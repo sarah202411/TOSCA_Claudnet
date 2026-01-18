@@ -1,0 +1,329 @@
+@startuml
+hide empty description
+skinparam shadowing false
+skinparam state {
+  ArrowColor blue
+  BorderColor blue
+  EndColor black
+  StartColor green
+  BackGroundColor<< step >> white
+  BorderColor<< step >> black
+  BackGroundColor<< delegate >> lightgrey
+  BackGroundColor<< set_state >> white
+  BackGroundColor<< call_operation >> lightblue
+  BackGroundColor<< inline >> white
+}
+skinparam ActivityBarColor<<fork>> DarkGreen
+skinparam ActivityBarColor<<join>> DarkOrange
+
+state "create_extCp_mgmt" as step_parallel_deploy_create_extCp_mgmt << step >> {
+  state "extCp_mgmt creating" as step_parallel_deploy_create_extCp_mgmt_extCp_mgmt_creating << set_state >>
+  state "extCp_mgmt Standard.create" as step_parallel_deploy_create_extCp_mgmt_extCp_mgmt_Standard.create << call_operation >>
+  state "extCp_mgmt created" as step_parallel_deploy_create_extCp_mgmt_extCp_mgmt_created << set_state >>
+  step_parallel_deploy_create_extCp_mgmt_extCp_mgmt_creating --> step_parallel_deploy_create_extCp_mgmt_extCp_mgmt_Standard.create
+  step_parallel_deploy_create_extCp_mgmt_extCp_mgmt_Standard.create --> step_parallel_deploy_create_extCp_mgmt_extCp_mgmt_created
+}
+state "pre_configure_extCp_mgmt" as step_parallel_deploy_pre_configure_extCp_mgmt << step >> {
+  state "extCp_mgmt configuring" as step_parallel_deploy_pre_configure_extCp_mgmt_extCp_mgmt_configuring << set_state >>
+}
+state "configure_extCp_mgmt" as step_parallel_deploy_configure_extCp_mgmt << step >> {
+  state "extCp_mgmt Standard.configure" as step_parallel_deploy_configure_extCp_mgmt_extCp_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_extCp_mgmt" as step_parallel_deploy_post_configure_extCp_mgmt << step >> {
+  state "extCp_mgmt configured" as step_parallel_deploy_post_configure_extCp_mgmt_extCp_mgmt_configured << set_state >>
+}
+state "start_extCp_mgmt" as step_parallel_deploy_start_extCp_mgmt << step >> {
+  state "extCp_mgmt starting" as step_parallel_deploy_start_extCp_mgmt_extCp_mgmt_starting << set_state >>
+  state "extCp_mgmt Standard.start" as step_parallel_deploy_start_extCp_mgmt_extCp_mgmt_Standard.start << call_operation >>
+  state "extCp_mgmt started" as step_parallel_deploy_start_extCp_mgmt_extCp_mgmt_started << set_state >>
+  step_parallel_deploy_start_extCp_mgmt_extCp_mgmt_starting --> step_parallel_deploy_start_extCp_mgmt_extCp_mgmt_Standard.start
+  step_parallel_deploy_start_extCp_mgmt_extCp_mgmt_Standard.start --> step_parallel_deploy_start_extCp_mgmt_extCp_mgmt_started
+}
+state "create_extCp_data" as step_parallel_deploy_create_extCp_data << step >> {
+  state "extCp_data creating" as step_parallel_deploy_create_extCp_data_extCp_data_creating << set_state >>
+  state "extCp_data Standard.create" as step_parallel_deploy_create_extCp_data_extCp_data_Standard.create << call_operation >>
+  state "extCp_data created" as step_parallel_deploy_create_extCp_data_extCp_data_created << set_state >>
+  step_parallel_deploy_create_extCp_data_extCp_data_creating --> step_parallel_deploy_create_extCp_data_extCp_data_Standard.create
+  step_parallel_deploy_create_extCp_data_extCp_data_Standard.create --> step_parallel_deploy_create_extCp_data_extCp_data_created
+}
+state "pre_configure_extCp_data" as step_parallel_deploy_pre_configure_extCp_data << step >> {
+  state "extCp_data configuring" as step_parallel_deploy_pre_configure_extCp_data_extCp_data_configuring << set_state >>
+}
+state "configure_extCp_data" as step_parallel_deploy_configure_extCp_data << step >> {
+  state "extCp_data Standard.configure" as step_parallel_deploy_configure_extCp_data_extCp_data_Standard.configure << call_operation >>
+}
+state "post_configure_extCp_data" as step_parallel_deploy_post_configure_extCp_data << step >> {
+  state "extCp_data configured" as step_parallel_deploy_post_configure_extCp_data_extCp_data_configured << set_state >>
+}
+state "start_extCp_data" as step_parallel_deploy_start_extCp_data << step >> {
+  state "extCp_data starting" as step_parallel_deploy_start_extCp_data_extCp_data_starting << set_state >>
+  state "extCp_data Standard.start" as step_parallel_deploy_start_extCp_data_extCp_data_Standard.start << call_operation >>
+  state "extCp_data started" as step_parallel_deploy_start_extCp_data_extCp_data_started << set_state >>
+  step_parallel_deploy_start_extCp_data_extCp_data_starting --> step_parallel_deploy_start_extCp_data_extCp_data_Standard.start
+  step_parallel_deploy_start_extCp_data_extCp_data_Standard.start --> step_parallel_deploy_start_extCp_data_extCp_data_started
+}
+state "create_intVL_mgmt" as step_parallel_deploy_create_intVL_mgmt << step >> {
+  state "intVL_mgmt creating" as step_parallel_deploy_create_intVL_mgmt_intVL_mgmt_creating << set_state >>
+  state "intVL_mgmt Standard.create" as step_parallel_deploy_create_intVL_mgmt_intVL_mgmt_Standard.create << call_operation >>
+  state "intVL_mgmt created" as step_parallel_deploy_create_intVL_mgmt_intVL_mgmt_created << set_state >>
+  step_parallel_deploy_create_intVL_mgmt_intVL_mgmt_creating --> step_parallel_deploy_create_intVL_mgmt_intVL_mgmt_Standard.create
+  step_parallel_deploy_create_intVL_mgmt_intVL_mgmt_Standard.create --> step_parallel_deploy_create_intVL_mgmt_intVL_mgmt_created
+}
+state "pre_configure_intVL_mgmt" as step_parallel_deploy_pre_configure_intVL_mgmt << step >> {
+  state "intVL_mgmt configuring" as step_parallel_deploy_pre_configure_intVL_mgmt_intVL_mgmt_configuring << set_state >>
+}
+state "configure_intVL_mgmt" as step_parallel_deploy_configure_intVL_mgmt << step >> {
+  state "intVL_mgmt Standard.configure" as step_parallel_deploy_configure_intVL_mgmt_intVL_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_intVL_mgmt" as step_parallel_deploy_post_configure_intVL_mgmt << step >> {
+  state "intVL_mgmt configured" as step_parallel_deploy_post_configure_intVL_mgmt_intVL_mgmt_configured << set_state >>
+}
+state "start_intVL_mgmt" as step_parallel_deploy_start_intVL_mgmt << step >> {
+  state "intVL_mgmt starting" as step_parallel_deploy_start_intVL_mgmt_intVL_mgmt_starting << set_state >>
+  state "intVL_mgmt Standard.start" as step_parallel_deploy_start_intVL_mgmt_intVL_mgmt_Standard.start << call_operation >>
+  state "intVL_mgmt started" as step_parallel_deploy_start_intVL_mgmt_intVL_mgmt_started << set_state >>
+  step_parallel_deploy_start_intVL_mgmt_intVL_mgmt_starting --> step_parallel_deploy_start_intVL_mgmt_intVL_mgmt_Standard.start
+  step_parallel_deploy_start_intVL_mgmt_intVL_mgmt_Standard.start --> step_parallel_deploy_start_intVL_mgmt_intVL_mgmt_started
+}
+state "create_intVL_data" as step_parallel_deploy_create_intVL_data << step >> {
+  state "intVL_data creating" as step_parallel_deploy_create_intVL_data_intVL_data_creating << set_state >>
+  state "intVL_data Standard.create" as step_parallel_deploy_create_intVL_data_intVL_data_Standard.create << call_operation >>
+  state "intVL_data created" as step_parallel_deploy_create_intVL_data_intVL_data_created << set_state >>
+  step_parallel_deploy_create_intVL_data_intVL_data_creating --> step_parallel_deploy_create_intVL_data_intVL_data_Standard.create
+  step_parallel_deploy_create_intVL_data_intVL_data_Standard.create --> step_parallel_deploy_create_intVL_data_intVL_data_created
+}
+state "pre_configure_intVL_data" as step_parallel_deploy_pre_configure_intVL_data << step >> {
+  state "intVL_data configuring" as step_parallel_deploy_pre_configure_intVL_data_intVL_data_configuring << set_state >>
+}
+state "configure_intVL_data" as step_parallel_deploy_configure_intVL_data << step >> {
+  state "intVL_data Standard.configure" as step_parallel_deploy_configure_intVL_data_intVL_data_Standard.configure << call_operation >>
+}
+state "post_configure_intVL_data" as step_parallel_deploy_post_configure_intVL_data << step >> {
+  state "intVL_data configured" as step_parallel_deploy_post_configure_intVL_data_intVL_data_configured << set_state >>
+}
+state "start_intVL_data" as step_parallel_deploy_start_intVL_data << step >> {
+  state "intVL_data starting" as step_parallel_deploy_start_intVL_data_intVL_data_starting << set_state >>
+  state "intVL_data Standard.start" as step_parallel_deploy_start_intVL_data_intVL_data_Standard.start << call_operation >>
+  state "intVL_data started" as step_parallel_deploy_start_intVL_data_intVL_data_started << set_state >>
+  step_parallel_deploy_start_intVL_data_intVL_data_starting --> step_parallel_deploy_start_intVL_data_intVL_data_Standard.start
+  step_parallel_deploy_start_intVL_data_intVL_data_Standard.start --> step_parallel_deploy_start_intVL_data_intVL_data_started
+}
+state "create_vdu_proxy_frontend" as step_parallel_deploy_create_vdu_proxy_frontend << step >> {
+  state "vdu_proxy_frontend creating" as step_parallel_deploy_create_vdu_proxy_frontend_vdu_proxy_frontend_creating << set_state >>
+  state "vdu_proxy_frontend Standard.create" as step_parallel_deploy_create_vdu_proxy_frontend_vdu_proxy_frontend_Standard.create << call_operation >>
+  state "vdu_proxy_frontend created" as step_parallel_deploy_create_vdu_proxy_frontend_vdu_proxy_frontend_created << set_state >>
+  step_parallel_deploy_create_vdu_proxy_frontend_vdu_proxy_frontend_creating --> step_parallel_deploy_create_vdu_proxy_frontend_vdu_proxy_frontend_Standard.create
+  step_parallel_deploy_create_vdu_proxy_frontend_vdu_proxy_frontend_Standard.create --> step_parallel_deploy_create_vdu_proxy_frontend_vdu_proxy_frontend_created
+}
+state "pre_configure_vdu_proxy_frontend" as step_parallel_deploy_pre_configure_vdu_proxy_frontend << step >> {
+  state "vdu_proxy_frontend configuring" as step_parallel_deploy_pre_configure_vdu_proxy_frontend_vdu_proxy_frontend_configuring << set_state >>
+}
+state "configure_vdu_proxy_frontend" as step_parallel_deploy_configure_vdu_proxy_frontend << step >> {
+  state "vdu_proxy_frontend Standard.configure" as step_parallel_deploy_configure_vdu_proxy_frontend_vdu_proxy_frontend_Standard.configure << call_operation >>
+}
+state "post_configure_vdu_proxy_frontend" as step_parallel_deploy_post_configure_vdu_proxy_frontend << step >> {
+  state "vdu_proxy_frontend configured" as step_parallel_deploy_post_configure_vdu_proxy_frontend_vdu_proxy_frontend_configured << set_state >>
+}
+state "start_vdu_proxy_frontend" as step_parallel_deploy_start_vdu_proxy_frontend << step >> {
+  state "vdu_proxy_frontend starting" as step_parallel_deploy_start_vdu_proxy_frontend_vdu_proxy_frontend_starting << set_state >>
+  state "vdu_proxy_frontend Standard.start" as step_parallel_deploy_start_vdu_proxy_frontend_vdu_proxy_frontend_Standard.start << call_operation >>
+  state "vdu_proxy_frontend started" as step_parallel_deploy_start_vdu_proxy_frontend_vdu_proxy_frontend_started << set_state >>
+  step_parallel_deploy_start_vdu_proxy_frontend_vdu_proxy_frontend_starting --> step_parallel_deploy_start_vdu_proxy_frontend_vdu_proxy_frontend_Standard.start
+  step_parallel_deploy_start_vdu_proxy_frontend_vdu_proxy_frontend_Standard.start --> step_parallel_deploy_start_vdu_proxy_frontend_vdu_proxy_frontend_started
+}
+state "create_vdu_proxy_backend" as step_parallel_deploy_create_vdu_proxy_backend << step >> {
+  state "vdu_proxy_backend creating" as step_parallel_deploy_create_vdu_proxy_backend_vdu_proxy_backend_creating << set_state >>
+  state "vdu_proxy_backend Standard.create" as step_parallel_deploy_create_vdu_proxy_backend_vdu_proxy_backend_Standard.create << call_operation >>
+  state "vdu_proxy_backend created" as step_parallel_deploy_create_vdu_proxy_backend_vdu_proxy_backend_created << set_state >>
+  step_parallel_deploy_create_vdu_proxy_backend_vdu_proxy_backend_creating --> step_parallel_deploy_create_vdu_proxy_backend_vdu_proxy_backend_Standard.create
+  step_parallel_deploy_create_vdu_proxy_backend_vdu_proxy_backend_Standard.create --> step_parallel_deploy_create_vdu_proxy_backend_vdu_proxy_backend_created
+}
+state "pre_configure_vdu_proxy_backend" as step_parallel_deploy_pre_configure_vdu_proxy_backend << step >> {
+  state "vdu_proxy_backend configuring" as step_parallel_deploy_pre_configure_vdu_proxy_backend_vdu_proxy_backend_configuring << set_state >>
+}
+state "configure_vdu_proxy_backend" as step_parallel_deploy_configure_vdu_proxy_backend << step >> {
+  state "vdu_proxy_backend Standard.configure" as step_parallel_deploy_configure_vdu_proxy_backend_vdu_proxy_backend_Standard.configure << call_operation >>
+}
+state "post_configure_vdu_proxy_backend" as step_parallel_deploy_post_configure_vdu_proxy_backend << step >> {
+  state "vdu_proxy_backend configured" as step_parallel_deploy_post_configure_vdu_proxy_backend_vdu_proxy_backend_configured << set_state >>
+}
+state "start_vdu_proxy_backend" as step_parallel_deploy_start_vdu_proxy_backend << step >> {
+  state "vdu_proxy_backend starting" as step_parallel_deploy_start_vdu_proxy_backend_vdu_proxy_backend_starting << set_state >>
+  state "vdu_proxy_backend Standard.start" as step_parallel_deploy_start_vdu_proxy_backend_vdu_proxy_backend_Standard.start << call_operation >>
+  state "vdu_proxy_backend started" as step_parallel_deploy_start_vdu_proxy_backend_vdu_proxy_backend_started << set_state >>
+  step_parallel_deploy_start_vdu_proxy_backend_vdu_proxy_backend_starting --> step_parallel_deploy_start_vdu_proxy_backend_vdu_proxy_backend_Standard.start
+  step_parallel_deploy_start_vdu_proxy_backend_vdu_proxy_backend_Standard.start --> step_parallel_deploy_start_vdu_proxy_backend_vdu_proxy_backend_started
+}
+state "create_cp_proxy_frontend_mgmt" as step_parallel_deploy_create_cp_proxy_frontend_mgmt << step >> {
+  state "cp_proxy_frontend_mgmt creating" as step_parallel_deploy_create_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_creating << set_state >>
+  state "cp_proxy_frontend_mgmt Standard.create" as step_parallel_deploy_create_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.create << call_operation >>
+  state "cp_proxy_frontend_mgmt created" as step_parallel_deploy_create_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_created << set_state >>
+  step_parallel_deploy_create_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_creating --> step_parallel_deploy_create_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.create
+  step_parallel_deploy_create_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.create --> step_parallel_deploy_create_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_created
+}
+state "pre_configure_cp_proxy_frontend_mgmt" as step_parallel_deploy_pre_configure_cp_proxy_frontend_mgmt << step >> {
+  state "cp_proxy_frontend_mgmt configuring" as step_parallel_deploy_pre_configure_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_configuring << set_state >>
+}
+state "configure_cp_proxy_frontend_mgmt" as step_parallel_deploy_configure_cp_proxy_frontend_mgmt << step >> {
+  state "cp_proxy_frontend_mgmt Standard.configure" as step_parallel_deploy_configure_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_cp_proxy_frontend_mgmt" as step_parallel_deploy_post_configure_cp_proxy_frontend_mgmt << step >> {
+  state "cp_proxy_frontend_mgmt configured" as step_parallel_deploy_post_configure_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_configured << set_state >>
+}
+state "start_cp_proxy_frontend_mgmt" as step_parallel_deploy_start_cp_proxy_frontend_mgmt << step >> {
+  state "cp_proxy_frontend_mgmt starting" as step_parallel_deploy_start_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_starting << set_state >>
+  state "cp_proxy_frontend_mgmt Standard.start" as step_parallel_deploy_start_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.start << call_operation >>
+  state "cp_proxy_frontend_mgmt started" as step_parallel_deploy_start_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_started << set_state >>
+  step_parallel_deploy_start_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_starting --> step_parallel_deploy_start_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.start
+  step_parallel_deploy_start_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.start --> step_parallel_deploy_start_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_started
+}
+state "create_cp_proxy_frontend_data" as step_parallel_deploy_create_cp_proxy_frontend_data << step >> {
+  state "cp_proxy_frontend_data creating" as step_parallel_deploy_create_cp_proxy_frontend_data_cp_proxy_frontend_data_creating << set_state >>
+  state "cp_proxy_frontend_data Standard.create" as step_parallel_deploy_create_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.create << call_operation >>
+  state "cp_proxy_frontend_data created" as step_parallel_deploy_create_cp_proxy_frontend_data_cp_proxy_frontend_data_created << set_state >>
+  step_parallel_deploy_create_cp_proxy_frontend_data_cp_proxy_frontend_data_creating --> step_parallel_deploy_create_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.create
+  step_parallel_deploy_create_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.create --> step_parallel_deploy_create_cp_proxy_frontend_data_cp_proxy_frontend_data_created
+}
+state "pre_configure_cp_proxy_frontend_data" as step_parallel_deploy_pre_configure_cp_proxy_frontend_data << step >> {
+  state "cp_proxy_frontend_data configuring" as step_parallel_deploy_pre_configure_cp_proxy_frontend_data_cp_proxy_frontend_data_configuring << set_state >>
+}
+state "configure_cp_proxy_frontend_data" as step_parallel_deploy_configure_cp_proxy_frontend_data << step >> {
+  state "cp_proxy_frontend_data Standard.configure" as step_parallel_deploy_configure_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.configure << call_operation >>
+}
+state "post_configure_cp_proxy_frontend_data" as step_parallel_deploy_post_configure_cp_proxy_frontend_data << step >> {
+  state "cp_proxy_frontend_data configured" as step_parallel_deploy_post_configure_cp_proxy_frontend_data_cp_proxy_frontend_data_configured << set_state >>
+}
+state "start_cp_proxy_frontend_data" as step_parallel_deploy_start_cp_proxy_frontend_data << step >> {
+  state "cp_proxy_frontend_data starting" as step_parallel_deploy_start_cp_proxy_frontend_data_cp_proxy_frontend_data_starting << set_state >>
+  state "cp_proxy_frontend_data Standard.start" as step_parallel_deploy_start_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.start << call_operation >>
+  state "cp_proxy_frontend_data started" as step_parallel_deploy_start_cp_proxy_frontend_data_cp_proxy_frontend_data_started << set_state >>
+  step_parallel_deploy_start_cp_proxy_frontend_data_cp_proxy_frontend_data_starting --> step_parallel_deploy_start_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.start
+  step_parallel_deploy_start_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.start --> step_parallel_deploy_start_cp_proxy_frontend_data_cp_proxy_frontend_data_started
+}
+state "create_cp_proxy_backend_mgmt" as step_parallel_deploy_create_cp_proxy_backend_mgmt << step >> {
+  state "cp_proxy_backend_mgmt creating" as step_parallel_deploy_create_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_creating << set_state >>
+  state "cp_proxy_backend_mgmt Standard.create" as step_parallel_deploy_create_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.create << call_operation >>
+  state "cp_proxy_backend_mgmt created" as step_parallel_deploy_create_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_created << set_state >>
+  step_parallel_deploy_create_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_creating --> step_parallel_deploy_create_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.create
+  step_parallel_deploy_create_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.create --> step_parallel_deploy_create_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_created
+}
+state "pre_configure_cp_proxy_backend_mgmt" as step_parallel_deploy_pre_configure_cp_proxy_backend_mgmt << step >> {
+  state "cp_proxy_backend_mgmt configuring" as step_parallel_deploy_pre_configure_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_configuring << set_state >>
+}
+state "configure_cp_proxy_backend_mgmt" as step_parallel_deploy_configure_cp_proxy_backend_mgmt << step >> {
+  state "cp_proxy_backend_mgmt Standard.configure" as step_parallel_deploy_configure_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_cp_proxy_backend_mgmt" as step_parallel_deploy_post_configure_cp_proxy_backend_mgmt << step >> {
+  state "cp_proxy_backend_mgmt configured" as step_parallel_deploy_post_configure_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_configured << set_state >>
+}
+state "start_cp_proxy_backend_mgmt" as step_parallel_deploy_start_cp_proxy_backend_mgmt << step >> {
+  state "cp_proxy_backend_mgmt starting" as step_parallel_deploy_start_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_starting << set_state >>
+  state "cp_proxy_backend_mgmt Standard.start" as step_parallel_deploy_start_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.start << call_operation >>
+  state "cp_proxy_backend_mgmt started" as step_parallel_deploy_start_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_started << set_state >>
+  step_parallel_deploy_start_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_starting --> step_parallel_deploy_start_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.start
+  step_parallel_deploy_start_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.start --> step_parallel_deploy_start_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_started
+}
+state "create_cp_proxy_backend_data" as step_parallel_deploy_create_cp_proxy_backend_data << step >> {
+  state "cp_proxy_backend_data creating" as step_parallel_deploy_create_cp_proxy_backend_data_cp_proxy_backend_data_creating << set_state >>
+  state "cp_proxy_backend_data Standard.create" as step_parallel_deploy_create_cp_proxy_backend_data_cp_proxy_backend_data_Standard.create << call_operation >>
+  state "cp_proxy_backend_data created" as step_parallel_deploy_create_cp_proxy_backend_data_cp_proxy_backend_data_created << set_state >>
+  step_parallel_deploy_create_cp_proxy_backend_data_cp_proxy_backend_data_creating --> step_parallel_deploy_create_cp_proxy_backend_data_cp_proxy_backend_data_Standard.create
+  step_parallel_deploy_create_cp_proxy_backend_data_cp_proxy_backend_data_Standard.create --> step_parallel_deploy_create_cp_proxy_backend_data_cp_proxy_backend_data_created
+}
+state "pre_configure_cp_proxy_backend_data" as step_parallel_deploy_pre_configure_cp_proxy_backend_data << step >> {
+  state "cp_proxy_backend_data configuring" as step_parallel_deploy_pre_configure_cp_proxy_backend_data_cp_proxy_backend_data_configuring << set_state >>
+}
+state "configure_cp_proxy_backend_data" as step_parallel_deploy_configure_cp_proxy_backend_data << step >> {
+  state "cp_proxy_backend_data Standard.configure" as step_parallel_deploy_configure_cp_proxy_backend_data_cp_proxy_backend_data_Standard.configure << call_operation >>
+}
+state "post_configure_cp_proxy_backend_data" as step_parallel_deploy_post_configure_cp_proxy_backend_data << step >> {
+  state "cp_proxy_backend_data configured" as step_parallel_deploy_post_configure_cp_proxy_backend_data_cp_proxy_backend_data_configured << set_state >>
+}
+state "start_cp_proxy_backend_data" as step_parallel_deploy_start_cp_proxy_backend_data << step >> {
+  state "cp_proxy_backend_data starting" as step_parallel_deploy_start_cp_proxy_backend_data_cp_proxy_backend_data_starting << set_state >>
+  state "cp_proxy_backend_data Standard.start" as step_parallel_deploy_start_cp_proxy_backend_data_cp_proxy_backend_data_Standard.start << call_operation >>
+  state "cp_proxy_backend_data started" as step_parallel_deploy_start_cp_proxy_backend_data_cp_proxy_backend_data_started << set_state >>
+  step_parallel_deploy_start_cp_proxy_backend_data_cp_proxy_backend_data_starting --> step_parallel_deploy_start_cp_proxy_backend_data_cp_proxy_backend_data_Standard.start
+  step_parallel_deploy_start_cp_proxy_backend_data_cp_proxy_backend_data_Standard.start --> step_parallel_deploy_start_cp_proxy_backend_data_cp_proxy_backend_data_started
+}
+  state step_parallel_deploy_create_cp_proxy_frontend_mgmt_join <<join>>
+  step_parallel_deploy_create_cp_proxy_frontend_mgmt_join --> step_parallel_deploy_create_cp_proxy_frontend_mgmt
+  state step_parallel_deploy_create_cp_proxy_frontend_data_join <<join>>
+  step_parallel_deploy_create_cp_proxy_frontend_data_join --> step_parallel_deploy_create_cp_proxy_frontend_data
+  state step_parallel_deploy_create_cp_proxy_backend_mgmt_join <<join>>
+  step_parallel_deploy_create_cp_proxy_backend_mgmt_join --> step_parallel_deploy_create_cp_proxy_backend_mgmt
+  state step_parallel_deploy_create_cp_proxy_backend_data_join <<join>>
+  step_parallel_deploy_create_cp_proxy_backend_data_join --> step_parallel_deploy_create_cp_proxy_backend_data
+step_parallel_deploy_create_extCp_mgmt --> step_parallel_deploy_pre_configure_extCp_mgmt
+step_parallel_deploy_pre_configure_extCp_mgmt --> step_parallel_deploy_configure_extCp_mgmt
+step_parallel_deploy_configure_extCp_mgmt --> step_parallel_deploy_post_configure_extCp_mgmt
+step_parallel_deploy_post_configure_extCp_mgmt --> step_parallel_deploy_start_extCp_mgmt
+step_parallel_deploy_create_extCp_data --> step_parallel_deploy_pre_configure_extCp_data
+step_parallel_deploy_pre_configure_extCp_data --> step_parallel_deploy_configure_extCp_data
+step_parallel_deploy_configure_extCp_data --> step_parallel_deploy_post_configure_extCp_data
+step_parallel_deploy_post_configure_extCp_data --> step_parallel_deploy_start_extCp_data
+step_parallel_deploy_create_intVL_mgmt --> step_parallel_deploy_pre_configure_intVL_mgmt
+step_parallel_deploy_pre_configure_intVL_mgmt --> step_parallel_deploy_configure_intVL_mgmt
+step_parallel_deploy_configure_intVL_mgmt --> step_parallel_deploy_post_configure_intVL_mgmt
+step_parallel_deploy_post_configure_intVL_mgmt --> step_parallel_deploy_start_intVL_mgmt
+state step_parallel_deploy_start_intVL_mgmt_fork <<fork>>
+step_parallel_deploy_start_intVL_mgmt --> step_parallel_deploy_start_intVL_mgmt_fork
+step_parallel_deploy_start_intVL_mgmt_fork --> step_parallel_deploy_create_extCp_mgmt
+step_parallel_deploy_start_intVL_mgmt_fork --> step_parallel_deploy_create_cp_proxy_frontend_mgmt_join
+step_parallel_deploy_start_intVL_mgmt_fork --> step_parallel_deploy_create_cp_proxy_backend_mgmt_join
+step_parallel_deploy_create_intVL_data --> step_parallel_deploy_pre_configure_intVL_data
+step_parallel_deploy_pre_configure_intVL_data --> step_parallel_deploy_configure_intVL_data
+step_parallel_deploy_configure_intVL_data --> step_parallel_deploy_post_configure_intVL_data
+step_parallel_deploy_post_configure_intVL_data --> step_parallel_deploy_start_intVL_data
+state step_parallel_deploy_start_intVL_data_fork <<fork>>
+step_parallel_deploy_start_intVL_data --> step_parallel_deploy_start_intVL_data_fork
+step_parallel_deploy_start_intVL_data_fork --> step_parallel_deploy_create_extCp_data
+step_parallel_deploy_start_intVL_data_fork --> step_parallel_deploy_create_cp_proxy_frontend_data_join
+step_parallel_deploy_start_intVL_data_fork --> step_parallel_deploy_create_cp_proxy_backend_data_join
+step_parallel_deploy_create_vdu_proxy_frontend --> step_parallel_deploy_pre_configure_vdu_proxy_frontend
+step_parallel_deploy_pre_configure_vdu_proxy_frontend --> step_parallel_deploy_configure_vdu_proxy_frontend
+step_parallel_deploy_configure_vdu_proxy_frontend --> step_parallel_deploy_post_configure_vdu_proxy_frontend
+step_parallel_deploy_post_configure_vdu_proxy_frontend --> step_parallel_deploy_start_vdu_proxy_frontend
+state step_parallel_deploy_start_vdu_proxy_frontend_fork <<fork>>
+step_parallel_deploy_start_vdu_proxy_frontend --> step_parallel_deploy_start_vdu_proxy_frontend_fork
+step_parallel_deploy_start_vdu_proxy_frontend_fork --> step_parallel_deploy_create_cp_proxy_frontend_mgmt_join
+step_parallel_deploy_start_vdu_proxy_frontend_fork --> step_parallel_deploy_create_cp_proxy_frontend_data_join
+step_parallel_deploy_create_vdu_proxy_backend --> step_parallel_deploy_pre_configure_vdu_proxy_backend
+step_parallel_deploy_pre_configure_vdu_proxy_backend --> step_parallel_deploy_configure_vdu_proxy_backend
+step_parallel_deploy_configure_vdu_proxy_backend --> step_parallel_deploy_post_configure_vdu_proxy_backend
+step_parallel_deploy_post_configure_vdu_proxy_backend --> step_parallel_deploy_start_vdu_proxy_backend
+state step_parallel_deploy_start_vdu_proxy_backend_fork <<fork>>
+step_parallel_deploy_start_vdu_proxy_backend --> step_parallel_deploy_start_vdu_proxy_backend_fork
+step_parallel_deploy_start_vdu_proxy_backend_fork --> step_parallel_deploy_create_cp_proxy_backend_mgmt_join
+step_parallel_deploy_start_vdu_proxy_backend_fork --> step_parallel_deploy_create_cp_proxy_backend_data_join
+step_parallel_deploy_create_cp_proxy_frontend_mgmt --> step_parallel_deploy_pre_configure_cp_proxy_frontend_mgmt
+step_parallel_deploy_pre_configure_cp_proxy_frontend_mgmt --> step_parallel_deploy_configure_cp_proxy_frontend_mgmt
+step_parallel_deploy_configure_cp_proxy_frontend_mgmt --> step_parallel_deploy_post_configure_cp_proxy_frontend_mgmt
+step_parallel_deploy_post_configure_cp_proxy_frontend_mgmt --> step_parallel_deploy_start_cp_proxy_frontend_mgmt
+step_parallel_deploy_create_cp_proxy_frontend_data --> step_parallel_deploy_pre_configure_cp_proxy_frontend_data
+step_parallel_deploy_pre_configure_cp_proxy_frontend_data --> step_parallel_deploy_configure_cp_proxy_frontend_data
+step_parallel_deploy_configure_cp_proxy_frontend_data --> step_parallel_deploy_post_configure_cp_proxy_frontend_data
+step_parallel_deploy_post_configure_cp_proxy_frontend_data --> step_parallel_deploy_start_cp_proxy_frontend_data
+step_parallel_deploy_create_cp_proxy_backend_mgmt --> step_parallel_deploy_pre_configure_cp_proxy_backend_mgmt
+step_parallel_deploy_pre_configure_cp_proxy_backend_mgmt --> step_parallel_deploy_configure_cp_proxy_backend_mgmt
+step_parallel_deploy_configure_cp_proxy_backend_mgmt --> step_parallel_deploy_post_configure_cp_proxy_backend_mgmt
+step_parallel_deploy_post_configure_cp_proxy_backend_mgmt --> step_parallel_deploy_start_cp_proxy_backend_mgmt
+step_parallel_deploy_create_cp_proxy_backend_data --> step_parallel_deploy_pre_configure_cp_proxy_backend_data
+step_parallel_deploy_pre_configure_cp_proxy_backend_data --> step_parallel_deploy_configure_cp_proxy_backend_data
+step_parallel_deploy_configure_cp_proxy_backend_data --> step_parallel_deploy_post_configure_cp_proxy_backend_data
+step_parallel_deploy_post_configure_cp_proxy_backend_data --> step_parallel_deploy_start_cp_proxy_backend_data
+state parallel_deploy_fork <<fork>>
+[*] --> parallel_deploy_fork
+parallel_deploy_fork --> step_parallel_deploy_create_intVL_mgmt
+parallel_deploy_fork --> step_parallel_deploy_create_intVL_data
+parallel_deploy_fork --> step_parallel_deploy_create_vdu_proxy_frontend
+parallel_deploy_fork --> step_parallel_deploy_create_vdu_proxy_backend
+state parallel_deploy_join <<join>>
+parallel_deploy_join --> [*]
+step_parallel_deploy_start_extCp_mgmt --> parallel_deploy_join
+step_parallel_deploy_start_extCp_data --> parallel_deploy_join
+step_parallel_deploy_start_cp_proxy_frontend_mgmt --> parallel_deploy_join
+step_parallel_deploy_start_cp_proxy_frontend_data --> parallel_deploy_join
+step_parallel_deploy_start_cp_proxy_backend_mgmt --> parallel_deploy_join
+step_parallel_deploy_start_cp_proxy_backend_data --> parallel_deploy_join
+@enduml

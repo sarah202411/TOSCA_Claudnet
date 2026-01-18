@@ -1,0 +1,24 @@
+@startuml
+set namespaceSeparator none
+class "tosca.nodes.nfv.VNF" << (N,green) >> #DDDDDD
+"tosca.nodes.nfv.VNF" <|-- "tosca.nodes.nfv.Firewall_VNF"
+class "tosca.nodes.nfv.Firewall_VNF" << (N,green) >> {
+.. properties ..
++<b>descriptor_id : string = 'firewall-vnfd-1.0'
++<b>provider : string = 'MyCompany'
++<b>product_name : string = 'Firewall_VM'
++<b>software_version : string = '1.0'
++<b>descriptor_version : string = '1.0'
++<b>flavour_id : string = 'scalable_ha'
++<b>flavour_description : string = 'Scalable flavour with HA support for Fi[[{'Scalable flavour with HA support for Firewall'} ...]]
++<b>vnfm_info : list<string> = ['etsivnfm:v3.3.1']
+.. requirements ..
++<b>virtual_link_external
+ capability : tosca.capabilities.nfv.VirtualLinkable[1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
+}
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.Firewall_VNF" *- "1" "tosca.capabilities.nfv.VirtualLinkable" : virtual_link_external
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.Firewall_VNF" ..> "tosca.relationships.nfv.VirtualLinksTo" : virtual_link_external.relationship
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+set namespaceSeparator none
+class "tosca.nodes.nfv.NS" << (N,green) >> #DDDDDD
+"tosca.nodes.nfv.NS" <|-- "tosca.nodes.nfv.MultiVNF_NS"
+class "tosca.nodes.nfv.MultiVNF_NS" << (N,green) >> {
+.. properties ..
++<b>descriptor_id : string = 'multi-vnf-ns-001'
++<b>designer : string = 'MyCompany'
++<b>version : string = '1.0'
++<b>name : string = 'Multi-VNF Network Service'
++<b>invariant_id : string = 'multi-vnf-ns-invariant-001'
++<b>flavour_id : string = 'default_flavour'
++<b>flavour_description : string = 'Default flavour for multi-VNF network s[[{'Default flavour for multi-VNF network service'} ...]]
+}
+@enduml

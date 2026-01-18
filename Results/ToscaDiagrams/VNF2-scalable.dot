@@ -1,0 +1,91 @@
+graph ToscaDiagram {
+  rankdir="LR"
+  subgraph clusterSubstitutionMappings {
+    label="tosca.nodes.nfv.IDS_VNF"
+    subgraph clusterextCp_mgmt {
+      color=white
+      label=""
+      extCp_mgmt[label="extCp_mgmt: VnfExtCp|\l\l\l\l" shape=record style=rounded]
+      extCp_mgmt_requirement_internal_virtual_link[label="internal_virtual_link" shape=cds style=filled fillcolor=turquoise]
+      extCp_mgmt -- extCp_mgmt_requirement_internal_virtual_link
+    }
+    subgraph clusterintVL_mgmt {
+      color=white
+      label=""
+      intVL_mgmt[label="intVL_mgmt: VnfVirtualLink|\l\l\l\l" shape=record style=rounded]
+      intVL_mgmt_capability_virtual_linkable[label="virtual_linkable" shape=cds style=filled fillcolor=orange]
+      intVL_mgmt_capability_virtual_linkable -- intVL_mgmt
+    }
+    subgraph clusterintVL_data {
+      color=white
+      label=""
+      intVL_data[label="intVL_data: VnfVirtualLink|\l\l\l\l" shape=record style=rounded]
+      intVL_data_capability_virtual_linkable[label="virtual_linkable" shape=cds style=filled fillcolor=orange]
+      intVL_data_capability_virtual_linkable -- intVL_data
+    }
+    subgraph clustervdu_ids_detection {
+      color=white
+      label=""
+      vdu_ids_detection[label="vdu_ids_detection: Compute|\l\l\l\l" shape=record style=rounded]
+      vdu_ids_detection_capability_virtual_compute[label="virtual_compute" shape=cds style=filled fillcolor=orange]
+      vdu_ids_detection_capability_virtual_compute -- vdu_ids_detection
+      vdu_ids_detection_capability_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=orange]
+      vdu_ids_detection_capability_virtual_binding -- vdu_ids_detection
+    }
+    subgraph clustervdu_ids_analysis {
+      color=white
+      label=""
+      vdu_ids_analysis[label="vdu_ids_analysis: Compute|\l\l\l\l" shape=record style=rounded]
+      vdu_ids_analysis_capability_virtual_compute[label="virtual_compute" shape=cds style=filled fillcolor=orange]
+      vdu_ids_analysis_capability_virtual_compute -- vdu_ids_analysis
+      vdu_ids_analysis_capability_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=orange]
+      vdu_ids_analysis_capability_virtual_binding -- vdu_ids_analysis
+    }
+    subgraph clustercp_ids_detection_mgmt {
+      color=white
+      label=""
+      cp_ids_detection_mgmt[label="cp_ids_detection_mgmt: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_ids_detection_mgmt_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_ids_detection_mgmt -- cp_ids_detection_mgmt_requirement_virtual_link
+      cp_ids_detection_mgmt_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_ids_detection_mgmt -- cp_ids_detection_mgmt_requirement_virtual_binding
+    }
+    subgraph clustercp_ids_detection_data {
+      color=white
+      label=""
+      cp_ids_detection_data[label="cp_ids_detection_data: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_ids_detection_data_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_ids_detection_data -- cp_ids_detection_data_requirement_virtual_link
+      cp_ids_detection_data_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_ids_detection_data -- cp_ids_detection_data_requirement_virtual_binding
+    }
+    subgraph clustercp_ids_analysis_mgmt {
+      color=white
+      label=""
+      cp_ids_analysis_mgmt[label="cp_ids_analysis_mgmt: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_ids_analysis_mgmt_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_ids_analysis_mgmt -- cp_ids_analysis_mgmt_requirement_virtual_link
+      cp_ids_analysis_mgmt_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_ids_analysis_mgmt -- cp_ids_analysis_mgmt_requirement_virtual_binding
+    }
+    subgraph clustercp_ids_analysis_data {
+      color=white
+      label=""
+      cp_ids_analysis_data[label="cp_ids_analysis_data: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_ids_analysis_data_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_ids_analysis_data -- cp_ids_analysis_data_requirement_virtual_link
+      cp_ids_analysis_data_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_ids_analysis_data -- cp_ids_analysis_data_requirement_virtual_binding
+    }
+    cp_ids_detection_mgmt_requirement_virtual_binding -- vdu_ids_detection_capability_virtual_binding[style=dotted]
+    cp_ids_detection_mgmt_requirement_virtual_link -- intVL_mgmt_capability_virtual_linkable[style=dotted]
+    cp_ids_detection_data_requirement_virtual_binding -- vdu_ids_detection_capability_virtual_binding[style=dotted]
+    cp_ids_detection_data_requirement_virtual_link -- intVL_data_capability_virtual_linkable[style=dotted]
+    cp_ids_analysis_mgmt_requirement_virtual_binding -- vdu_ids_analysis_capability_virtual_binding[style=dotted]
+    cp_ids_analysis_mgmt_requirement_virtual_link -- intVL_mgmt_capability_virtual_linkable[style=dotted]
+    cp_ids_analysis_data_requirement_virtual_binding -- vdu_ids_analysis_capability_virtual_binding[style=dotted]
+    cp_ids_analysis_data_requirement_virtual_link -- intVL_data_capability_virtual_linkable[style=dotted]
+  }
+  topology_template_substitution_mappings_requirement_virtual_link_external[label="virtual_link_external" shape=cds style=filled fillcolor=turquoise]
+  extCp_mgmt_requirement_internal_virtual_link -- topology_template_substitution_mappings_requirement_virtual_link_external[style=dotted]
+}

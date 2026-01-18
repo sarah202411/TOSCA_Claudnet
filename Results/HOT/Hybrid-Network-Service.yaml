@@ -1,0 +1,613 @@
+heat_template_version: queens
+
+description: Network Service Descriptor for interconnecting VNF1, VNF2, and CNF
+
+parameters:
+  external_mgmt_network:
+    type: string
+    label: External Mgmt Network
+    description: External management network ID
+    default: ext-mgmt-net
+#   hidden: false
+#   immutable: false
+#   tags: []
+  external_data_network:
+    type: string
+    label: External Data Network
+    description: External data network ID
+    default: ext-data-net
+#   hidden: false
+#   immutable: false
+#   tags: []
+  descriptor_id:
+    type: string
+    label: Descriptor Id
+    description: Identifier of this NS descriptor
+    default: multi-vnf-ns-001
+#   hidden: false
+#   immutable: false
+#   tags: []
+  designer:
+    type: string
+    label: Designer
+    description: Identifies the designer of the NSD.
+    default: MyCompany
+#   hidden: false
+#   immutable: false
+#   tags: []
+  version:
+    type: string
+    label: Version
+    description: Identifies the version of the NSD.
+    default: 1.0
+#   hidden: false
+#   immutable: false
+#   tags: []
+  name:
+    type: string
+    label: Name
+    description: Provides the human readable name of the NSD.
+    default: Multi-VNF Network Service
+#   hidden: false
+#   immutable: false
+#   tags: []
+  invariant_id:
+    type: string
+    label: Invariant Id
+    description: Identifies an NSD in a version independent manner. This attribute is invariant across versions of NSD with no constraints on the changes across versions.
+    default: multi-vnf-ns-invariant-001
+#   hidden: false
+#   immutable: false
+#   tags: []
+  flavour_id:
+    type: string
+    label: Flavour Id
+    description: Identifier of the NS Deployment Flavour within the NSD
+    default: default_flavour
+#   hidden: false
+#   immutable: false
+#   tags: []
+  strict_nsd_constituent_onboarding:
+    type: boolean
+    label: Strict Nsd Constituent Onboarding
+    description: Indicates if all NSD constituents referenced by this NSD shall be onboarded before onboarding the NSD identified by this information element. If true all referenced constituents shall be onboarded.
+    default: True
+#   hidden: false
+#   immutable: false
+#   tags: []
+  flavour_description:
+    type: string
+    label: Flavour Description
+    default: Default flavour for multi-VNF network service
+#   hidden: false
+#   immutable: false
+#   tags: []
+  virtual_link:
+    type: string
+    label: Virtual Link
+#   hidden: false
+    constraints:
+      - custom_constraint: neutron.network
+#   immutable: false
+#   tags: []
+
+resources:
+  #
+  # Node 'vl_mgmt_network' of type 'tosca.nodes.nfv.NsVirtualLink' translated into the following resource(s):
+  #
+
+  vl_mgmt_network:
+    type: OS::Neutron::Net
+    properties:
+#     admin_state_up: true # default value
+#     dhcp_agent_ids: [] # default value
+#     dns_domain: DNS_DOMAIN
+#     name: vl_mgmt_network # set by Heat engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+      shared: false # default value
+#     tags: [] # default value
+#     value_specs: {} # default value
+    metadata:
+      tosca.type: tosca.nodes.nfv.NsVirtualLink
+      connectivity_type.layer_protocols: ['ipv4']
+      connectivity_type.flow_pattern: mesh
+      vl_profile.max_bitrate_requirements.root: 1000000
+      vl_profile.max_bitrate_requirements.leaf: 100000
+      vl_profile.min_bitrate_requirements.root: 100000
+      vl_profile.min_bitrate_requirements.leaf: 10000
+      vl_profile.qos.latency: 10 ms
+      vl_profile.qos.packet_delay_variation: 5 ms
+      vl_profile.qos.packet_loss_ratio: 0.001
+      vl_profile.qos.priority: 2
+      description: Management network for all VNFs and CNF
+      test_access: []
+
+  vl_mgmt_network_root_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for root ports of network vl_mgmt_network
+#     name: vl_mgmt_network root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  vl_mgmt_network_root_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: vl_mgmt_network_root_qos_policy }
+      max_kbps: 1000
+#     max_burst_kbps: 1000
+
+  vl_mgmt_network_leaf_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for leaf ports of network vl_mgmt_network
+#     name: vl_mgmt_network root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  vl_mgmt_network_leaf_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: vl_mgmt_network_leaf_qos_policy }
+      max_kbps: 100
+#     max_burst_kbps: 100
+
+  vl_mgmt_network_subnet_ipv4:
+    type: OS::Neutron::Subnet
+    properties:
+      network: { get_resource: vl_mgmt_network }
+#     allocation_pools: [] # default value
+      cidr: 10.100.0.0/24  # generated
+#     enable_dhcp: true # default value
+#     gateway_ip: GATEWAY_IP
+#     host_routes: {} # default value
+      ip_version: 4
+#     ipv6_address_mode: ""
+#     ipv6_ra_mode: ""
+#     name: vl_mgmt_network-subnet-ipv4 # set by Heat engine
+#     prefixlen: integer
+#     segment: segment_id
+#     subnetpool: subnetpool_id
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+  #
+  # Node 'vl_data_network' of type 'tosca.nodes.nfv.NsVirtualLink' translated into the following resource(s):
+  #
+
+  vl_data_network:
+    type: OS::Neutron::Net
+    properties:
+#     admin_state_up: true # default value
+#     dhcp_agent_ids: [] # default value
+#     dns_domain: DNS_DOMAIN
+#     name: vl_data_network # set by Heat engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+      shared: false # default value
+#     tags: [] # default value
+#     value_specs: {} # default value
+    metadata:
+      tosca.type: tosca.nodes.nfv.NsVirtualLink
+      connectivity_type.layer_protocols: ['ipv4']
+      connectivity_type.flow_pattern: line
+      vl_profile.max_bitrate_requirements.root: 10000000
+      vl_profile.max_bitrate_requirements.leaf: 1000000
+      vl_profile.min_bitrate_requirements.root: 1000000
+      vl_profile.min_bitrate_requirements.leaf: 100000
+      vl_profile.qos.latency: 5 ms
+      vl_profile.qos.packet_delay_variation: 2 ms
+      vl_profile.qos.packet_loss_ratio: 0.0001
+      vl_profile.qos.priority: 1
+      description: Data plane network connecting VNF1, VNF2, and CNF
+      test_access: []
+
+  vl_data_network_root_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for root ports of network vl_data_network
+#     name: vl_data_network root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  vl_data_network_root_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: vl_data_network_root_qos_policy }
+      max_kbps: 10000
+#     max_burst_kbps: 10000
+
+  vl_data_network_leaf_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for leaf ports of network vl_data_network
+#     name: vl_data_network root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  vl_data_network_leaf_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: vl_data_network_leaf_qos_policy }
+      max_kbps: 1000
+#     max_burst_kbps: 1000
+
+  vl_data_network_subnet_ipv4:
+    type: OS::Neutron::Subnet
+    properties:
+      network: { get_resource: vl_data_network }
+#     allocation_pools: [] # default value
+      cidr: 10.100.1.0/24  # generated
+#     enable_dhcp: true # default value
+#     gateway_ip: GATEWAY_IP
+#     host_routes: {} # default value
+      ip_version: 4
+#     ipv6_address_mode: ""
+#     ipv6_ra_mode: ""
+#     name: vl_data_network-subnet-ipv4 # set by Heat engine
+#     prefixlen: integer
+#     segment: segment_id
+#     subnetpool: subnetpool_id
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+  #
+  # Node 'vl_vnf1_to_vnf2' of type 'tosca.nodes.nfv.NsVirtualLink' translated into the following resource(s):
+  #
+
+  vl_vnf1_to_vnf2:
+    type: OS::Neutron::Net
+    properties:
+#     admin_state_up: true # default value
+#     dhcp_agent_ids: [] # default value
+#     dns_domain: DNS_DOMAIN
+#     name: vl_vnf1_to_vnf2 # set by Heat engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+      shared: false # default value
+#     tags: [] # default value
+#     value_specs: {} # default value
+    metadata:
+      tosca.type: tosca.nodes.nfv.NsVirtualLink
+      connectivity_type.layer_protocols: ['ipv4']
+      connectivity_type.flow_pattern: line
+      vl_profile.max_bitrate_requirements.root: 5000000
+      vl_profile.max_bitrate_requirements.leaf: 500000
+      vl_profile.min_bitrate_requirements.root: 500000
+      vl_profile.min_bitrate_requirements.leaf: 50000
+      vl_profile.qos.latency: 3 ms
+      vl_profile.qos.packet_delay_variation: 1 ms
+      vl_profile.qos.packet_loss_ratio: 0.0001
+      vl_profile.qos.priority: 1
+      description: Direct link from VNF1 to VNF2
+      test_access: []
+
+  vl_vnf1_to_vnf2_root_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for root ports of network vl_vnf1_to_vnf2
+#     name: vl_vnf1_to_vnf2 root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  vl_vnf1_to_vnf2_root_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: vl_vnf1_to_vnf2_root_qos_policy }
+      max_kbps: 5000
+#     max_burst_kbps: 5000
+
+  vl_vnf1_to_vnf2_leaf_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for leaf ports of network vl_vnf1_to_vnf2
+#     name: vl_vnf1_to_vnf2 root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  vl_vnf1_to_vnf2_leaf_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: vl_vnf1_to_vnf2_leaf_qos_policy }
+      max_kbps: 500
+#     max_burst_kbps: 500
+
+  vl_vnf1_to_vnf2_subnet_ipv4:
+    type: OS::Neutron::Subnet
+    properties:
+      network: { get_resource: vl_vnf1_to_vnf2 }
+#     allocation_pools: [] # default value
+      cidr: 10.100.2.0/24  # generated
+#     enable_dhcp: true # default value
+#     gateway_ip: GATEWAY_IP
+#     host_routes: {} # default value
+      ip_version: 4
+#     ipv6_address_mode: ""
+#     ipv6_ra_mode: ""
+#     name: vl_vnf1_to_vnf2-subnet-ipv4 # set by Heat engine
+#     prefixlen: integer
+#     segment: segment_id
+#     subnetpool: subnetpool_id
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+  #
+  # Node 'vl_vnf2_to_cnf' of type 'tosca.nodes.nfv.NsVirtualLink' translated into the following resource(s):
+  #
+
+  vl_vnf2_to_cnf:
+    type: OS::Neutron::Net
+    properties:
+#     admin_state_up: true # default value
+#     dhcp_agent_ids: [] # default value
+#     dns_domain: DNS_DOMAIN
+#     name: vl_vnf2_to_cnf # set by Heat engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+      shared: false # default value
+#     tags: [] # default value
+#     value_specs: {} # default value
+    metadata:
+      tosca.type: tosca.nodes.nfv.NsVirtualLink
+      connectivity_type.layer_protocols: ['ipv4']
+      connectivity_type.flow_pattern: line
+      vl_profile.max_bitrate_requirements.root: 5000000
+      vl_profile.max_bitrate_requirements.leaf: 500000
+      vl_profile.min_bitrate_requirements.root: 500000
+      vl_profile.min_bitrate_requirements.leaf: 50000
+      vl_profile.qos.latency: 3 ms
+      vl_profile.qos.packet_delay_variation: 1 ms
+      vl_profile.qos.packet_loss_ratio: 0.0001
+      vl_profile.qos.priority: 1
+      description: Direct link from VNF2 to CNF
+      test_access: []
+
+  vl_vnf2_to_cnf_root_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for root ports of network vl_vnf2_to_cnf
+#     name: vl_vnf2_to_cnf root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  vl_vnf2_to_cnf_root_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: vl_vnf2_to_cnf_root_qos_policy }
+      max_kbps: 5000
+#     max_burst_kbps: 5000
+
+  vl_vnf2_to_cnf_leaf_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for leaf ports of network vl_vnf2_to_cnf
+#     name: vl_vnf2_to_cnf root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  vl_vnf2_to_cnf_leaf_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: vl_vnf2_to_cnf_leaf_qos_policy }
+      max_kbps: 500
+#     max_burst_kbps: 500
+
+  vl_vnf2_to_cnf_subnet_ipv4:
+    type: OS::Neutron::Subnet
+    properties:
+      network: { get_resource: vl_vnf2_to_cnf }
+#     allocation_pools: [] # default value
+      cidr: 10.100.3.0/24  # generated
+#     enable_dhcp: true # default value
+#     gateway_ip: GATEWAY_IP
+#     host_routes: {} # default value
+      ip_version: 4
+#     ipv6_address_mode: ""
+#     ipv6_ra_mode: ""
+#     name: vl_vnf2_to_cnf-subnet-ipv4 # set by Heat engine
+#     prefixlen: integer
+#     segment: segment_id
+#     subnetpool: subnetpool_id
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+  #
+  # Node 'vnf1_instance' of type 'tosca.nodes.nfv.example_VNF1' translated into the following resource(s):
+  #
+
+  vnf1_instance:
+    type: VNF1-scalable.yaml
+    properties:
+      flavour_id: scalable_ha
+      virtual_link: { get_resource: vl_mgmt_network }
+      virtual_link_external: { get_resource: vl_mgmt_network }
+    metadata:
+      tosca.type: tosca.nodes.nfv.example_VNF1
+
+  #
+  # Node 'vnf2_instance' of type 'tosca.nodes.nfv.example_VNF2' translated into the following resource(s):
+  #
+
+  vnf2_instance:
+    type: VNF2-scalable.yaml
+    properties:
+      flavour_id: scalable_ha
+      virtual_link: { get_resource: vl_data_network }
+      virtual_link_external: { get_resource: vl_mgmt_network }
+    metadata:
+      tosca.type: tosca.nodes.nfv.example_VNF2
+
+  #
+  # Node 'cnf_instance' of type 'tosca.nodes.nfv.example_CNF' translated into the following resource(s):
+  #
+
+  cnf_instance:
+    type: CNF3-scalable.yaml
+    properties:
+      flavour_id: scalable_ha_container
+      virtual_link: { get_resource: vl_vnf2_to_cnf }
+      virtual_link_external: { get_resource: vl_mgmt_network }
+    metadata:
+      tosca.type: tosca.nodes.nfv.example_CNF
+
+  #
+  # Node 'sap_mgmt' of type 'tosca.nodes.nfv.Sap' translated into the following resource(s):
+  #
+
+  sap_mgmt:
+    type: OS::Neutron::Router
+#   properties:
+#     admin_state_up: true # default value
+#     distributed: false # default value?
+#     ha: false# default value?
+#     l3_agent_ids: [] # default value
+#     name: sap_mgmt  # set by Heat engine
+#     tags: [] # default value
+#     value_specs: {} # default value
+    metadata:
+      tosca.type: tosca.nodes.nfv.Sap
+      layer_protocols: ['ipv4']
+      role: root
+      description: Service access point for management
+      protocol: []
+      trunk_mode: false
+
+  sap_mgmt_internal_virtual_link_ipv4_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: vl_mgmt_network }
+#     admin_state_up: true  # default value
+#     allowed_address_pairs: []  # default value
+#     binding:vnic_type: normal # TODO
+#     device_id: "" # default value
+#     device_owner: "" # default value
+#     dns_name: "" # TODO
+      fixed_ips:
+        - subnet: { get_resource: vl_mgmt_network_subnet_ipv4 }
+#     mac_address: MAC_ADDRESS
+#     name: # set by Heat Engine
+#     port_security_enabled: true # default value
+      qos_policy: { get_resource: vl_mgmt_network_root_qos_policy }
+#     security_groups: [ SECURITY_GROUP ]
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+  sap_mgmt_internal_virtual_link_ipv4:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: sap_mgmt }
+      port: { get_resource: sap_mgmt_internal_virtual_link_ipv4_port }
+
+  sap_mgmt_external_virtual_link_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: virtual_link }
+
+  sap_mgmt_external_virtual_link:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: sap_mgmt }
+      port: { get_resource: sap_mgmt_external_virtual_link_port }
+
+  #
+  # Node 'sap_data' of type 'tosca.nodes.nfv.Sap' translated into the following resource(s):
+  #
+
+  sap_data:
+    type: OS::Neutron::Router
+#   properties:
+#     admin_state_up: true # default value
+#     distributed: false # default value?
+#     ha: false# default value?
+#     l3_agent_ids: [] # default value
+#     name: sap_data  # set by Heat engine
+#     tags: [] # default value
+#     value_specs: {} # default value
+    metadata:
+      tosca.type: tosca.nodes.nfv.Sap
+      layer_protocols: ['ipv4']
+      role: root
+      description: Service access point for data plane
+      protocol: []
+      trunk_mode: false
+
+  sap_data_internal_virtual_link_ipv4_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: vl_data_network }
+#     admin_state_up: true  # default value
+#     allowed_address_pairs: []  # default value
+#     binding:vnic_type: normal # TODO
+#     device_id: "" # default value
+#     device_owner: "" # default value
+#     dns_name: "" # TODO
+      fixed_ips:
+        - subnet: { get_resource: vl_data_network_subnet_ipv4 }
+#     mac_address: MAC_ADDRESS
+#     name: # set by Heat Engine
+#     port_security_enabled: true # default value
+      qos_policy: { get_resource: vl_data_network_root_qos_policy }
+#     security_groups: [ SECURITY_GROUP ]
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+  sap_data_internal_virtual_link_ipv4:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: sap_data }
+      port: { get_resource: sap_data_internal_virtual_link_ipv4_port }
+
+  sap_data_external_virtual_link_ipv4_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: None }
+#     admin_state_up: true  # default value
+#     allowed_address_pairs: []  # default value
+#     binding:vnic_type: normal # TODO
+#     device_id: "" # default value
+#     device_owner: "" # default value
+#     dns_name: "" # TODO
+      fixed_ips:
+        - subnet: { get_resource: None_subnet_ipv4 }
+#     mac_address: MAC_ADDRESS
+#     name: # set by Heat Engine
+#     port_security_enabled: true # default value
+      qos_policy: { get_resource: None_root_qos_policy }
+#     security_groups: [ SECURITY_GROUP ]
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+  sap_data_external_virtual_link_ipv4:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: sap_data }
+      port: { get_resource: sap_data_external_virtual_link_ipv4_port }
+
+  #
+  # Policy 'ns_instantiation_levels' of type 'tosca.policies.nfv.NsInstantiationLevels' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'ns_instantiation_levels' of type 'tosca.policies.nfv.NsInstantiationLevels'!
+
+  #
+  # Policy 'vnf1_to_level_mapping' of type 'tosca.policies.nfv.VnfToLevelMapping' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'vnf1_to_level_mapping' of type 'tosca.policies.nfv.VnfToLevelMapping'!
+
+  #
+  # Policy 'vnf2_to_level_mapping' of type 'tosca.policies.nfv.VnfToLevelMapping' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'vnf2_to_level_mapping' of type 'tosca.policies.nfv.VnfToLevelMapping'!
+
+  #
+  # Policy 'cnf_to_level_mapping' of type 'tosca.policies.nfv.VnfToLevelMapping' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'cnf_to_level_mapping' of type 'tosca.policies.nfv.VnfToLevelMapping'!
+
+  #
+  # Policy 'vl_mgmt_to_level_mapping' of type 'tosca.policies.nfv.VirtualLinkToLevelMapping' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'vl_mgmt_to_level_mapping' of type 'tosca.policies.nfv.VirtualLinkToLevelMapping'!
+
+  #
+  # Policy 'vl_data_to_level_mapping' of type 'tosca.policies.nfv.VirtualLinkToLevelMapping' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'vl_data_to_level_mapping' of type 'tosca.policies.nfv.VirtualLinkToLevelMapping'!
+
+  #
+  # Policy 'ns_scaling_aspects' of type 'tosca.policies.nfv.NsScalingAspects' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'ns_scaling_aspects' of type 'tosca.policies.nfv.NsScalingAspects'!
+

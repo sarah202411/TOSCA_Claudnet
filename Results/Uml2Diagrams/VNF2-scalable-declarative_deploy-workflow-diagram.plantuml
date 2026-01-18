@@ -1,0 +1,300 @@
+@startuml
+hide empty description
+skinparam shadowing false
+skinparam state {
+  ArrowColor blue
+  BorderColor blue
+  EndColor black
+  StartColor green
+  BackGroundColor<< step >> white
+  BorderColor<< step >> black
+  BackGroundColor<< delegate >> lightgrey
+  BackGroundColor<< set_state >> white
+  BackGroundColor<< call_operation >> lightblue
+  BackGroundColor<< inline >> white
+}
+skinparam ActivityBarColor<<fork>> DarkGreen
+skinparam ActivityBarColor<<join>> DarkOrange
+
+state "create_extCp_mgmt" as step_declarative_deploy_create_extCp_mgmt << step >> {
+  state "extCp_mgmt creating" as step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_creating << set_state >>
+  state "extCp_mgmt Standard.create" as step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_Standard.create << call_operation >>
+  state "extCp_mgmt created" as step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_created << set_state >>
+  step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_creating --> step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_Standard.create
+  step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_Standard.create --> step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_created
+}
+state "pre_configure_extCp_mgmt" as step_declarative_deploy_pre_configure_extCp_mgmt << step >> {
+  state "extCp_mgmt configuring" as step_declarative_deploy_pre_configure_extCp_mgmt_extCp_mgmt_configuring << set_state >>
+}
+state "configure_extCp_mgmt" as step_declarative_deploy_configure_extCp_mgmt << step >> {
+  state "extCp_mgmt Standard.configure" as step_declarative_deploy_configure_extCp_mgmt_extCp_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_extCp_mgmt" as step_declarative_deploy_post_configure_extCp_mgmt << step >> {
+  state "extCp_mgmt configured" as step_declarative_deploy_post_configure_extCp_mgmt_extCp_mgmt_configured << set_state >>
+}
+state "start_extCp_mgmt" as step_declarative_deploy_start_extCp_mgmt << step >> {
+  state "extCp_mgmt starting" as step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_starting << set_state >>
+  state "extCp_mgmt Standard.start" as step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_Standard.start << call_operation >>
+  state "extCp_mgmt started" as step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_started << set_state >>
+  step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_starting --> step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_Standard.start
+  step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_Standard.start --> step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_started
+}
+state "create_intVL_mgmt" as step_declarative_deploy_create_intVL_mgmt << step >> {
+  state "intVL_mgmt creating" as step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_creating << set_state >>
+  state "intVL_mgmt Standard.create" as step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_Standard.create << call_operation >>
+  state "intVL_mgmt created" as step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_created << set_state >>
+  step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_creating --> step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_Standard.create
+  step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_Standard.create --> step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_created
+}
+state "pre_configure_intVL_mgmt" as step_declarative_deploy_pre_configure_intVL_mgmt << step >> {
+  state "intVL_mgmt configuring" as step_declarative_deploy_pre_configure_intVL_mgmt_intVL_mgmt_configuring << set_state >>
+}
+state "configure_intVL_mgmt" as step_declarative_deploy_configure_intVL_mgmt << step >> {
+  state "intVL_mgmt Standard.configure" as step_declarative_deploy_configure_intVL_mgmt_intVL_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_intVL_mgmt" as step_declarative_deploy_post_configure_intVL_mgmt << step >> {
+  state "intVL_mgmt configured" as step_declarative_deploy_post_configure_intVL_mgmt_intVL_mgmt_configured << set_state >>
+}
+state "start_intVL_mgmt" as step_declarative_deploy_start_intVL_mgmt << step >> {
+  state "intVL_mgmt starting" as step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_starting << set_state >>
+  state "intVL_mgmt Standard.start" as step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_Standard.start << call_operation >>
+  state "intVL_mgmt started" as step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_started << set_state >>
+  step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_starting --> step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_Standard.start
+  step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_Standard.start --> step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_started
+}
+state "create_intVL_data" as step_declarative_deploy_create_intVL_data << step >> {
+  state "intVL_data creating" as step_declarative_deploy_create_intVL_data_intVL_data_creating << set_state >>
+  state "intVL_data Standard.create" as step_declarative_deploy_create_intVL_data_intVL_data_Standard.create << call_operation >>
+  state "intVL_data created" as step_declarative_deploy_create_intVL_data_intVL_data_created << set_state >>
+  step_declarative_deploy_create_intVL_data_intVL_data_creating --> step_declarative_deploy_create_intVL_data_intVL_data_Standard.create
+  step_declarative_deploy_create_intVL_data_intVL_data_Standard.create --> step_declarative_deploy_create_intVL_data_intVL_data_created
+}
+state "pre_configure_intVL_data" as step_declarative_deploy_pre_configure_intVL_data << step >> {
+  state "intVL_data configuring" as step_declarative_deploy_pre_configure_intVL_data_intVL_data_configuring << set_state >>
+}
+state "configure_intVL_data" as step_declarative_deploy_configure_intVL_data << step >> {
+  state "intVL_data Standard.configure" as step_declarative_deploy_configure_intVL_data_intVL_data_Standard.configure << call_operation >>
+}
+state "post_configure_intVL_data" as step_declarative_deploy_post_configure_intVL_data << step >> {
+  state "intVL_data configured" as step_declarative_deploy_post_configure_intVL_data_intVL_data_configured << set_state >>
+}
+state "start_intVL_data" as step_declarative_deploy_start_intVL_data << step >> {
+  state "intVL_data starting" as step_declarative_deploy_start_intVL_data_intVL_data_starting << set_state >>
+  state "intVL_data Standard.start" as step_declarative_deploy_start_intVL_data_intVL_data_Standard.start << call_operation >>
+  state "intVL_data started" as step_declarative_deploy_start_intVL_data_intVL_data_started << set_state >>
+  step_declarative_deploy_start_intVL_data_intVL_data_starting --> step_declarative_deploy_start_intVL_data_intVL_data_Standard.start
+  step_declarative_deploy_start_intVL_data_intVL_data_Standard.start --> step_declarative_deploy_start_intVL_data_intVL_data_started
+}
+state "create_vdu_ids_detection" as step_declarative_deploy_create_vdu_ids_detection << step >> {
+  state "vdu_ids_detection creating" as step_declarative_deploy_create_vdu_ids_detection_vdu_ids_detection_creating << set_state >>
+  state "vdu_ids_detection Standard.create" as step_declarative_deploy_create_vdu_ids_detection_vdu_ids_detection_Standard.create << call_operation >>
+  state "vdu_ids_detection created" as step_declarative_deploy_create_vdu_ids_detection_vdu_ids_detection_created << set_state >>
+  step_declarative_deploy_create_vdu_ids_detection_vdu_ids_detection_creating --> step_declarative_deploy_create_vdu_ids_detection_vdu_ids_detection_Standard.create
+  step_declarative_deploy_create_vdu_ids_detection_vdu_ids_detection_Standard.create --> step_declarative_deploy_create_vdu_ids_detection_vdu_ids_detection_created
+}
+state "pre_configure_vdu_ids_detection" as step_declarative_deploy_pre_configure_vdu_ids_detection << step >> {
+  state "vdu_ids_detection configuring" as step_declarative_deploy_pre_configure_vdu_ids_detection_vdu_ids_detection_configuring << set_state >>
+}
+state "configure_vdu_ids_detection" as step_declarative_deploy_configure_vdu_ids_detection << step >> {
+  state "vdu_ids_detection Standard.configure" as step_declarative_deploy_configure_vdu_ids_detection_vdu_ids_detection_Standard.configure << call_operation >>
+}
+state "post_configure_vdu_ids_detection" as step_declarative_deploy_post_configure_vdu_ids_detection << step >> {
+  state "vdu_ids_detection configured" as step_declarative_deploy_post_configure_vdu_ids_detection_vdu_ids_detection_configured << set_state >>
+}
+state "start_vdu_ids_detection" as step_declarative_deploy_start_vdu_ids_detection << step >> {
+  state "vdu_ids_detection starting" as step_declarative_deploy_start_vdu_ids_detection_vdu_ids_detection_starting << set_state >>
+  state "vdu_ids_detection Standard.start" as step_declarative_deploy_start_vdu_ids_detection_vdu_ids_detection_Standard.start << call_operation >>
+  state "vdu_ids_detection started" as step_declarative_deploy_start_vdu_ids_detection_vdu_ids_detection_started << set_state >>
+  step_declarative_deploy_start_vdu_ids_detection_vdu_ids_detection_starting --> step_declarative_deploy_start_vdu_ids_detection_vdu_ids_detection_Standard.start
+  step_declarative_deploy_start_vdu_ids_detection_vdu_ids_detection_Standard.start --> step_declarative_deploy_start_vdu_ids_detection_vdu_ids_detection_started
+}
+state "create_vdu_ids_analysis" as step_declarative_deploy_create_vdu_ids_analysis << step >> {
+  state "vdu_ids_analysis creating" as step_declarative_deploy_create_vdu_ids_analysis_vdu_ids_analysis_creating << set_state >>
+  state "vdu_ids_analysis Standard.create" as step_declarative_deploy_create_vdu_ids_analysis_vdu_ids_analysis_Standard.create << call_operation >>
+  state "vdu_ids_analysis created" as step_declarative_deploy_create_vdu_ids_analysis_vdu_ids_analysis_created << set_state >>
+  step_declarative_deploy_create_vdu_ids_analysis_vdu_ids_analysis_creating --> step_declarative_deploy_create_vdu_ids_analysis_vdu_ids_analysis_Standard.create
+  step_declarative_deploy_create_vdu_ids_analysis_vdu_ids_analysis_Standard.create --> step_declarative_deploy_create_vdu_ids_analysis_vdu_ids_analysis_created
+}
+state "pre_configure_vdu_ids_analysis" as step_declarative_deploy_pre_configure_vdu_ids_analysis << step >> {
+  state "vdu_ids_analysis configuring" as step_declarative_deploy_pre_configure_vdu_ids_analysis_vdu_ids_analysis_configuring << set_state >>
+}
+state "configure_vdu_ids_analysis" as step_declarative_deploy_configure_vdu_ids_analysis << step >> {
+  state "vdu_ids_analysis Standard.configure" as step_declarative_deploy_configure_vdu_ids_analysis_vdu_ids_analysis_Standard.configure << call_operation >>
+}
+state "post_configure_vdu_ids_analysis" as step_declarative_deploy_post_configure_vdu_ids_analysis << step >> {
+  state "vdu_ids_analysis configured" as step_declarative_deploy_post_configure_vdu_ids_analysis_vdu_ids_analysis_configured << set_state >>
+}
+state "start_vdu_ids_analysis" as step_declarative_deploy_start_vdu_ids_analysis << step >> {
+  state "vdu_ids_analysis starting" as step_declarative_deploy_start_vdu_ids_analysis_vdu_ids_analysis_starting << set_state >>
+  state "vdu_ids_analysis Standard.start" as step_declarative_deploy_start_vdu_ids_analysis_vdu_ids_analysis_Standard.start << call_operation >>
+  state "vdu_ids_analysis started" as step_declarative_deploy_start_vdu_ids_analysis_vdu_ids_analysis_started << set_state >>
+  step_declarative_deploy_start_vdu_ids_analysis_vdu_ids_analysis_starting --> step_declarative_deploy_start_vdu_ids_analysis_vdu_ids_analysis_Standard.start
+  step_declarative_deploy_start_vdu_ids_analysis_vdu_ids_analysis_Standard.start --> step_declarative_deploy_start_vdu_ids_analysis_vdu_ids_analysis_started
+}
+state "create_cp_ids_detection_mgmt" as step_declarative_deploy_create_cp_ids_detection_mgmt << step >> {
+  state "cp_ids_detection_mgmt creating" as step_declarative_deploy_create_cp_ids_detection_mgmt_cp_ids_detection_mgmt_creating << set_state >>
+  state "cp_ids_detection_mgmt Standard.create" as step_declarative_deploy_create_cp_ids_detection_mgmt_cp_ids_detection_mgmt_Standard.create << call_operation >>
+  state "cp_ids_detection_mgmt created" as step_declarative_deploy_create_cp_ids_detection_mgmt_cp_ids_detection_mgmt_created << set_state >>
+  step_declarative_deploy_create_cp_ids_detection_mgmt_cp_ids_detection_mgmt_creating --> step_declarative_deploy_create_cp_ids_detection_mgmt_cp_ids_detection_mgmt_Standard.create
+  step_declarative_deploy_create_cp_ids_detection_mgmt_cp_ids_detection_mgmt_Standard.create --> step_declarative_deploy_create_cp_ids_detection_mgmt_cp_ids_detection_mgmt_created
+}
+state "pre_configure_cp_ids_detection_mgmt" as step_declarative_deploy_pre_configure_cp_ids_detection_mgmt << step >> {
+  state "cp_ids_detection_mgmt configuring" as step_declarative_deploy_pre_configure_cp_ids_detection_mgmt_cp_ids_detection_mgmt_configuring << set_state >>
+}
+state "configure_cp_ids_detection_mgmt" as step_declarative_deploy_configure_cp_ids_detection_mgmt << step >> {
+  state "cp_ids_detection_mgmt Standard.configure" as step_declarative_deploy_configure_cp_ids_detection_mgmt_cp_ids_detection_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_cp_ids_detection_mgmt" as step_declarative_deploy_post_configure_cp_ids_detection_mgmt << step >> {
+  state "cp_ids_detection_mgmt configured" as step_declarative_deploy_post_configure_cp_ids_detection_mgmt_cp_ids_detection_mgmt_configured << set_state >>
+}
+state "start_cp_ids_detection_mgmt" as step_declarative_deploy_start_cp_ids_detection_mgmt << step >> {
+  state "cp_ids_detection_mgmt starting" as step_declarative_deploy_start_cp_ids_detection_mgmt_cp_ids_detection_mgmt_starting << set_state >>
+  state "cp_ids_detection_mgmt Standard.start" as step_declarative_deploy_start_cp_ids_detection_mgmt_cp_ids_detection_mgmt_Standard.start << call_operation >>
+  state "cp_ids_detection_mgmt started" as step_declarative_deploy_start_cp_ids_detection_mgmt_cp_ids_detection_mgmt_started << set_state >>
+  step_declarative_deploy_start_cp_ids_detection_mgmt_cp_ids_detection_mgmt_starting --> step_declarative_deploy_start_cp_ids_detection_mgmt_cp_ids_detection_mgmt_Standard.start
+  step_declarative_deploy_start_cp_ids_detection_mgmt_cp_ids_detection_mgmt_Standard.start --> step_declarative_deploy_start_cp_ids_detection_mgmt_cp_ids_detection_mgmt_started
+}
+state "create_cp_ids_detection_data" as step_declarative_deploy_create_cp_ids_detection_data << step >> {
+  state "cp_ids_detection_data creating" as step_declarative_deploy_create_cp_ids_detection_data_cp_ids_detection_data_creating << set_state >>
+  state "cp_ids_detection_data Standard.create" as step_declarative_deploy_create_cp_ids_detection_data_cp_ids_detection_data_Standard.create << call_operation >>
+  state "cp_ids_detection_data created" as step_declarative_deploy_create_cp_ids_detection_data_cp_ids_detection_data_created << set_state >>
+  step_declarative_deploy_create_cp_ids_detection_data_cp_ids_detection_data_creating --> step_declarative_deploy_create_cp_ids_detection_data_cp_ids_detection_data_Standard.create
+  step_declarative_deploy_create_cp_ids_detection_data_cp_ids_detection_data_Standard.create --> step_declarative_deploy_create_cp_ids_detection_data_cp_ids_detection_data_created
+}
+state "pre_configure_cp_ids_detection_data" as step_declarative_deploy_pre_configure_cp_ids_detection_data << step >> {
+  state "cp_ids_detection_data configuring" as step_declarative_deploy_pre_configure_cp_ids_detection_data_cp_ids_detection_data_configuring << set_state >>
+}
+state "configure_cp_ids_detection_data" as step_declarative_deploy_configure_cp_ids_detection_data << step >> {
+  state "cp_ids_detection_data Standard.configure" as step_declarative_deploy_configure_cp_ids_detection_data_cp_ids_detection_data_Standard.configure << call_operation >>
+}
+state "post_configure_cp_ids_detection_data" as step_declarative_deploy_post_configure_cp_ids_detection_data << step >> {
+  state "cp_ids_detection_data configured" as step_declarative_deploy_post_configure_cp_ids_detection_data_cp_ids_detection_data_configured << set_state >>
+}
+state "start_cp_ids_detection_data" as step_declarative_deploy_start_cp_ids_detection_data << step >> {
+  state "cp_ids_detection_data starting" as step_declarative_deploy_start_cp_ids_detection_data_cp_ids_detection_data_starting << set_state >>
+  state "cp_ids_detection_data Standard.start" as step_declarative_deploy_start_cp_ids_detection_data_cp_ids_detection_data_Standard.start << call_operation >>
+  state "cp_ids_detection_data started" as step_declarative_deploy_start_cp_ids_detection_data_cp_ids_detection_data_started << set_state >>
+  step_declarative_deploy_start_cp_ids_detection_data_cp_ids_detection_data_starting --> step_declarative_deploy_start_cp_ids_detection_data_cp_ids_detection_data_Standard.start
+  step_declarative_deploy_start_cp_ids_detection_data_cp_ids_detection_data_Standard.start --> step_declarative_deploy_start_cp_ids_detection_data_cp_ids_detection_data_started
+}
+state "create_cp_ids_analysis_mgmt" as step_declarative_deploy_create_cp_ids_analysis_mgmt << step >> {
+  state "cp_ids_analysis_mgmt creating" as step_declarative_deploy_create_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_creating << set_state >>
+  state "cp_ids_analysis_mgmt Standard.create" as step_declarative_deploy_create_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_Standard.create << call_operation >>
+  state "cp_ids_analysis_mgmt created" as step_declarative_deploy_create_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_created << set_state >>
+  step_declarative_deploy_create_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_creating --> step_declarative_deploy_create_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_Standard.create
+  step_declarative_deploy_create_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_Standard.create --> step_declarative_deploy_create_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_created
+}
+state "pre_configure_cp_ids_analysis_mgmt" as step_declarative_deploy_pre_configure_cp_ids_analysis_mgmt << step >> {
+  state "cp_ids_analysis_mgmt configuring" as step_declarative_deploy_pre_configure_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_configuring << set_state >>
+}
+state "configure_cp_ids_analysis_mgmt" as step_declarative_deploy_configure_cp_ids_analysis_mgmt << step >> {
+  state "cp_ids_analysis_mgmt Standard.configure" as step_declarative_deploy_configure_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_cp_ids_analysis_mgmt" as step_declarative_deploy_post_configure_cp_ids_analysis_mgmt << step >> {
+  state "cp_ids_analysis_mgmt configured" as step_declarative_deploy_post_configure_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_configured << set_state >>
+}
+state "start_cp_ids_analysis_mgmt" as step_declarative_deploy_start_cp_ids_analysis_mgmt << step >> {
+  state "cp_ids_analysis_mgmt starting" as step_declarative_deploy_start_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_starting << set_state >>
+  state "cp_ids_analysis_mgmt Standard.start" as step_declarative_deploy_start_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_Standard.start << call_operation >>
+  state "cp_ids_analysis_mgmt started" as step_declarative_deploy_start_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_started << set_state >>
+  step_declarative_deploy_start_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_starting --> step_declarative_deploy_start_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_Standard.start
+  step_declarative_deploy_start_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_Standard.start --> step_declarative_deploy_start_cp_ids_analysis_mgmt_cp_ids_analysis_mgmt_started
+}
+state "create_cp_ids_analysis_data" as step_declarative_deploy_create_cp_ids_analysis_data << step >> {
+  state "cp_ids_analysis_data creating" as step_declarative_deploy_create_cp_ids_analysis_data_cp_ids_analysis_data_creating << set_state >>
+  state "cp_ids_analysis_data Standard.create" as step_declarative_deploy_create_cp_ids_analysis_data_cp_ids_analysis_data_Standard.create << call_operation >>
+  state "cp_ids_analysis_data created" as step_declarative_deploy_create_cp_ids_analysis_data_cp_ids_analysis_data_created << set_state >>
+  step_declarative_deploy_create_cp_ids_analysis_data_cp_ids_analysis_data_creating --> step_declarative_deploy_create_cp_ids_analysis_data_cp_ids_analysis_data_Standard.create
+  step_declarative_deploy_create_cp_ids_analysis_data_cp_ids_analysis_data_Standard.create --> step_declarative_deploy_create_cp_ids_analysis_data_cp_ids_analysis_data_created
+}
+state "pre_configure_cp_ids_analysis_data" as step_declarative_deploy_pre_configure_cp_ids_analysis_data << step >> {
+  state "cp_ids_analysis_data configuring" as step_declarative_deploy_pre_configure_cp_ids_analysis_data_cp_ids_analysis_data_configuring << set_state >>
+}
+state "configure_cp_ids_analysis_data" as step_declarative_deploy_configure_cp_ids_analysis_data << step >> {
+  state "cp_ids_analysis_data Standard.configure" as step_declarative_deploy_configure_cp_ids_analysis_data_cp_ids_analysis_data_Standard.configure << call_operation >>
+}
+state "post_configure_cp_ids_analysis_data" as step_declarative_deploy_post_configure_cp_ids_analysis_data << step >> {
+  state "cp_ids_analysis_data configured" as step_declarative_deploy_post_configure_cp_ids_analysis_data_cp_ids_analysis_data_configured << set_state >>
+}
+state "start_cp_ids_analysis_data" as step_declarative_deploy_start_cp_ids_analysis_data << step >> {
+  state "cp_ids_analysis_data starting" as step_declarative_deploy_start_cp_ids_analysis_data_cp_ids_analysis_data_starting << set_state >>
+  state "cp_ids_analysis_data Standard.start" as step_declarative_deploy_start_cp_ids_analysis_data_cp_ids_analysis_data_Standard.start << call_operation >>
+  state "cp_ids_analysis_data started" as step_declarative_deploy_start_cp_ids_analysis_data_cp_ids_analysis_data_started << set_state >>
+  step_declarative_deploy_start_cp_ids_analysis_data_cp_ids_analysis_data_starting --> step_declarative_deploy_start_cp_ids_analysis_data_cp_ids_analysis_data_Standard.start
+  step_declarative_deploy_start_cp_ids_analysis_data_cp_ids_analysis_data_Standard.start --> step_declarative_deploy_start_cp_ids_analysis_data_cp_ids_analysis_data_started
+}
+  state step_declarative_deploy_create_cp_ids_detection_mgmt_join <<join>>
+  step_declarative_deploy_create_cp_ids_detection_mgmt_join --> step_declarative_deploy_create_cp_ids_detection_mgmt
+  state step_declarative_deploy_create_cp_ids_detection_data_join <<join>>
+  step_declarative_deploy_create_cp_ids_detection_data_join --> step_declarative_deploy_create_cp_ids_detection_data
+  state step_declarative_deploy_create_cp_ids_analysis_mgmt_join <<join>>
+  step_declarative_deploy_create_cp_ids_analysis_mgmt_join --> step_declarative_deploy_create_cp_ids_analysis_mgmt
+  state step_declarative_deploy_create_cp_ids_analysis_data_join <<join>>
+  step_declarative_deploy_create_cp_ids_analysis_data_join --> step_declarative_deploy_create_cp_ids_analysis_data
+step_declarative_deploy_create_extCp_mgmt --> step_declarative_deploy_pre_configure_extCp_mgmt
+step_declarative_deploy_pre_configure_extCp_mgmt --> step_declarative_deploy_configure_extCp_mgmt
+step_declarative_deploy_configure_extCp_mgmt --> step_declarative_deploy_post_configure_extCp_mgmt
+step_declarative_deploy_post_configure_extCp_mgmt --> step_declarative_deploy_start_extCp_mgmt
+step_declarative_deploy_create_intVL_mgmt --> step_declarative_deploy_pre_configure_intVL_mgmt
+step_declarative_deploy_pre_configure_intVL_mgmt --> step_declarative_deploy_configure_intVL_mgmt
+step_declarative_deploy_configure_intVL_mgmt --> step_declarative_deploy_post_configure_intVL_mgmt
+step_declarative_deploy_post_configure_intVL_mgmt --> step_declarative_deploy_start_intVL_mgmt
+state step_declarative_deploy_start_intVL_mgmt_fork <<fork>>
+step_declarative_deploy_start_intVL_mgmt --> step_declarative_deploy_start_intVL_mgmt_fork
+step_declarative_deploy_start_intVL_mgmt_fork --> step_declarative_deploy_create_cp_ids_detection_mgmt_join
+step_declarative_deploy_start_intVL_mgmt_fork --> step_declarative_deploy_create_cp_ids_analysis_mgmt_join
+step_declarative_deploy_create_intVL_data --> step_declarative_deploy_pre_configure_intVL_data
+step_declarative_deploy_pre_configure_intVL_data --> step_declarative_deploy_configure_intVL_data
+step_declarative_deploy_configure_intVL_data --> step_declarative_deploy_post_configure_intVL_data
+step_declarative_deploy_post_configure_intVL_data --> step_declarative_deploy_start_intVL_data
+state step_declarative_deploy_start_intVL_data_fork <<fork>>
+step_declarative_deploy_start_intVL_data --> step_declarative_deploy_start_intVL_data_fork
+step_declarative_deploy_start_intVL_data_fork --> step_declarative_deploy_create_cp_ids_detection_data_join
+step_declarative_deploy_start_intVL_data_fork --> step_declarative_deploy_create_cp_ids_analysis_data_join
+step_declarative_deploy_create_vdu_ids_detection --> step_declarative_deploy_pre_configure_vdu_ids_detection
+step_declarative_deploy_pre_configure_vdu_ids_detection --> step_declarative_deploy_configure_vdu_ids_detection
+step_declarative_deploy_configure_vdu_ids_detection --> step_declarative_deploy_post_configure_vdu_ids_detection
+step_declarative_deploy_post_configure_vdu_ids_detection --> step_declarative_deploy_start_vdu_ids_detection
+state step_declarative_deploy_start_vdu_ids_detection_fork <<fork>>
+step_declarative_deploy_start_vdu_ids_detection --> step_declarative_deploy_start_vdu_ids_detection_fork
+step_declarative_deploy_start_vdu_ids_detection_fork --> step_declarative_deploy_create_cp_ids_detection_mgmt_join
+step_declarative_deploy_start_vdu_ids_detection_fork --> step_declarative_deploy_create_cp_ids_detection_data_join
+step_declarative_deploy_create_vdu_ids_analysis --> step_declarative_deploy_pre_configure_vdu_ids_analysis
+step_declarative_deploy_pre_configure_vdu_ids_analysis --> step_declarative_deploy_configure_vdu_ids_analysis
+step_declarative_deploy_configure_vdu_ids_analysis --> step_declarative_deploy_post_configure_vdu_ids_analysis
+step_declarative_deploy_post_configure_vdu_ids_analysis --> step_declarative_deploy_start_vdu_ids_analysis
+state step_declarative_deploy_start_vdu_ids_analysis_fork <<fork>>
+step_declarative_deploy_start_vdu_ids_analysis --> step_declarative_deploy_start_vdu_ids_analysis_fork
+step_declarative_deploy_start_vdu_ids_analysis_fork --> step_declarative_deploy_create_cp_ids_analysis_mgmt_join
+step_declarative_deploy_start_vdu_ids_analysis_fork --> step_declarative_deploy_create_cp_ids_analysis_data_join
+step_declarative_deploy_create_cp_ids_detection_mgmt --> step_declarative_deploy_pre_configure_cp_ids_detection_mgmt
+step_declarative_deploy_pre_configure_cp_ids_detection_mgmt --> step_declarative_deploy_configure_cp_ids_detection_mgmt
+step_declarative_deploy_configure_cp_ids_detection_mgmt --> step_declarative_deploy_post_configure_cp_ids_detection_mgmt
+step_declarative_deploy_post_configure_cp_ids_detection_mgmt --> step_declarative_deploy_start_cp_ids_detection_mgmt
+step_declarative_deploy_create_cp_ids_detection_data --> step_declarative_deploy_pre_configure_cp_ids_detection_data
+step_declarative_deploy_pre_configure_cp_ids_detection_data --> step_declarative_deploy_configure_cp_ids_detection_data
+step_declarative_deploy_configure_cp_ids_detection_data --> step_declarative_deploy_post_configure_cp_ids_detection_data
+step_declarative_deploy_post_configure_cp_ids_detection_data --> step_declarative_deploy_start_cp_ids_detection_data
+step_declarative_deploy_create_cp_ids_analysis_mgmt --> step_declarative_deploy_pre_configure_cp_ids_analysis_mgmt
+step_declarative_deploy_pre_configure_cp_ids_analysis_mgmt --> step_declarative_deploy_configure_cp_ids_analysis_mgmt
+step_declarative_deploy_configure_cp_ids_analysis_mgmt --> step_declarative_deploy_post_configure_cp_ids_analysis_mgmt
+step_declarative_deploy_post_configure_cp_ids_analysis_mgmt --> step_declarative_deploy_start_cp_ids_analysis_mgmt
+step_declarative_deploy_create_cp_ids_analysis_data --> step_declarative_deploy_pre_configure_cp_ids_analysis_data
+step_declarative_deploy_pre_configure_cp_ids_analysis_data --> step_declarative_deploy_configure_cp_ids_analysis_data
+step_declarative_deploy_configure_cp_ids_analysis_data --> step_declarative_deploy_post_configure_cp_ids_analysis_data
+step_declarative_deploy_post_configure_cp_ids_analysis_data --> step_declarative_deploy_start_cp_ids_analysis_data
+state declarative_deploy_fork <<fork>>
+[*] --> declarative_deploy_fork
+declarative_deploy_fork --> step_declarative_deploy_create_extCp_mgmt
+declarative_deploy_fork --> step_declarative_deploy_create_intVL_mgmt
+declarative_deploy_fork --> step_declarative_deploy_create_intVL_data
+declarative_deploy_fork --> step_declarative_deploy_create_vdu_ids_detection
+declarative_deploy_fork --> step_declarative_deploy_create_vdu_ids_analysis
+state declarative_deploy_join <<join>>
+declarative_deploy_join --> [*]
+step_declarative_deploy_start_extCp_mgmt --> declarative_deploy_join
+step_declarative_deploy_start_cp_ids_detection_mgmt --> declarative_deploy_join
+step_declarative_deploy_start_cp_ids_detection_data --> declarative_deploy_join
+step_declarative_deploy_start_cp_ids_analysis_mgmt --> declarative_deploy_join
+step_declarative_deploy_start_cp_ids_analysis_data --> declarative_deploy_join
+@enduml

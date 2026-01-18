@@ -1,0 +1,1175 @@
+description: "Firewall VM-based scalable et tol\xE9rant aux pannes avec 2 composants\
+  \ (Main & Mgmt)"
+imports:
+- etsi_nfv_sol001_vnfd_types.yaml
+node_types:
+  tosca.nodes.nfv.Firewall_VNF:
+    derived_from: tosca.nodes.nfv.VNF
+    properties:
+      descriptor_id:
+        default: firewall-vnfd-1.0
+        type: string
+      descriptor_version:
+        default: '1.0'
+        type: string
+      flavour_description:
+        default: Scalable flavour with HA support for Firewall
+        type: string
+      flavour_id:
+        default: scalable_ha
+        type: string
+      product_name:
+        default: Firewall_VM
+        type: string
+      provider:
+        default: MyCompany
+        type: string
+      software_version:
+        default: '1.0'
+        type: string
+      vnfm_info:
+        default:
+        - etsivnfm:v3.3.1
+        entry_schema:
+          type: string
+        type: list
+    requirements:
+      virtual_link_external:
+        capability: tosca.capabilities.nfv.VirtualLinkable
+        relationship: tosca.relationships.nfv.VirtualLinksTo
+topology_template:
+  inputs:
+    firewall_main_flavour:
+      default: m1.medium
+      type: string
+    firewall_mgmt_flavour:
+      default: m1.small
+      type: string
+  node_templates:
+    cp_firewall_main_data:
+      properties:
+        layer_protocols:
+        - ipv4
+        order: 1
+      requirements:
+      - virtual_binding: vdu_firewall_main
+      - virtual_link: intVL_data
+      type: tosca.nodes.nfv.VduCp
+    cp_firewall_main_mgmt:
+      properties:
+        layer_protocols:
+        - ipv4
+        order: 0
+      requirements:
+      - virtual_binding: vdu_firewall_main
+      - virtual_link: intVL_mgmt
+      type: tosca.nodes.nfv.VduCp
+    cp_firewall_mgmt_data:
+      properties:
+        layer_protocols:
+        - ipv4
+        order: 1
+      requirements:
+      - virtual_binding: vdu_firewall_mgmt
+      - virtual_link: intVL_data
+      type: tosca.nodes.nfv.VduCp
+    cp_firewall_mgmt_mgmt:
+      properties:
+        layer_protocols:
+        - ipv4
+        order: 0
+      requirements:
+      - virtual_binding: vdu_firewall_mgmt
+      - virtual_link: intVL_mgmt
+      type: tosca.nodes.nfv.VduCp
+    extCp_mgmt:
+      properties:
+        description: Firewall Management interface
+        layer_protocols:
+        - ipv4
+      type: tosca.nodes.nfv.VnfExtCp
+    intVL_data:
+      properties:
+        connectivity_type:
+          layer_protocols:
+          - ipv4
+        description: Firewall Data plane network
+        vl_profile:
+          max_bitrate_requirements:
+            leaf: 1000000
+            root: 10000000
+          min_bitrate_requirements:
+            leaf: 100000
+            root: 1000000
+      type: tosca.nodes.nfv.VnfVirtualLink
+    intVL_mgmt:
+      properties:
+        connectivity_type:
+          layer_protocols:
+          - ipv4
+        description: Firewall Management network
+        vl_profile:
+          max_bitrate_requirements:
+            leaf: 100000
+            root: 1000000
+          min_bitrate_requirements:
+            leaf: 10000
+            root: 100000
+      type: tosca.nodes.nfv.VnfVirtualLink
+    vdu_firewall_main:
+      artifacts:
+        sw_image:
+          file: firewall-main-image.qcow2
+          properties:
+            checksum:
+              algorithm: sha-256
+              hash: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+            container_format: bare
+            disk_format: qcow2
+            min_disk: 10 GB
+            name: firewall-main-os
+            size: 2 GB
+            version: '1.0'
+          type: tosca.artifacts.nfv.SwImage
+      capabilities:
+        virtual_compute:
+          properties:
+            virtual_cpu:
+              num_virtual_cpu: 2
+            virtual_local_storage:
+            - size_of_storage: 40 GB
+            virtual_memory:
+              virtual_mem_size: 4 GB
+      properties:
+        description: Firewall Main Inspection Engine
+        name: firewall-main
+        vdu_profile:
+          max_number_of_instances: 5
+          min_number_of_instances: 2
+      type: tosca.nodes.nfv.Vdu.Compute
+    vdu_firewall_mgmt:
+      artifacts:
+        sw_image:
+          file: firewall-mgmt-image.qcow2
+          properties:
+            checksum:
+              algorithm: sha-256
+              hash: abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+            container_format: bare
+            disk_format: qcow2
+            min_disk: 20 GB
+            name: firewall-mgmt-os
+            size: 3 GB
+            version: '1.0'
+          type: tosca.artifacts.nfv.SwImage
+      capabilities:
+        virtual_compute:
+          properties:
+            virtual_cpu:
+              num_virtual_cpu: 4
+            virtual_local_storage:
+            - size_of_storage: 100 GB
+            virtual_memory:
+              virtual_mem_size: 8 GB
+      properties:
+        description: Firewall Management and Logs Unit
+        name: firewall-mgmt
+        vdu_profile:
+          max_number_of_instances: 4
+          min_number_of_instances: 2
+      type: tosca.nodes.nfv.Vdu.Compute
+  policies:
+  - scaling_aspects:
+      properties:
+        aspects:
+          firewall_main_scaling:
+            description: Scaling for main inspection engine
+            max_scale_level: 3
+            name: firewall_main_scaling_aspect
+            step_deltas:
+            - delta_1
+          firewall_mgmt_scaling:
+            description: Scaling for management unit
+            max_scale_level: 2
+            name: firewall_mgmt_scaling_aspect
+            step_deltas:
+            - delta_1
+      type: tosca.policies.nfv.ScalingAspects
+  - vdu_firewall_main_initial_delta:
+      properties:
+        initial_delta:
+          number_of_instances: 2
+      targets:
+      - vdu_firewall_main
+      type: tosca.policies.nfv.VduInitialDelta
+  - vdu_firewall_main_scaling_delta:
+      properties:
+        aspect: firewall_main_scaling
+        deltas:
+          delta_1:
+            number_of_instances: 1
+      targets:
+      - vdu_firewall_main
+      type: tosca.policies.nfv.VduScalingAspectDeltas
+  - vdu_firewall_mgmt_initial_delta:
+      properties:
+        initial_delta:
+          number_of_instances: 2
+      targets:
+      - vdu_firewall_mgmt
+      type: tosca.policies.nfv.VduInitialDelta
+  - vdu_firewall_mgmt_scaling_delta:
+      properties:
+        aspect: firewall_mgmt_scaling
+        deltas:
+          delta_1:
+            number_of_instances: 1
+      targets:
+      - vdu_firewall_mgmt
+      type: tosca.policies.nfv.VduScalingAspectDeltas
+  - instantiation_levels:
+      properties:
+        default_level: default
+        levels:
+          default:
+            description: Default instantiation level
+            scale_info:
+              firewall_main_scaling:
+                scale_level: 0
+              firewall_mgmt_scaling:
+                scale_level: 0
+          large:
+            description: Large instantiation level
+            scale_info:
+              firewall_main_scaling:
+                scale_level: 3
+              firewall_mgmt_scaling:
+                scale_level: 2
+          medium:
+            description: Medium instantiation level
+            scale_info:
+              firewall_main_scaling:
+                scale_level: 1
+              firewall_mgmt_scaling:
+                scale_level: 1
+      type: tosca.policies.nfv.InstantiationLevels
+  - vdu_firewall_main_instantiation_levels:
+      properties:
+        levels:
+          default:
+            number_of_instances: 2
+          large:
+            number_of_instances: 5
+          medium:
+            number_of_instances: 3
+      targets:
+      - vdu_firewall_main
+      type: tosca.policies.nfv.VduInstantiationLevels
+  - vdu_firewall_mgmt_instantiation_levels:
+      properties:
+        levels:
+          default:
+            number_of_instances: 2
+          large:
+            number_of_instances: 4
+          medium:
+            number_of_instances: 3
+      targets:
+      - vdu_firewall_mgmt
+      type: tosca.policies.nfv.VduInstantiationLevels
+  substitution_mappings:
+    node_type: tosca.nodes.nfv.Firewall_VNF
+    requirements:
+      virtual_link_external:
+      - extCp_mgmt
+      - internal_virtual_link
+  workflows:
+    declarative_deploy:
+      description: Deployment declarative workflow
+      steps:
+        configure_cp_firewall_main_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_firewall_main_data
+          target: cp_firewall_main_data
+        configure_cp_firewall_main_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_firewall_main_mgmt
+          target: cp_firewall_main_mgmt
+        configure_cp_firewall_mgmt_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_firewall_mgmt_data
+          target: cp_firewall_mgmt_data
+        configure_cp_firewall_mgmt_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_firewall_mgmt_mgmt
+          target: cp_firewall_mgmt_mgmt
+        configure_extCp_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_extCp_mgmt
+          target: extCp_mgmt
+        configure_intVL_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_data
+          target: intVL_data
+        configure_intVL_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_mgmt
+          target: intVL_mgmt
+        configure_vdu_firewall_main:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_firewall_main
+          target: vdu_firewall_main
+        configure_vdu_firewall_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_firewall_mgmt
+          target: vdu_firewall_mgmt
+        create_cp_firewall_main_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_firewall_main_data
+          target: cp_firewall_main_data
+        create_cp_firewall_main_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_firewall_main_mgmt
+          target: cp_firewall_main_mgmt
+        create_cp_firewall_mgmt_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_firewall_mgmt_data
+          target: cp_firewall_mgmt_data
+        create_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_firewall_mgmt_mgmt
+          target: cp_firewall_mgmt_mgmt
+        create_extCp_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_extCp_mgmt
+          target: extCp_mgmt
+        create_intVL_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_data
+          target: intVL_data
+        create_intVL_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_mgmt
+          target: intVL_mgmt
+        create_vdu_firewall_main:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_firewall_main
+          target: vdu_firewall_main
+        create_vdu_firewall_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_firewall_mgmt
+          target: vdu_firewall_mgmt
+        post_configure_cp_firewall_main_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_firewall_main_data
+          target: cp_firewall_main_data
+        post_configure_cp_firewall_main_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_firewall_main_mgmt
+          target: cp_firewall_main_mgmt
+        post_configure_cp_firewall_mgmt_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_firewall_mgmt_data
+          target: cp_firewall_mgmt_data
+        post_configure_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_firewall_mgmt_mgmt
+          target: cp_firewall_mgmt_mgmt
+        post_configure_extCp_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_extCp_mgmt
+          target: extCp_mgmt
+        post_configure_intVL_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_data
+          target: intVL_data
+        post_configure_intVL_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_mgmt
+          target: intVL_mgmt
+        post_configure_vdu_firewall_main:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_firewall_main
+          target: vdu_firewall_main
+        post_configure_vdu_firewall_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_firewall_mgmt
+          target: vdu_firewall_mgmt
+        pre_configure_cp_firewall_main_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_firewall_main_data
+          target: cp_firewall_main_data
+        pre_configure_cp_firewall_main_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_firewall_main_mgmt
+          target: cp_firewall_main_mgmt
+        pre_configure_cp_firewall_mgmt_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_firewall_mgmt_data
+          target: cp_firewall_mgmt_data
+        pre_configure_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_firewall_mgmt_mgmt
+          target: cp_firewall_mgmt_mgmt
+        pre_configure_extCp_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_extCp_mgmt
+          target: extCp_mgmt
+        pre_configure_intVL_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_data
+          target: intVL_data
+        pre_configure_intVL_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_mgmt
+          target: intVL_mgmt
+        pre_configure_vdu_firewall_main:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_firewall_main
+          target: vdu_firewall_main
+        pre_configure_vdu_firewall_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_firewall_mgmt
+          target: vdu_firewall_mgmt
+        start_cp_firewall_main_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_firewall_main_data
+        start_cp_firewall_main_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_firewall_main_mgmt
+        start_cp_firewall_mgmt_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_firewall_mgmt_data
+        start_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_firewall_mgmt_mgmt
+        start_extCp_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: extCp_mgmt
+        start_intVL_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_firewall_main_data
+          - create_cp_firewall_mgmt_data
+          target: intVL_data
+        start_intVL_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_firewall_main_mgmt
+          - create_cp_firewall_mgmt_mgmt
+          target: intVL_mgmt
+        start_vdu_firewall_main:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_firewall_main_mgmt
+          - create_cp_firewall_main_data
+          target: vdu_firewall_main
+        start_vdu_firewall_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_firewall_mgmt_mgmt
+          - create_cp_firewall_mgmt_data
+          target: vdu_firewall_mgmt
+    declarative_undeploy:
+      description: Undeployment declarative workflow
+      steps:
+        delete_cp_firewall_main_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_firewall_main
+          - stop_intVL_data
+          target: cp_firewall_main_data
+        delete_cp_firewall_main_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_firewall_main
+          - stop_intVL_mgmt
+          target: cp_firewall_main_mgmt
+        delete_cp_firewall_mgmt_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_firewall_mgmt
+          - stop_intVL_data
+          target: cp_firewall_mgmt_data
+        delete_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_firewall_mgmt
+          - stop_intVL_mgmt
+          target: cp_firewall_mgmt_mgmt
+        delete_extCp_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: extCp_mgmt
+        delete_intVL_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_data
+        delete_intVL_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_mgmt
+        delete_vdu_firewall_main:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_firewall_main
+        delete_vdu_firewall_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_firewall_mgmt
+        stop_cp_firewall_main_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_firewall_main_data
+          target: cp_firewall_main_data
+        stop_cp_firewall_main_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_firewall_main_mgmt
+          target: cp_firewall_main_mgmt
+        stop_cp_firewall_mgmt_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_firewall_mgmt_data
+          target: cp_firewall_mgmt_data
+        stop_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_firewall_mgmt_mgmt
+          target: cp_firewall_mgmt_mgmt
+        stop_extCp_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_extCp_mgmt
+          target: extCp_mgmt
+        stop_intVL_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_data
+          target: intVL_data
+        stop_intVL_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_mgmt
+          target: intVL_mgmt
+        stop_vdu_firewall_main:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_firewall_main
+          target: vdu_firewall_main
+        stop_vdu_firewall_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_firewall_mgmt
+          target: vdu_firewall_mgmt
+    parallel_deploy:
+      description: Parallel deployment declarative workflow
+      steps:
+        configure_cp_firewall_main_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_firewall_main_data
+          target: cp_firewall_main_data
+        configure_cp_firewall_main_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_firewall_main_mgmt
+          target: cp_firewall_main_mgmt
+        configure_cp_firewall_mgmt_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_firewall_mgmt_data
+          target: cp_firewall_mgmt_data
+        configure_cp_firewall_mgmt_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_firewall_mgmt_mgmt
+          target: cp_firewall_mgmt_mgmt
+        configure_extCp_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_extCp_mgmt
+          target: extCp_mgmt
+        configure_intVL_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_data
+          target: intVL_data
+        configure_intVL_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_mgmt
+          target: intVL_mgmt
+        configure_vdu_firewall_main:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_firewall_main
+          target: vdu_firewall_main
+        configure_vdu_firewall_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_firewall_mgmt
+          target: vdu_firewall_mgmt
+        create_cp_firewall_main_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_firewall_main_data
+          target: cp_firewall_main_data
+        create_cp_firewall_main_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_firewall_main_mgmt
+          target: cp_firewall_main_mgmt
+        create_cp_firewall_mgmt_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_firewall_mgmt_data
+          target: cp_firewall_mgmt_data
+        create_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_firewall_mgmt_mgmt
+          target: cp_firewall_mgmt_mgmt
+        create_extCp_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_extCp_mgmt
+          target: extCp_mgmt
+        create_intVL_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_data
+          target: intVL_data
+        create_intVL_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_mgmt
+          target: intVL_mgmt
+        create_vdu_firewall_main:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_firewall_main
+          target: vdu_firewall_main
+        create_vdu_firewall_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_firewall_mgmt
+          target: vdu_firewall_mgmt
+        post_configure_cp_firewall_main_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_firewall_main_data
+          target: cp_firewall_main_data
+        post_configure_cp_firewall_main_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_firewall_main_mgmt
+          target: cp_firewall_main_mgmt
+        post_configure_cp_firewall_mgmt_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_firewall_mgmt_data
+          target: cp_firewall_mgmt_data
+        post_configure_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_firewall_mgmt_mgmt
+          target: cp_firewall_mgmt_mgmt
+        post_configure_extCp_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_extCp_mgmt
+          target: extCp_mgmt
+        post_configure_intVL_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_data
+          target: intVL_data
+        post_configure_intVL_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_mgmt
+          target: intVL_mgmt
+        post_configure_vdu_firewall_main:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_firewall_main
+          target: vdu_firewall_main
+        post_configure_vdu_firewall_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_firewall_mgmt
+          target: vdu_firewall_mgmt
+        pre_configure_cp_firewall_main_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_firewall_main_data
+          target: cp_firewall_main_data
+        pre_configure_cp_firewall_main_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_firewall_main_mgmt
+          target: cp_firewall_main_mgmt
+        pre_configure_cp_firewall_mgmt_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_firewall_mgmt_data
+          target: cp_firewall_mgmt_data
+        pre_configure_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_firewall_mgmt_mgmt
+          target: cp_firewall_mgmt_mgmt
+        pre_configure_extCp_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_extCp_mgmt
+          target: extCp_mgmt
+        pre_configure_intVL_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_data
+          target: intVL_data
+        pre_configure_intVL_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_mgmt
+          target: intVL_mgmt
+        pre_configure_vdu_firewall_main:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_firewall_main
+          target: vdu_firewall_main
+        pre_configure_vdu_firewall_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_firewall_mgmt
+          target: vdu_firewall_mgmt
+        start_cp_firewall_main_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_firewall_main_data
+        start_cp_firewall_main_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_firewall_main_mgmt
+        start_cp_firewall_mgmt_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_firewall_mgmt_data
+        start_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_firewall_mgmt_mgmt
+        start_extCp_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: extCp_mgmt
+        start_intVL_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_firewall_main_data
+          - create_cp_firewall_mgmt_data
+          target: intVL_data
+        start_intVL_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_firewall_main_mgmt
+          - create_cp_firewall_mgmt_mgmt
+          target: intVL_mgmt
+        start_vdu_firewall_main:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_firewall_main_mgmt
+          - create_cp_firewall_main_data
+          target: vdu_firewall_main
+        start_vdu_firewall_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_firewall_mgmt_mgmt
+          - create_cp_firewall_mgmt_data
+          target: vdu_firewall_mgmt
+    parallel_undeploy:
+      description: Parallel undeployment declarative workflow
+      steps:
+        delete_cp_firewall_main_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_firewall_main
+          - stop_intVL_data
+          target: cp_firewall_main_data
+        delete_cp_firewall_main_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_firewall_main
+          - stop_intVL_mgmt
+          target: cp_firewall_main_mgmt
+        delete_cp_firewall_mgmt_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_firewall_mgmt
+          - stop_intVL_data
+          target: cp_firewall_mgmt_data
+        delete_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_firewall_mgmt
+          - stop_intVL_mgmt
+          target: cp_firewall_mgmt_mgmt
+        delete_extCp_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: extCp_mgmt
+        delete_intVL_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_data
+        delete_intVL_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_mgmt
+        delete_vdu_firewall_main:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_firewall_main
+        delete_vdu_firewall_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_firewall_mgmt
+        stop_cp_firewall_main_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_firewall_main_data
+          target: cp_firewall_main_data
+        stop_cp_firewall_main_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_firewall_main_mgmt
+          target: cp_firewall_main_mgmt
+        stop_cp_firewall_mgmt_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_firewall_mgmt_data
+          target: cp_firewall_mgmt_data
+        stop_cp_firewall_mgmt_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_firewall_mgmt_mgmt
+          target: cp_firewall_mgmt_mgmt
+        stop_extCp_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_extCp_mgmt
+          target: extCp_mgmt
+        stop_intVL_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_data
+          target: intVL_data
+        stop_intVL_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_mgmt
+          target: intVL_mgmt
+        stop_vdu_firewall_main:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_firewall_main
+          target: vdu_firewall_main
+        stop_vdu_firewall_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_firewall_mgmt
+          target: vdu_firewall_mgmt
+tosca_definitions_version: tosca_simple_yaml_1_3

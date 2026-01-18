@@ -1,0 +1,183 @@
+@startuml
+hide empty description
+skinparam shadowing false
+skinparam state {
+  ArrowColor blue
+  BorderColor blue
+  EndColor black
+  StartColor green
+  BackGroundColor<< step >> white
+  BorderColor<< step >> black
+  BackGroundColor<< delegate >> lightgrey
+  BackGroundColor<< set_state >> white
+  BackGroundColor<< call_operation >> lightblue
+  BackGroundColor<< inline >> white
+}
+skinparam ActivityBarColor<<fork>> DarkGreen
+skinparam ActivityBarColor<<join>> DarkOrange
+
+state "stop_vl_mgmt_network" as step_declarative_undeploy_stop_vl_mgmt_network << step >> {
+  state "vl_mgmt_network stopping" as step_declarative_undeploy_stop_vl_mgmt_network_vl_mgmt_network_stopping << set_state >>
+  state "vl_mgmt_network Standard.stop" as step_declarative_undeploy_stop_vl_mgmt_network_vl_mgmt_network_Standard.stop << call_operation >>
+  state "vl_mgmt_network stopped" as step_declarative_undeploy_stop_vl_mgmt_network_vl_mgmt_network_stopped << set_state >>
+  step_declarative_undeploy_stop_vl_mgmt_network_vl_mgmt_network_stopping --> step_declarative_undeploy_stop_vl_mgmt_network_vl_mgmt_network_Standard.stop
+  step_declarative_undeploy_stop_vl_mgmt_network_vl_mgmt_network_Standard.stop --> step_declarative_undeploy_stop_vl_mgmt_network_vl_mgmt_network_stopped
+}
+state "delete_vl_mgmt_network" as step_declarative_undeploy_delete_vl_mgmt_network << step >> {
+  state "vl_mgmt_network deleting" as step_declarative_undeploy_delete_vl_mgmt_network_vl_mgmt_network_deleting << set_state >>
+  state "vl_mgmt_network Standard.delete" as step_declarative_undeploy_delete_vl_mgmt_network_vl_mgmt_network_Standard.delete << call_operation >>
+  state "vl_mgmt_network initial" as step_declarative_undeploy_delete_vl_mgmt_network_vl_mgmt_network_initial << set_state >>
+  step_declarative_undeploy_delete_vl_mgmt_network_vl_mgmt_network_deleting --> step_declarative_undeploy_delete_vl_mgmt_network_vl_mgmt_network_Standard.delete
+  step_declarative_undeploy_delete_vl_mgmt_network_vl_mgmt_network_Standard.delete --> step_declarative_undeploy_delete_vl_mgmt_network_vl_mgmt_network_initial
+}
+state "stop_vl_data_network" as step_declarative_undeploy_stop_vl_data_network << step >> {
+  state "vl_data_network stopping" as step_declarative_undeploy_stop_vl_data_network_vl_data_network_stopping << set_state >>
+  state "vl_data_network Standard.stop" as step_declarative_undeploy_stop_vl_data_network_vl_data_network_Standard.stop << call_operation >>
+  state "vl_data_network stopped" as step_declarative_undeploy_stop_vl_data_network_vl_data_network_stopped << set_state >>
+  step_declarative_undeploy_stop_vl_data_network_vl_data_network_stopping --> step_declarative_undeploy_stop_vl_data_network_vl_data_network_Standard.stop
+  step_declarative_undeploy_stop_vl_data_network_vl_data_network_Standard.stop --> step_declarative_undeploy_stop_vl_data_network_vl_data_network_stopped
+}
+state "delete_vl_data_network" as step_declarative_undeploy_delete_vl_data_network << step >> {
+  state "vl_data_network deleting" as step_declarative_undeploy_delete_vl_data_network_vl_data_network_deleting << set_state >>
+  state "vl_data_network Standard.delete" as step_declarative_undeploy_delete_vl_data_network_vl_data_network_Standard.delete << call_operation >>
+  state "vl_data_network initial" as step_declarative_undeploy_delete_vl_data_network_vl_data_network_initial << set_state >>
+  step_declarative_undeploy_delete_vl_data_network_vl_data_network_deleting --> step_declarative_undeploy_delete_vl_data_network_vl_data_network_Standard.delete
+  step_declarative_undeploy_delete_vl_data_network_vl_data_network_Standard.delete --> step_declarative_undeploy_delete_vl_data_network_vl_data_network_initial
+}
+state "stop_vl_vnf1_to_vnf2" as step_declarative_undeploy_stop_vl_vnf1_to_vnf2 << step >> {
+  state "vl_vnf1_to_vnf2 stopping" as step_declarative_undeploy_stop_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_stopping << set_state >>
+  state "vl_vnf1_to_vnf2 Standard.stop" as step_declarative_undeploy_stop_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.stop << call_operation >>
+  state "vl_vnf1_to_vnf2 stopped" as step_declarative_undeploy_stop_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_stopped << set_state >>
+  step_declarative_undeploy_stop_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_stopping --> step_declarative_undeploy_stop_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.stop
+  step_declarative_undeploy_stop_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.stop --> step_declarative_undeploy_stop_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_stopped
+}
+state "delete_vl_vnf1_to_vnf2" as step_declarative_undeploy_delete_vl_vnf1_to_vnf2 << step >> {
+  state "vl_vnf1_to_vnf2 deleting" as step_declarative_undeploy_delete_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_deleting << set_state >>
+  state "vl_vnf1_to_vnf2 Standard.delete" as step_declarative_undeploy_delete_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.delete << call_operation >>
+  state "vl_vnf1_to_vnf2 initial" as step_declarative_undeploy_delete_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_initial << set_state >>
+  step_declarative_undeploy_delete_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_deleting --> step_declarative_undeploy_delete_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.delete
+  step_declarative_undeploy_delete_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.delete --> step_declarative_undeploy_delete_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_initial
+}
+state "stop_vl_vnf2_to_cnf" as step_declarative_undeploy_stop_vl_vnf2_to_cnf << step >> {
+  state "vl_vnf2_to_cnf stopping" as step_declarative_undeploy_stop_vl_vnf2_to_cnf_vl_vnf2_to_cnf_stopping << set_state >>
+  state "vl_vnf2_to_cnf Standard.stop" as step_declarative_undeploy_stop_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.stop << call_operation >>
+  state "vl_vnf2_to_cnf stopped" as step_declarative_undeploy_stop_vl_vnf2_to_cnf_vl_vnf2_to_cnf_stopped << set_state >>
+  step_declarative_undeploy_stop_vl_vnf2_to_cnf_vl_vnf2_to_cnf_stopping --> step_declarative_undeploy_stop_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.stop
+  step_declarative_undeploy_stop_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.stop --> step_declarative_undeploy_stop_vl_vnf2_to_cnf_vl_vnf2_to_cnf_stopped
+}
+state "delete_vl_vnf2_to_cnf" as step_declarative_undeploy_delete_vl_vnf2_to_cnf << step >> {
+  state "vl_vnf2_to_cnf deleting" as step_declarative_undeploy_delete_vl_vnf2_to_cnf_vl_vnf2_to_cnf_deleting << set_state >>
+  state "vl_vnf2_to_cnf Standard.delete" as step_declarative_undeploy_delete_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.delete << call_operation >>
+  state "vl_vnf2_to_cnf initial" as step_declarative_undeploy_delete_vl_vnf2_to_cnf_vl_vnf2_to_cnf_initial << set_state >>
+  step_declarative_undeploy_delete_vl_vnf2_to_cnf_vl_vnf2_to_cnf_deleting --> step_declarative_undeploy_delete_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.delete
+  step_declarative_undeploy_delete_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.delete --> step_declarative_undeploy_delete_vl_vnf2_to_cnf_vl_vnf2_to_cnf_initial
+}
+state "stop_vnf1_instance" as step_declarative_undeploy_stop_vnf1_instance << step >> {
+  state "vnf1_instance stopping" as step_declarative_undeploy_stop_vnf1_instance_vnf1_instance_stopping << set_state >>
+  state "vnf1_instance Standard.stop" as step_declarative_undeploy_stop_vnf1_instance_vnf1_instance_Standard.stop << call_operation >>
+  state "vnf1_instance stopped" as step_declarative_undeploy_stop_vnf1_instance_vnf1_instance_stopped << set_state >>
+  step_declarative_undeploy_stop_vnf1_instance_vnf1_instance_stopping --> step_declarative_undeploy_stop_vnf1_instance_vnf1_instance_Standard.stop
+  step_declarative_undeploy_stop_vnf1_instance_vnf1_instance_Standard.stop --> step_declarative_undeploy_stop_vnf1_instance_vnf1_instance_stopped
+}
+state "delete_vnf1_instance" as step_declarative_undeploy_delete_vnf1_instance << step >> {
+  state "vnf1_instance deleting" as step_declarative_undeploy_delete_vnf1_instance_vnf1_instance_deleting << set_state >>
+  state "vnf1_instance Standard.delete" as step_declarative_undeploy_delete_vnf1_instance_vnf1_instance_Standard.delete << call_operation >>
+  state "vnf1_instance initial" as step_declarative_undeploy_delete_vnf1_instance_vnf1_instance_initial << set_state >>
+  step_declarative_undeploy_delete_vnf1_instance_vnf1_instance_deleting --> step_declarative_undeploy_delete_vnf1_instance_vnf1_instance_Standard.delete
+  step_declarative_undeploy_delete_vnf1_instance_vnf1_instance_Standard.delete --> step_declarative_undeploy_delete_vnf1_instance_vnf1_instance_initial
+}
+state "stop_vnf2_instance" as step_declarative_undeploy_stop_vnf2_instance << step >> {
+  state "vnf2_instance stopping" as step_declarative_undeploy_stop_vnf2_instance_vnf2_instance_stopping << set_state >>
+  state "vnf2_instance Standard.stop" as step_declarative_undeploy_stop_vnf2_instance_vnf2_instance_Standard.stop << call_operation >>
+  state "vnf2_instance stopped" as step_declarative_undeploy_stop_vnf2_instance_vnf2_instance_stopped << set_state >>
+  step_declarative_undeploy_stop_vnf2_instance_vnf2_instance_stopping --> step_declarative_undeploy_stop_vnf2_instance_vnf2_instance_Standard.stop
+  step_declarative_undeploy_stop_vnf2_instance_vnf2_instance_Standard.stop --> step_declarative_undeploy_stop_vnf2_instance_vnf2_instance_stopped
+}
+state "delete_vnf2_instance" as step_declarative_undeploy_delete_vnf2_instance << step >> {
+  state "vnf2_instance deleting" as step_declarative_undeploy_delete_vnf2_instance_vnf2_instance_deleting << set_state >>
+  state "vnf2_instance Standard.delete" as step_declarative_undeploy_delete_vnf2_instance_vnf2_instance_Standard.delete << call_operation >>
+  state "vnf2_instance initial" as step_declarative_undeploy_delete_vnf2_instance_vnf2_instance_initial << set_state >>
+  step_declarative_undeploy_delete_vnf2_instance_vnf2_instance_deleting --> step_declarative_undeploy_delete_vnf2_instance_vnf2_instance_Standard.delete
+  step_declarative_undeploy_delete_vnf2_instance_vnf2_instance_Standard.delete --> step_declarative_undeploy_delete_vnf2_instance_vnf2_instance_initial
+}
+state "stop_cnf_instance" as step_declarative_undeploy_stop_cnf_instance << step >> {
+  state "cnf_instance stopping" as step_declarative_undeploy_stop_cnf_instance_cnf_instance_stopping << set_state >>
+  state "cnf_instance Standard.stop" as step_declarative_undeploy_stop_cnf_instance_cnf_instance_Standard.stop << call_operation >>
+  state "cnf_instance stopped" as step_declarative_undeploy_stop_cnf_instance_cnf_instance_stopped << set_state >>
+  step_declarative_undeploy_stop_cnf_instance_cnf_instance_stopping --> step_declarative_undeploy_stop_cnf_instance_cnf_instance_Standard.stop
+  step_declarative_undeploy_stop_cnf_instance_cnf_instance_Standard.stop --> step_declarative_undeploy_stop_cnf_instance_cnf_instance_stopped
+}
+state "delete_cnf_instance" as step_declarative_undeploy_delete_cnf_instance << step >> {
+  state "cnf_instance deleting" as step_declarative_undeploy_delete_cnf_instance_cnf_instance_deleting << set_state >>
+  state "cnf_instance Standard.delete" as step_declarative_undeploy_delete_cnf_instance_cnf_instance_Standard.delete << call_operation >>
+  state "cnf_instance initial" as step_declarative_undeploy_delete_cnf_instance_cnf_instance_initial << set_state >>
+  step_declarative_undeploy_delete_cnf_instance_cnf_instance_deleting --> step_declarative_undeploy_delete_cnf_instance_cnf_instance_Standard.delete
+  step_declarative_undeploy_delete_cnf_instance_cnf_instance_Standard.delete --> step_declarative_undeploy_delete_cnf_instance_cnf_instance_initial
+}
+state "stop_sap_mgmt" as step_declarative_undeploy_stop_sap_mgmt << step >> {
+  state "sap_mgmt stopping" as step_declarative_undeploy_stop_sap_mgmt_sap_mgmt_stopping << set_state >>
+  state "sap_mgmt Standard.stop" as step_declarative_undeploy_stop_sap_mgmt_sap_mgmt_Standard.stop << call_operation >>
+  state "sap_mgmt stopped" as step_declarative_undeploy_stop_sap_mgmt_sap_mgmt_stopped << set_state >>
+  step_declarative_undeploy_stop_sap_mgmt_sap_mgmt_stopping --> step_declarative_undeploy_stop_sap_mgmt_sap_mgmt_Standard.stop
+  step_declarative_undeploy_stop_sap_mgmt_sap_mgmt_Standard.stop --> step_declarative_undeploy_stop_sap_mgmt_sap_mgmt_stopped
+}
+state "delete_sap_mgmt" as step_declarative_undeploy_delete_sap_mgmt << step >> {
+  state "sap_mgmt deleting" as step_declarative_undeploy_delete_sap_mgmt_sap_mgmt_deleting << set_state >>
+  state "sap_mgmt Standard.delete" as step_declarative_undeploy_delete_sap_mgmt_sap_mgmt_Standard.delete << call_operation >>
+  state "sap_mgmt initial" as step_declarative_undeploy_delete_sap_mgmt_sap_mgmt_initial << set_state >>
+  step_declarative_undeploy_delete_sap_mgmt_sap_mgmt_deleting --> step_declarative_undeploy_delete_sap_mgmt_sap_mgmt_Standard.delete
+  step_declarative_undeploy_delete_sap_mgmt_sap_mgmt_Standard.delete --> step_declarative_undeploy_delete_sap_mgmt_sap_mgmt_initial
+}
+state "stop_sap_data" as step_declarative_undeploy_stop_sap_data << step >> {
+  state "sap_data stopping" as step_declarative_undeploy_stop_sap_data_sap_data_stopping << set_state >>
+  state "sap_data Standard.stop" as step_declarative_undeploy_stop_sap_data_sap_data_Standard.stop << call_operation >>
+  state "sap_data stopped" as step_declarative_undeploy_stop_sap_data_sap_data_stopped << set_state >>
+  step_declarative_undeploy_stop_sap_data_sap_data_stopping --> step_declarative_undeploy_stop_sap_data_sap_data_Standard.stop
+  step_declarative_undeploy_stop_sap_data_sap_data_Standard.stop --> step_declarative_undeploy_stop_sap_data_sap_data_stopped
+}
+state "delete_sap_data" as step_declarative_undeploy_delete_sap_data << step >> {
+  state "sap_data deleting" as step_declarative_undeploy_delete_sap_data_sap_data_deleting << set_state >>
+  state "sap_data Standard.delete" as step_declarative_undeploy_delete_sap_data_sap_data_Standard.delete << call_operation >>
+  state "sap_data initial" as step_declarative_undeploy_delete_sap_data_sap_data_initial << set_state >>
+  step_declarative_undeploy_delete_sap_data_sap_data_deleting --> step_declarative_undeploy_delete_sap_data_sap_data_Standard.delete
+  step_declarative_undeploy_delete_sap_data_sap_data_Standard.delete --> step_declarative_undeploy_delete_sap_data_sap_data_initial
+}
+  state step_declarative_undeploy_stop_vl_mgmt_network_join <<join>>
+  step_declarative_undeploy_stop_vl_mgmt_network_join --> step_declarative_undeploy_stop_vl_mgmt_network
+  state step_declarative_undeploy_stop_vl_data_network_join <<join>>
+  step_declarative_undeploy_stop_vl_data_network_join --> step_declarative_undeploy_stop_vl_data_network
+step_declarative_undeploy_stop_vl_mgmt_network --> step_declarative_undeploy_delete_vl_mgmt_network
+step_declarative_undeploy_stop_vl_data_network --> step_declarative_undeploy_delete_vl_data_network
+step_declarative_undeploy_stop_vl_vnf1_to_vnf2 --> step_declarative_undeploy_delete_vl_vnf1_to_vnf2
+step_declarative_undeploy_stop_vl_vnf2_to_cnf --> step_declarative_undeploy_delete_vl_vnf2_to_cnf
+step_declarative_undeploy_stop_vnf1_instance --> step_declarative_undeploy_delete_vnf1_instance
+step_declarative_undeploy_delete_vnf1_instance --> step_declarative_undeploy_stop_vl_mgmt_network_join
+step_declarative_undeploy_stop_vnf2_instance --> step_declarative_undeploy_delete_vnf2_instance
+state step_declarative_undeploy_delete_vnf2_instance_fork <<fork>>
+step_declarative_undeploy_delete_vnf2_instance --> step_declarative_undeploy_delete_vnf2_instance_fork
+step_declarative_undeploy_delete_vnf2_instance_fork --> step_declarative_undeploy_stop_vl_data_network_join
+step_declarative_undeploy_delete_vnf2_instance_fork --> step_declarative_undeploy_stop_vl_mgmt_network_join
+step_declarative_undeploy_stop_cnf_instance --> step_declarative_undeploy_delete_cnf_instance
+state step_declarative_undeploy_delete_cnf_instance_fork <<fork>>
+step_declarative_undeploy_delete_cnf_instance --> step_declarative_undeploy_delete_cnf_instance_fork
+step_declarative_undeploy_delete_cnf_instance_fork --> step_declarative_undeploy_stop_vl_vnf2_to_cnf
+step_declarative_undeploy_delete_cnf_instance_fork --> step_declarative_undeploy_stop_vl_mgmt_network_join
+step_declarative_undeploy_stop_sap_mgmt --> step_declarative_undeploy_delete_sap_mgmt
+step_declarative_undeploy_delete_sap_mgmt --> step_declarative_undeploy_stop_vl_mgmt_network_join
+step_declarative_undeploy_stop_sap_data --> step_declarative_undeploy_delete_sap_data
+step_declarative_undeploy_delete_sap_data --> step_declarative_undeploy_stop_vl_data_network_join
+state declarative_undeploy_fork <<fork>>
+[*] --> declarative_undeploy_fork
+declarative_undeploy_fork --> step_declarative_undeploy_stop_vl_vnf1_to_vnf2
+declarative_undeploy_fork --> step_declarative_undeploy_stop_vnf1_instance
+declarative_undeploy_fork --> step_declarative_undeploy_stop_vnf2_instance
+declarative_undeploy_fork --> step_declarative_undeploy_stop_cnf_instance
+declarative_undeploy_fork --> step_declarative_undeploy_stop_sap_mgmt
+declarative_undeploy_fork --> step_declarative_undeploy_stop_sap_data
+state declarative_undeploy_join <<join>>
+declarative_undeploy_join --> [*]
+step_declarative_undeploy_delete_vl_mgmt_network --> declarative_undeploy_join
+step_declarative_undeploy_delete_vl_data_network --> declarative_undeploy_join
+step_declarative_undeploy_delete_vl_vnf1_to_vnf2 --> declarative_undeploy_join
+step_declarative_undeploy_delete_vl_vnf2_to_cnf --> declarative_undeploy_join
+@enduml

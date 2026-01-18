@@ -1,0 +1,1315 @@
+description: "CNF Proxy scalable et tol\xE9rant aux pannes bas\xE9 sur des conteneurs\
+  \ (Frontend & Backend/Cache)"
+imports:
+- etsi_nfv_sol001_vnfd_types.yaml
+node_types:
+  tosca.nodes.nfv.Proxy_CNF:
+    derived_from: tosca.nodes.nfv.VNF
+    properties:
+      descriptor_id:
+        default: proxy-container-based
+        type: string
+      descriptor_version:
+        default: '1.0'
+        type: string
+      flavour_description:
+        default: Scalable containerized flavour with HA support for Proxy
+        type: string
+      flavour_id:
+        default: scalable_ha_container
+        type: string
+      product_name:
+        default: Proxy_CNF
+        type: string
+      provider:
+        default: MyCompany
+        type: string
+      software_version:
+        default: '1.0'
+        type: string
+      vnfm_info:
+        default:
+        - etsivnfm:v3.3.1
+        entry_schema:
+          type: string
+        type: list
+    requirements:
+      virtual_link_external:
+        capability: tosca.capabilities.nfv.VirtualLinkable
+        relationship: tosca.relationships.nfv.VirtualLinksTo
+topology_template:
+  inputs:
+    proxy_backend_cpu_limit:
+      default: 4000m
+      type: string
+    proxy_backend_memory_limit:
+      default: 8Gi
+      type: string
+    proxy_frontend_cpu_limit:
+      default: 2000m
+      type: string
+    proxy_frontend_memory_limit:
+      default: 4Gi
+      type: string
+  node_templates:
+    cp_proxy_backend_data:
+      properties:
+        description: Proxy Backend data interface
+        layer_protocols:
+        - ipv4
+        order: 1
+      requirements:
+      - virtual_binding: vdu_proxy_backend
+      - virtual_link: intVL_data
+      type: tosca.nodes.nfv.VduCp
+    cp_proxy_backend_mgmt:
+      properties:
+        description: Proxy Backend management interface
+        layer_protocols:
+        - ipv4
+        order: 0
+      requirements:
+      - virtual_binding: vdu_proxy_backend
+      - virtual_link: intVL_mgmt
+      type: tosca.nodes.nfv.VduCp
+    cp_proxy_frontend_data:
+      properties:
+        description: Proxy Frontend data interface
+        layer_protocols:
+        - ipv4
+        order: 1
+      requirements:
+      - virtual_binding: vdu_proxy_frontend
+      - virtual_link: intVL_data
+      type: tosca.nodes.nfv.VduCp
+    cp_proxy_frontend_mgmt:
+      properties:
+        description: Proxy Frontend management interface
+        layer_protocols:
+        - ipv4
+        order: 0
+      requirements:
+      - virtual_binding: vdu_proxy_frontend
+      - virtual_link: intVL_mgmt
+      type: tosca.nodes.nfv.VduCp
+    extCp_data:
+      properties:
+        description: Proxy Data plane interface
+        layer_protocols:
+        - ipv4
+      requirements:
+      - internal_virtual_link: intVL_data
+      type: tosca.nodes.nfv.VnfExtCp
+    extCp_mgmt:
+      properties:
+        description: Proxy Management interface
+        layer_protocols:
+        - ipv4
+      requirements:
+      - internal_virtual_link: intVL_mgmt
+      type: tosca.nodes.nfv.VnfExtCp
+    intVL_data:
+      properties:
+        connectivity_type:
+          layer_protocols:
+          - ipv4
+        description: Proxy Data plane network
+        vl_profile:
+          max_bitrate_requirements:
+            leaf: 1000000
+            root: 10000000
+          min_bitrate_requirements:
+            leaf: 100000
+            root: 1000000
+      type: tosca.nodes.nfv.VnfVirtualLink
+    intVL_mgmt:
+      properties:
+        connectivity_type:
+          layer_protocols:
+          - ipv4
+        description: Proxy Management network
+        vl_profile:
+          max_bitrate_requirements:
+            leaf: 100000
+            root: 1000000
+          min_bitrate_requirements:
+            leaf: 10000
+            root: 100000
+      type: tosca.nodes.nfv.VnfVirtualLink
+    vdu_proxy_backend:
+      artifacts:
+        sw_image:
+          file: docker.io/mycompany/proxy-backend:v1.0
+          properties:
+            container_format: docker
+            min_ram: 4 GB
+            name: proxy-backend-img
+            operating_system: linux
+            size: 800 MB
+            version: '1.0'
+          type: tosca.artifacts.nfv.SwImage
+      capabilities:
+        virtual_compute:
+          properties:
+            requested_additional_capabilities:
+              properties:
+                requested_additional_capability_name: container_runtime
+                support_mandatory: true
+                target_performance_parameters:
+                  container_runtime: kubernetes
+            virtual_cpu:
+              num_virtual_cpu: 4
+            virtual_local_storage:
+            - size_of_storage: 50 GB
+            virtual_memory:
+              virtual_mem_size: 8 GB
+      properties:
+        description: Proxy Backend (Caching and Content processing)
+        name: proxy-backend
+        vdu_profile:
+          max_number_of_instances: 8
+          min_number_of_instances: 3
+      type: tosca.nodes.nfv.Vdu.Compute
+    vdu_proxy_frontend:
+      artifacts:
+        sw_image:
+          file: docker.io/mycompany/proxy-frontend:v1.0
+          properties:
+            container_format: docker
+            min_ram: 2 GB
+            name: proxy-frontend-img
+            operating_system: linux
+            size: 500 MB
+            version: '1.0'
+          type: tosca.artifacts.nfv.SwImage
+      capabilities:
+        virtual_compute:
+          properties:
+            requested_additional_capabilities:
+              properties:
+                requested_additional_capability_name: container_runtime
+                support_mandatory: true
+                target_performance_parameters:
+                  container_runtime: kubernetes
+            virtual_cpu:
+              num_virtual_cpu: 2
+            virtual_memory:
+              virtual_mem_size: 4 GB
+      properties:
+        description: Proxy Frontend (Entry point/SSL Termination)
+        name: proxy-frontend
+        vdu_profile:
+          max_number_of_instances: 10
+          min_number_of_instances: 3
+      type: tosca.nodes.nfv.Vdu.Compute
+  policies:
+  - scaling_aspects:
+      properties:
+        aspects:
+          proxy_backend_scaling:
+            description: Horizontal Pod Autoscaling for Proxy backend
+            max_scale_level: 5
+            name: proxy_backend_scaling_aspect
+            step_deltas:
+            - delta_1
+          proxy_frontend_scaling:
+            description: Horizontal Pod Autoscaling for Proxy frontend
+            max_scale_level: 7
+            name: proxy_frontend_scaling_aspect
+            step_deltas:
+            - delta_1
+      type: tosca.policies.nfv.ScalingAspects
+  - vdu_proxy_frontend_initial_delta:
+      properties:
+        initial_delta:
+          number_of_instances: 3
+      targets:
+      - vdu_proxy_frontend
+      type: tosca.policies.nfv.VduInitialDelta
+  - vdu_proxy_frontend_scaling_delta:
+      properties:
+        aspect: proxy_frontend_scaling
+        deltas:
+          delta_1:
+            number_of_instances: 1
+      targets:
+      - vdu_proxy_frontend
+      type: tosca.policies.nfv.VduScalingAspectDeltas
+  - vdu_proxy_backend_initial_delta:
+      properties:
+        initial_delta:
+          number_of_instances: 3
+      targets:
+      - vdu_proxy_backend
+      type: tosca.policies.nfv.VduInitialDelta
+  - vdu_proxy_backend_scaling_delta:
+      properties:
+        aspect: proxy_backend_scaling
+        deltas:
+          delta_1:
+            number_of_instances: 1
+      targets:
+      - vdu_proxy_backend
+      type: tosca.policies.nfv.VduScalingAspectDeltas
+  - instantiation_levels:
+      properties:
+        default_level: small
+        levels:
+          large:
+            description: Large instantiation level
+            scale_info:
+              proxy_backend_scaling:
+                scale_level: 5
+              proxy_frontend_scaling:
+                scale_level: 7
+          medium:
+            description: Medium instantiation level
+            scale_info:
+              proxy_backend_scaling:
+                scale_level: 2
+              proxy_frontend_scaling:
+                scale_level: 3
+          small:
+            description: Small instantiation level
+            scale_info:
+              proxy_backend_scaling:
+                scale_level: 0
+              proxy_frontend_scaling:
+                scale_level: 0
+      type: tosca.policies.nfv.InstantiationLevels
+  - vdu_proxy_frontend_instantiation_levels:
+      properties:
+        levels:
+          large:
+            number_of_instances: 10
+          medium:
+            number_of_instances: 6
+          small:
+            number_of_instances: 3
+      targets:
+      - vdu_proxy_frontend
+      type: tosca.policies.nfv.VduInstantiationLevels
+  - vdu_proxy_backend_instantiation_levels:
+      properties:
+        levels:
+          large:
+            number_of_instances: 8
+          medium:
+            number_of_instances: 5
+          small:
+            number_of_instances: 3
+      targets:
+      - vdu_proxy_backend
+      type: tosca.policies.nfv.VduInstantiationLevels
+  - proxy_frontend_anti_affinity:
+      properties:
+        scope: nfvi_node
+      targets:
+      - vdu_proxy_frontend
+      type: tosca.policies.nfv.AntiAffinityRule
+  - proxy_backend_anti_affinity:
+      properties:
+        scope: nfvi_node
+      targets:
+      - vdu_proxy_backend
+      type: tosca.policies.nfv.AntiAffinityRule
+  substitution_mappings:
+    node_type: tosca.nodes.nfv.Proxy_CNF
+    requirements:
+      virtual_link_external:
+      - extCp_data
+      - external_virtual_link
+  workflows:
+    declarative_deploy:
+      description: Deployment declarative workflow
+      steps:
+        configure_cp_proxy_backend_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_proxy_backend_data
+          target: cp_proxy_backend_data
+        configure_cp_proxy_backend_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_proxy_backend_mgmt
+          target: cp_proxy_backend_mgmt
+        configure_cp_proxy_frontend_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_proxy_frontend_data
+          target: cp_proxy_frontend_data
+        configure_cp_proxy_frontend_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_proxy_frontend_mgmt
+          target: cp_proxy_frontend_mgmt
+        configure_extCp_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_extCp_data
+          target: extCp_data
+        configure_extCp_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_extCp_mgmt
+          target: extCp_mgmt
+        configure_intVL_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_data
+          target: intVL_data
+        configure_intVL_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_mgmt
+          target: intVL_mgmt
+        configure_vdu_proxy_backend:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_proxy_backend
+          target: vdu_proxy_backend
+        configure_vdu_proxy_frontend:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_proxy_frontend
+          target: vdu_proxy_frontend
+        create_cp_proxy_backend_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_proxy_backend_data
+          target: cp_proxy_backend_data
+        create_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_proxy_backend_mgmt
+          target: cp_proxy_backend_mgmt
+        create_cp_proxy_frontend_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_proxy_frontend_data
+          target: cp_proxy_frontend_data
+        create_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_proxy_frontend_mgmt
+          target: cp_proxy_frontend_mgmt
+        create_extCp_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_extCp_data
+          target: extCp_data
+        create_extCp_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_extCp_mgmt
+          target: extCp_mgmt
+        create_intVL_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_data
+          target: intVL_data
+        create_intVL_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_mgmt
+          target: intVL_mgmt
+        create_vdu_proxy_backend:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_proxy_backend
+          target: vdu_proxy_backend
+        create_vdu_proxy_frontend:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_proxy_frontend
+          target: vdu_proxy_frontend
+        post_configure_cp_proxy_backend_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_proxy_backend_data
+          target: cp_proxy_backend_data
+        post_configure_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_proxy_backend_mgmt
+          target: cp_proxy_backend_mgmt
+        post_configure_cp_proxy_frontend_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_proxy_frontend_data
+          target: cp_proxy_frontend_data
+        post_configure_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_proxy_frontend_mgmt
+          target: cp_proxy_frontend_mgmt
+        post_configure_extCp_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_extCp_data
+          target: extCp_data
+        post_configure_extCp_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_extCp_mgmt
+          target: extCp_mgmt
+        post_configure_intVL_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_data
+          target: intVL_data
+        post_configure_intVL_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_mgmt
+          target: intVL_mgmt
+        post_configure_vdu_proxy_backend:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_proxy_backend
+          target: vdu_proxy_backend
+        post_configure_vdu_proxy_frontend:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_proxy_frontend
+          target: vdu_proxy_frontend
+        pre_configure_cp_proxy_backend_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_proxy_backend_data
+          target: cp_proxy_backend_data
+        pre_configure_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_proxy_backend_mgmt
+          target: cp_proxy_backend_mgmt
+        pre_configure_cp_proxy_frontend_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_proxy_frontend_data
+          target: cp_proxy_frontend_data
+        pre_configure_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_proxy_frontend_mgmt
+          target: cp_proxy_frontend_mgmt
+        pre_configure_extCp_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_extCp_data
+          target: extCp_data
+        pre_configure_extCp_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_extCp_mgmt
+          target: extCp_mgmt
+        pre_configure_intVL_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_data
+          target: intVL_data
+        pre_configure_intVL_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_mgmt
+          target: intVL_mgmt
+        pre_configure_vdu_proxy_backend:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_proxy_backend
+          target: vdu_proxy_backend
+        pre_configure_vdu_proxy_frontend:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_proxy_frontend
+          target: vdu_proxy_frontend
+        start_cp_proxy_backend_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_proxy_backend_data
+        start_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_proxy_backend_mgmt
+        start_cp_proxy_frontend_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_proxy_frontend_data
+        start_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_proxy_frontend_mgmt
+        start_extCp_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: extCp_data
+        start_extCp_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: extCp_mgmt
+        start_intVL_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_extCp_data
+          - create_cp_proxy_frontend_data
+          - create_cp_proxy_backend_data
+          target: intVL_data
+        start_intVL_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_extCp_mgmt
+          - create_cp_proxy_frontend_mgmt
+          - create_cp_proxy_backend_mgmt
+          target: intVL_mgmt
+        start_vdu_proxy_backend:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_proxy_backend_mgmt
+          - create_cp_proxy_backend_data
+          target: vdu_proxy_backend
+        start_vdu_proxy_frontend:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_proxy_frontend_mgmt
+          - create_cp_proxy_frontend_data
+          target: vdu_proxy_frontend
+    declarative_undeploy:
+      description: Undeployment declarative workflow
+      steps:
+        delete_cp_proxy_backend_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_proxy_backend
+          - stop_intVL_data
+          target: cp_proxy_backend_data
+        delete_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_proxy_backend
+          - stop_intVL_mgmt
+          target: cp_proxy_backend_mgmt
+        delete_cp_proxy_frontend_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_proxy_frontend
+          - stop_intVL_data
+          target: cp_proxy_frontend_data
+        delete_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_proxy_frontend
+          - stop_intVL_mgmt
+          target: cp_proxy_frontend_mgmt
+        delete_extCp_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_intVL_data
+          target: extCp_data
+        delete_extCp_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_intVL_mgmt
+          target: extCp_mgmt
+        delete_intVL_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_data
+        delete_intVL_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_mgmt
+        delete_vdu_proxy_backend:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_proxy_backend
+        delete_vdu_proxy_frontend:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_proxy_frontend
+        stop_cp_proxy_backend_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_proxy_backend_data
+          target: cp_proxy_backend_data
+        stop_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_proxy_backend_mgmt
+          target: cp_proxy_backend_mgmt
+        stop_cp_proxy_frontend_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_proxy_frontend_data
+          target: cp_proxy_frontend_data
+        stop_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_proxy_frontend_mgmt
+          target: cp_proxy_frontend_mgmt
+        stop_extCp_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_extCp_data
+          target: extCp_data
+        stop_extCp_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_extCp_mgmt
+          target: extCp_mgmt
+        stop_intVL_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_data
+          target: intVL_data
+        stop_intVL_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_mgmt
+          target: intVL_mgmt
+        stop_vdu_proxy_backend:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_proxy_backend
+          target: vdu_proxy_backend
+        stop_vdu_proxy_frontend:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_proxy_frontend
+          target: vdu_proxy_frontend
+    parallel_deploy:
+      description: Parallel deployment declarative workflow
+      steps:
+        configure_cp_proxy_backend_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_proxy_backend_data
+          target: cp_proxy_backend_data
+        configure_cp_proxy_backend_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_proxy_backend_mgmt
+          target: cp_proxy_backend_mgmt
+        configure_cp_proxy_frontend_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_proxy_frontend_data
+          target: cp_proxy_frontend_data
+        configure_cp_proxy_frontend_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_proxy_frontend_mgmt
+          target: cp_proxy_frontend_mgmt
+        configure_extCp_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_extCp_data
+          target: extCp_data
+        configure_extCp_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_extCp_mgmt
+          target: extCp_mgmt
+        configure_intVL_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_data
+          target: intVL_data
+        configure_intVL_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_mgmt
+          target: intVL_mgmt
+        configure_vdu_proxy_backend:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_proxy_backend
+          target: vdu_proxy_backend
+        configure_vdu_proxy_frontend:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_proxy_frontend
+          target: vdu_proxy_frontend
+        create_cp_proxy_backend_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_proxy_backend_data
+          target: cp_proxy_backend_data
+        create_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_proxy_backend_mgmt
+          target: cp_proxy_backend_mgmt
+        create_cp_proxy_frontend_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_proxy_frontend_data
+          target: cp_proxy_frontend_data
+        create_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_proxy_frontend_mgmt
+          target: cp_proxy_frontend_mgmt
+        create_extCp_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_extCp_data
+          target: extCp_data
+        create_extCp_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_extCp_mgmt
+          target: extCp_mgmt
+        create_intVL_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_data
+          target: intVL_data
+        create_intVL_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_mgmt
+          target: intVL_mgmt
+        create_vdu_proxy_backend:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_proxy_backend
+          target: vdu_proxy_backend
+        create_vdu_proxy_frontend:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_proxy_frontend
+          target: vdu_proxy_frontend
+        post_configure_cp_proxy_backend_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_proxy_backend_data
+          target: cp_proxy_backend_data
+        post_configure_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_proxy_backend_mgmt
+          target: cp_proxy_backend_mgmt
+        post_configure_cp_proxy_frontend_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_proxy_frontend_data
+          target: cp_proxy_frontend_data
+        post_configure_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_proxy_frontend_mgmt
+          target: cp_proxy_frontend_mgmt
+        post_configure_extCp_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_extCp_data
+          target: extCp_data
+        post_configure_extCp_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_extCp_mgmt
+          target: extCp_mgmt
+        post_configure_intVL_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_data
+          target: intVL_data
+        post_configure_intVL_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_mgmt
+          target: intVL_mgmt
+        post_configure_vdu_proxy_backend:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_proxy_backend
+          target: vdu_proxy_backend
+        post_configure_vdu_proxy_frontend:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_proxy_frontend
+          target: vdu_proxy_frontend
+        pre_configure_cp_proxy_backend_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_proxy_backend_data
+          target: cp_proxy_backend_data
+        pre_configure_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_proxy_backend_mgmt
+          target: cp_proxy_backend_mgmt
+        pre_configure_cp_proxy_frontend_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_proxy_frontend_data
+          target: cp_proxy_frontend_data
+        pre_configure_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_proxy_frontend_mgmt
+          target: cp_proxy_frontend_mgmt
+        pre_configure_extCp_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_extCp_data
+          target: extCp_data
+        pre_configure_extCp_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_extCp_mgmt
+          target: extCp_mgmt
+        pre_configure_intVL_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_data
+          target: intVL_data
+        pre_configure_intVL_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_mgmt
+          target: intVL_mgmt
+        pre_configure_vdu_proxy_backend:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_proxy_backend
+          target: vdu_proxy_backend
+        pre_configure_vdu_proxy_frontend:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_proxy_frontend
+          target: vdu_proxy_frontend
+        start_cp_proxy_backend_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_proxy_backend_data
+        start_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_proxy_backend_mgmt
+        start_cp_proxy_frontend_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_proxy_frontend_data
+        start_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_proxy_frontend_mgmt
+        start_extCp_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: extCp_data
+        start_extCp_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: extCp_mgmt
+        start_intVL_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_extCp_data
+          - create_cp_proxy_frontend_data
+          - create_cp_proxy_backend_data
+          target: intVL_data
+        start_intVL_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_extCp_mgmt
+          - create_cp_proxy_frontend_mgmt
+          - create_cp_proxy_backend_mgmt
+          target: intVL_mgmt
+        start_vdu_proxy_backend:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_proxy_backend_mgmt
+          - create_cp_proxy_backend_data
+          target: vdu_proxy_backend
+        start_vdu_proxy_frontend:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_proxy_frontend_mgmt
+          - create_cp_proxy_frontend_data
+          target: vdu_proxy_frontend
+    parallel_undeploy:
+      description: Parallel undeployment declarative workflow
+      steps:
+        delete_cp_proxy_backend_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_proxy_backend
+          - stop_intVL_data
+          target: cp_proxy_backend_data
+        delete_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_proxy_backend
+          - stop_intVL_mgmt
+          target: cp_proxy_backend_mgmt
+        delete_cp_proxy_frontend_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_proxy_frontend
+          - stop_intVL_data
+          target: cp_proxy_frontend_data
+        delete_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_proxy_frontend
+          - stop_intVL_mgmt
+          target: cp_proxy_frontend_mgmt
+        delete_extCp_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_intVL_data
+          target: extCp_data
+        delete_extCp_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_intVL_mgmt
+          target: extCp_mgmt
+        delete_intVL_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_data
+        delete_intVL_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_mgmt
+        delete_vdu_proxy_backend:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_proxy_backend
+        delete_vdu_proxy_frontend:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_proxy_frontend
+        stop_cp_proxy_backend_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_proxy_backend_data
+          target: cp_proxy_backend_data
+        stop_cp_proxy_backend_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_proxy_backend_mgmt
+          target: cp_proxy_backend_mgmt
+        stop_cp_proxy_frontend_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_proxy_frontend_data
+          target: cp_proxy_frontend_data
+        stop_cp_proxy_frontend_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_proxy_frontend_mgmt
+          target: cp_proxy_frontend_mgmt
+        stop_extCp_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_extCp_data
+          target: extCp_data
+        stop_extCp_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_extCp_mgmt
+          target: extCp_mgmt
+        stop_intVL_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_data
+          target: intVL_data
+        stop_intVL_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_mgmt
+          target: intVL_mgmt
+        stop_vdu_proxy_backend:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_proxy_backend
+          target: vdu_proxy_backend
+        stop_vdu_proxy_frontend:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_proxy_frontend
+          target: vdu_proxy_frontend
+tosca_definitions_version: tosca_simple_yaml_1_3

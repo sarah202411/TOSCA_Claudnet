@@ -1,0 +1,37 @@
+@startuml
+skinparam componentStyle uml2
+allowmixing
+
+component ": tosca.nodes.nfv.Proxy_CNF" as substitution_mappings {
+component "extCp_mgmt: VnfExtCp" as node_extCp_mgmt
+component "extCp_data: VnfExtCp" as node_extCp_data
+queue "intVL_mgmt: VnfVirtualLink" as node_intVL_mgmt
+queue "intVL_data: VnfVirtualLink" as node_intVL_data
+node "vdu_proxy_frontend: Compute" as node_vdu_proxy_frontend {
+artifact "sw_image: SwImage" <<artifact>> as node_vdu_proxy_frontend_artifact_sw_image {
+label "file: docker.io/mycompany/proxy-frontend:v1.0" as node_vdu_proxy_frontend_artifact_sw_image_label
+}
+}
+node "vdu_proxy_backend: Compute" as node_vdu_proxy_backend {
+artifact "sw_image: SwImage" <<artifact>> as node_vdu_proxy_backend_artifact_sw_image {
+label "file: docker.io/mycompany/proxy-backend:v1.0" as node_vdu_proxy_backend_artifact_sw_image_label
+}
+}
+component "cp_proxy_frontend_mgmt: VduCp" as node_cp_proxy_frontend_mgmt
+component "cp_proxy_frontend_data: VduCp" as node_cp_proxy_frontend_data
+component "cp_proxy_backend_mgmt: VduCp" as node_cp_proxy_backend_mgmt
+component "cp_proxy_backend_data: VduCp" as node_cp_proxy_backend_data
+node_extCp_mgmt ..> node_intVL_mgmt : <<VirtualLinksTo>>
+node_extCp_data ..> node_intVL_data : <<VirtualLinksTo>>
+node_cp_proxy_frontend_mgmt ..> node_vdu_proxy_frontend : <<VirtualBindsTo>>
+node_cp_proxy_frontend_mgmt ..> node_intVL_mgmt : <<VirtualLinksTo>>
+node_cp_proxy_frontend_data ..> node_vdu_proxy_frontend : <<VirtualBindsTo>>
+node_cp_proxy_frontend_data ..> node_intVL_data : <<VirtualLinksTo>>
+node_cp_proxy_backend_mgmt ..> node_vdu_proxy_backend : <<VirtualBindsTo>>
+node_cp_proxy_backend_mgmt ..> node_intVL_mgmt : <<VirtualLinksTo>>
+node_cp_proxy_backend_data ..> node_vdu_proxy_backend : <<VirtualBindsTo>>
+node_cp_proxy_backend_data ..> node_intVL_data : <<VirtualLinksTo>>
+}
+queue "virtual_link_external" as substitution_mappings_requirement_virtual_link_external
+node_extCp_data ..>  substitution_mappings_requirement_virtual_link_external
+@enduml

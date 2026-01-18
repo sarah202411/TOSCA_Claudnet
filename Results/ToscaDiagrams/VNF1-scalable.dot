@@ -1,0 +1,91 @@
+graph ToscaDiagram {
+  rankdir="LR"
+  subgraph clusterSubstitutionMappings {
+    label="tosca.nodes.nfv.Firewall_VNF"
+    subgraph clusterextCp_mgmt {
+      color=white
+      label=""
+      extCp_mgmt[label="extCp_mgmt: VnfExtCp|\l\l\l\l" shape=record style=rounded]
+      extCp_mgmt_requirement_internal_virtual_link[label="internal_virtual_link" shape=cds style=filled fillcolor=turquoise]
+      extCp_mgmt -- extCp_mgmt_requirement_internal_virtual_link
+    }
+    subgraph clusterintVL_mgmt {
+      color=white
+      label=""
+      intVL_mgmt[label="intVL_mgmt: VnfVirtualLink|\l\l\l\l" shape=record style=rounded]
+      intVL_mgmt_capability_virtual_linkable[label="virtual_linkable" shape=cds style=filled fillcolor=orange]
+      intVL_mgmt_capability_virtual_linkable -- intVL_mgmt
+    }
+    subgraph clusterintVL_data {
+      color=white
+      label=""
+      intVL_data[label="intVL_data: VnfVirtualLink|\l\l\l\l" shape=record style=rounded]
+      intVL_data_capability_virtual_linkable[label="virtual_linkable" shape=cds style=filled fillcolor=orange]
+      intVL_data_capability_virtual_linkable -- intVL_data
+    }
+    subgraph clustervdu_firewall_main {
+      color=white
+      label=""
+      vdu_firewall_main[label="vdu_firewall_main: Compute|\l\l\l\l" shape=record style=rounded]
+      vdu_firewall_main_capability_virtual_compute[label="virtual_compute" shape=cds style=filled fillcolor=orange]
+      vdu_firewall_main_capability_virtual_compute -- vdu_firewall_main
+      vdu_firewall_main_capability_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=orange]
+      vdu_firewall_main_capability_virtual_binding -- vdu_firewall_main
+    }
+    subgraph clustervdu_firewall_mgmt {
+      color=white
+      label=""
+      vdu_firewall_mgmt[label="vdu_firewall_mgmt: Compute|\l\l\l\l" shape=record style=rounded]
+      vdu_firewall_mgmt_capability_virtual_compute[label="virtual_compute" shape=cds style=filled fillcolor=orange]
+      vdu_firewall_mgmt_capability_virtual_compute -- vdu_firewall_mgmt
+      vdu_firewall_mgmt_capability_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=orange]
+      vdu_firewall_mgmt_capability_virtual_binding -- vdu_firewall_mgmt
+    }
+    subgraph clustercp_firewall_main_mgmt {
+      color=white
+      label=""
+      cp_firewall_main_mgmt[label="cp_firewall_main_mgmt: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_firewall_main_mgmt_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_firewall_main_mgmt -- cp_firewall_main_mgmt_requirement_virtual_link
+      cp_firewall_main_mgmt_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_firewall_main_mgmt -- cp_firewall_main_mgmt_requirement_virtual_binding
+    }
+    subgraph clustercp_firewall_main_data {
+      color=white
+      label=""
+      cp_firewall_main_data[label="cp_firewall_main_data: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_firewall_main_data_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_firewall_main_data -- cp_firewall_main_data_requirement_virtual_link
+      cp_firewall_main_data_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_firewall_main_data -- cp_firewall_main_data_requirement_virtual_binding
+    }
+    subgraph clustercp_firewall_mgmt_mgmt {
+      color=white
+      label=""
+      cp_firewall_mgmt_mgmt[label="cp_firewall_mgmt_mgmt: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_firewall_mgmt_mgmt_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_firewall_mgmt_mgmt -- cp_firewall_mgmt_mgmt_requirement_virtual_link
+      cp_firewall_mgmt_mgmt_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_firewall_mgmt_mgmt -- cp_firewall_mgmt_mgmt_requirement_virtual_binding
+    }
+    subgraph clustercp_firewall_mgmt_data {
+      color=white
+      label=""
+      cp_firewall_mgmt_data[label="cp_firewall_mgmt_data: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_firewall_mgmt_data_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_firewall_mgmt_data -- cp_firewall_mgmt_data_requirement_virtual_link
+      cp_firewall_mgmt_data_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_firewall_mgmt_data -- cp_firewall_mgmt_data_requirement_virtual_binding
+    }
+    cp_firewall_main_mgmt_requirement_virtual_binding -- vdu_firewall_main_capability_virtual_binding[style=dotted]
+    cp_firewall_main_mgmt_requirement_virtual_link -- intVL_mgmt_capability_virtual_linkable[style=dotted]
+    cp_firewall_main_data_requirement_virtual_binding -- vdu_firewall_main_capability_virtual_binding[style=dotted]
+    cp_firewall_main_data_requirement_virtual_link -- intVL_data_capability_virtual_linkable[style=dotted]
+    cp_firewall_mgmt_mgmt_requirement_virtual_binding -- vdu_firewall_mgmt_capability_virtual_binding[style=dotted]
+    cp_firewall_mgmt_mgmt_requirement_virtual_link -- intVL_mgmt_capability_virtual_linkable[style=dotted]
+    cp_firewall_mgmt_data_requirement_virtual_binding -- vdu_firewall_mgmt_capability_virtual_binding[style=dotted]
+    cp_firewall_mgmt_data_requirement_virtual_link -- intVL_data_capability_virtual_linkable[style=dotted]
+  }
+  topology_template_substitution_mappings_requirement_virtual_link_external[label="virtual_link_external" shape=cds style=filled fillcolor=turquoise]
+  extCp_mgmt_requirement_internal_virtual_link -- topology_template_substitution_mappings_requirement_virtual_link_external[style=dotted]
+}

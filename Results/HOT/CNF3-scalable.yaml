@@ -1,0 +1,591 @@
+heat_template_version: queens
+
+description: CNF Proxy scalable et tolérant aux pannes basé sur des conteneurs (Frontend & Backend/Cache)
+
+parameters:
+  proxy_frontend_cpu_limit:
+    type: string
+    label: Proxy Frontend Cpu Limit
+    default: 2000m
+#   hidden: false
+#   immutable: false
+#   tags: []
+  proxy_frontend_memory_limit:
+    type: string
+    label: Proxy Frontend Memory Limit
+    default: 4Gi
+#   hidden: false
+#   immutable: false
+#   tags: []
+  proxy_backend_cpu_limit:
+    type: string
+    label: Proxy Backend Cpu Limit
+    default: 4000m
+#   hidden: false
+#   immutable: false
+#   tags: []
+  proxy_backend_memory_limit:
+    type: string
+    label: Proxy Backend Memory Limit
+    default: 8Gi
+#   hidden: false
+#   immutable: false
+#   tags: []
+  descriptor_id:
+    type: string
+    label: Descriptor Id
+    description: Identifier of this VNFD information element. This attribute shall be globally unique
+    default: proxy-container-based
+#   hidden: false
+#   immutable: false
+#   tags: []
+  descriptor_version:
+    type: string
+    label: Descriptor Version
+    description: Identifies the version of the VNFD
+    default: 1.0
+#   hidden: false
+#   immutable: false
+#   tags: []
+  provider:
+    type: string
+    label: Provider
+    description: Provider of the VNF and of the VNFD
+    default: MyCompany
+#   hidden: false
+#   immutable: false
+#   tags: []
+  product_name:
+    type: string
+    label: Product Name
+    description: Human readable name for the VNF Product
+    default: Proxy_CNF
+#   hidden: false
+#   immutable: false
+#   tags: []
+  software_version:
+    type: string
+    label: Software Version
+    description: Software version of the VNF
+    default: 1.0
+#   hidden: false
+#   immutable: false
+#   tags: []
+  vnfm_info:
+    type: comma_delimited_list
+    label: Vnfm Info
+    description: Identifies VNFM(s) compatible with the VNF
+    default: ['etsivnfm:v3.3.1']
+#   hidden: false
+#   immutable: false
+#   tags: []
+  flavour_id:
+    type: string
+    label: Flavour Id
+    description: Identifier of the Deployment Flavour within the VNFD
+    default: scalable_ha_container
+#   hidden: false
+#   immutable: false
+#   tags: []
+  flavour_description:
+    type: string
+    label: Flavour Description
+    description: Human readable description of the DF
+    default: Scalable containerized flavour with HA support for Proxy
+#   hidden: false
+#   immutable: false
+#   tags: []
+  virtual_link_external:
+    type: string
+    label: Virtual Link External
+#   hidden: false
+    constraints:
+      - custom_constraint: neutron.network
+#   immutable: false
+#   tags: []
+
+resources:
+  #
+  # Node 'extCp_mgmt' of type 'tosca.nodes.nfv.VnfExtCp' translated into the following resource(s):
+  #
+
+  extCp_mgmt:
+    type: OS::Neutron::Router
+#   properties:
+#     admin_state_up: true # default value
+#     distributed: false # default value?
+#     ha: false# default value?
+#     l3_agent_ids: [] # default value
+#     name: extCp_mgmt  # set by Heat engine
+#     tags: [] # default value
+#     value_specs: {} # default value
+    metadata:
+      tosca.type: tosca.nodes.nfv.VnfExtCp
+      layer_protocols: ['ipv4']
+      description: Proxy Management interface
+
+  extCp_mgmt_internal_virtual_link_ipv4_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: intVL_mgmt }
+#     admin_state_up: true  # default value
+#     allowed_address_pairs: []  # default value
+#     binding:vnic_type: normal # TODO
+#     device_id: "" # default value
+#     device_owner: "" # default value
+#     dns_name: "" # TODO
+      fixed_ips:
+        - subnet: { get_resource: intVL_mgmt_subnet_ipv4 }
+#     mac_address: MAC_ADDRESS
+#     name: # set by Heat Engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+#     security_groups: [ SECURITY_GROUP ]
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+  extCp_mgmt_internal_virtual_link_ipv4:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: extCp_mgmt }
+      port: { get_resource: extCp_mgmt_internal_virtual_link_ipv4_port }
+
+  extCp_mgmt_external_virtual_link_ipv4_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: None }
+#     admin_state_up: true  # default value
+#     allowed_address_pairs: []  # default value
+#     binding:vnic_type: normal # TODO
+#     device_id: "" # default value
+#     device_owner: "" # default value
+#     dns_name: "" # TODO
+      fixed_ips:
+        - subnet: { get_resource: None_subnet_ipv4 }
+#     mac_address: MAC_ADDRESS
+#     name: # set by Heat Engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+#     security_groups: [ SECURITY_GROUP ]
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+  extCp_mgmt_external_virtual_link_ipv4:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: extCp_mgmt }
+      port: { get_resource: extCp_mgmt_external_virtual_link_ipv4_port }
+
+  #
+  # Node 'extCp_data' of type 'tosca.nodes.nfv.VnfExtCp' translated into the following resource(s):
+  #
+
+  extCp_data:
+    type: OS::Neutron::Router
+#   properties:
+#     admin_state_up: true # default value
+#     distributed: false # default value?
+#     ha: false# default value?
+#     l3_agent_ids: [] # default value
+#     name: extCp_data  # set by Heat engine
+#     tags: [] # default value
+#     value_specs: {} # default value
+    metadata:
+      tosca.type: tosca.nodes.nfv.VnfExtCp
+      layer_protocols: ['ipv4']
+      description: Proxy Data plane interface
+
+  extCp_data_internal_virtual_link_ipv4_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: intVL_data }
+#     admin_state_up: true  # default value
+#     allowed_address_pairs: []  # default value
+#     binding:vnic_type: normal # TODO
+#     device_id: "" # default value
+#     device_owner: "" # default value
+#     dns_name: "" # TODO
+      fixed_ips:
+        - subnet: { get_resource: intVL_data_subnet_ipv4 }
+#     mac_address: MAC_ADDRESS
+#     name: # set by Heat Engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+#     security_groups: [ SECURITY_GROUP ]
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+  extCp_data_internal_virtual_link_ipv4:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: extCp_data }
+      port: { get_resource: extCp_data_internal_virtual_link_ipv4_port }
+
+  extCp_data_external_virtual_link_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: virtual_link_external }
+
+  extCp_data_external_virtual_link:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: extCp_data }
+      port: { get_resource: extCp_data_external_virtual_link_port }
+
+  #
+  # Node 'intVL_mgmt' of type 'tosca.nodes.nfv.VnfVirtualLink' translated into the following resource(s):
+  #
+
+  intVL_mgmt:
+    type: OS::Neutron::Net
+    properties:
+#     admin_state_up: true # default value
+#     dhcp_agent_ids: [] # default value
+#     dns_domain: DNS_DOMAIN
+#     name: intVL_mgmt # set by Heat engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+      shared: false # default value
+#     tags: [] # default value
+#     value_specs: {} # default value
+    metadata:
+      tosca.type: tosca.nodes.nfv.VnfVirtualLink
+      connectivity_type.layer_protocols: ['ipv4']
+      vl_profile.max_bitrate_requirements.root: 1000000
+      vl_profile.max_bitrate_requirements.leaf: 100000
+      vl_profile.min_bitrate_requirements.root: 100000
+      vl_profile.min_bitrate_requirements.leaf: 10000
+      description: Proxy Management network
+
+  intVL_mgmt_root_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for root ports of network intVL_mgmt
+#     name: intVL_mgmt root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  intVL_mgmt_root_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: intVL_mgmt_root_qos_policy }
+      max_kbps: 1000
+#     max_burst_kbps: 1000
+
+  intVL_mgmt_leaf_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for leaf ports of network intVL_mgmt
+#     name: intVL_mgmt root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  intVL_mgmt_leaf_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: intVL_mgmt_leaf_qos_policy }
+      max_kbps: 100
+#     max_burst_kbps: 100
+
+  intVL_mgmt_subnet_ipv4:
+    type: OS::Neutron::Subnet
+    properties:
+      network: { get_resource: intVL_mgmt }
+#     allocation_pools: [] # default value
+      cidr: 10.100.0.0/24  # generated
+#     enable_dhcp: true # default value
+#     gateway_ip: GATEWAY_IP
+#     host_routes: {} # default value
+      ip_version: 4
+#     ipv6_address_mode: ""
+#     ipv6_ra_mode: ""
+#     name: intVL_mgmt-subnet-ipv4 # set by Heat engine
+#     prefixlen: integer
+#     segment: segment_id
+#     subnetpool: subnetpool_id
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+
+  #
+  # Node 'intVL_data' of type 'tosca.nodes.nfv.VnfVirtualLink' translated into the following resource(s):
+  #
+
+  intVL_data:
+    type: OS::Neutron::Net
+    properties:
+#     admin_state_up: true # default value
+#     dhcp_agent_ids: [] # default value
+#     dns_domain: DNS_DOMAIN
+#     name: intVL_data # set by Heat engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+      shared: false # default value
+#     tags: [] # default value
+#     value_specs: {} # default value
+    metadata:
+      tosca.type: tosca.nodes.nfv.VnfVirtualLink
+      connectivity_type.layer_protocols: ['ipv4']
+      vl_profile.max_bitrate_requirements.root: 10000000
+      vl_profile.max_bitrate_requirements.leaf: 1000000
+      vl_profile.min_bitrate_requirements.root: 1000000
+      vl_profile.min_bitrate_requirements.leaf: 100000
+      description: Proxy Data plane network
+
+  intVL_data_root_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for root ports of network intVL_data
+#     name: intVL_data root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  intVL_data_root_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: intVL_data_root_qos_policy }
+      max_kbps: 10000
+#     max_burst_kbps: 10000
+
+  intVL_data_leaf_qos_policy:
+    type: OS::Neutron::QoSPolicy
+    properties:
+      description: QoS policy for leaf ports of network intVL_data
+#     name: intVL_data root QoS Policy # set by Heat engine
+#     shared: false # default value
+
+  intVL_data_leaf_qos_bandwidth_limit_rule:
+    type: OS::Neutron::QoSBandwidthLimitRule
+    properties:
+      policy: { get_resource: intVL_data_leaf_qos_policy }
+      max_kbps: 1000
+#     max_burst_kbps: 1000
+
+  intVL_data_subnet_ipv4:
+    type: OS::Neutron::Subnet
+    properties:
+      network: { get_resource: intVL_data }
+#     allocation_pools: [] # default value
+      cidr: 10.100.1.0/24  # generated
+#     enable_dhcp: true # default value
+#     gateway_ip: GATEWAY_IP
+#     host_routes: {} # default value
+      ip_version: 4
+#     ipv6_address_mode: ""
+#     ipv6_ra_mode: ""
+#     name: intVL_data-subnet-ipv4 # set by Heat engine
+#     prefixlen: integer
+#     segment: segment_id
+#     subnetpool: subnetpool_id
+#     tags: [] # default value
+#     value_specs: {} # default value
+
+
+  #
+  # Node 'vdu_proxy_frontend' of type 'tosca.nodes.nfv.Vdu.Compute' translated into the following resource(s):
+  #
+
+  vdu_proxy_frontend_flavor:
+    type: OS::Nova::Flavor
+    properties:
+      is_public: false
+      ram: 2000 # WARNING: Initial value was 4000 !
+      vcpus: 2
+      # TODO: Translate requested_additional_capabilities: {'properties': {'requested_additional_capability_name': 'container_runtime', 'support_mandatory': True, 'target_performance_parameters': {'container_runtime': 'kubernetes'}}}
+
+      # TODO: Translate min_number_of_instances: 3
+
+      # TODO: Translate max_number_of_instances: 10
+
+  vdu_proxy_frontend:
+    type: OS::Nova::Server
+    properties:
+#     name: proxy-frontend # set by Heat engine
+      metadata:
+        description: Proxy Frontend (Entry point/SSL Termination)
+      flavor: { get_resource: vdu_proxy_frontend_flavor }
+      image: cirros-0.3.5-x86_64-disk # default value generated
+      networks:
+        - port: { get_resource: cp_proxy_frontend_mgmt }
+        - port: { get_resource: cp_proxy_frontend_data }
+    depends_on: vdu_proxy_frontend_flavor # Required else error when delete the stack. Should it be a bug into Heat engine?
+
+  #
+  # Node 'vdu_proxy_backend' of type 'tosca.nodes.nfv.Vdu.Compute' translated into the following resource(s):
+  #
+
+  vdu_proxy_backend_flavor:
+    type: OS::Nova::Flavor
+    properties:
+      is_public: false
+      ram: 2000 # WARNING: Initial value was 8000 !
+      vcpus: 4
+      # TODO: Translate requested_additional_capabilities: {'properties': {'requested_additional_capability_name': 'container_runtime', 'support_mandatory': True, 'target_performance_parameters': {'container_runtime': 'kubernetes'}}}
+      # TODO: Translate virtual_local_storage: [{'size_of_storage': '50 GB'}]
+
+      # TODO: Translate min_number_of_instances: 3
+
+      # TODO: Translate max_number_of_instances: 8
+
+  vdu_proxy_backend:
+    type: OS::Nova::Server
+    properties:
+#     name: proxy-backend # set by Heat engine
+      metadata:
+        description: Proxy Backend (Caching and Content processing)
+      flavor: { get_resource: vdu_proxy_backend_flavor }
+      image: cirros-0.3.5-x86_64-disk # default value generated
+      networks:
+        - port: { get_resource: cp_proxy_backend_mgmt }
+        - port: { get_resource: cp_proxy_backend_data }
+    depends_on: vdu_proxy_backend_flavor # Required else error when delete the stack. Should it be a bug into Heat engine?
+
+  #
+  # Node 'cp_proxy_frontend_mgmt' of type 'tosca.nodes.nfv.VduCp' translated into the following resource(s):
+  #
+
+  cp_proxy_frontend_mgmt:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: intVL_mgmt }
+#     admin_state_up: true  # default value
+#     allowed_address_pairs: []  # default value
+#     binding:vnic_type: normal # TODO
+#     device_id: "" # default value
+#     device_owner: "" # default value
+#     dns_name: "" # TODO
+      fixed_ips:
+        - subnet: { get_resource: intVL_mgmt_subnet_ipv4 }
+#     mac_address: MAC_ADDRESS
+#     name: # set by Heat Engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+#     security_groups: [ SECURITY_GROUP ]
+#     tags: [] # default value
+#     value_specs: {} # default value
+      # TODO: Translate description: Proxy Frontend management interface
+
+  #
+  # Node 'cp_proxy_frontend_data' of type 'tosca.nodes.nfv.VduCp' translated into the following resource(s):
+  #
+
+  cp_proxy_frontend_data:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: intVL_data }
+#     admin_state_up: true  # default value
+#     allowed_address_pairs: []  # default value
+#     binding:vnic_type: normal # TODO
+#     device_id: "" # default value
+#     device_owner: "" # default value
+#     dns_name: "" # TODO
+      fixed_ips:
+        - subnet: { get_resource: intVL_data_subnet_ipv4 }
+#     mac_address: MAC_ADDRESS
+#     name: # set by Heat Engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+#     security_groups: [ SECURITY_GROUP ]
+#     tags: [] # default value
+#     value_specs: {} # default value
+      # TODO: Translate description: Proxy Frontend data interface
+      # TODO: Translate order: 1
+
+  #
+  # Node 'cp_proxy_backend_mgmt' of type 'tosca.nodes.nfv.VduCp' translated into the following resource(s):
+  #
+
+  cp_proxy_backend_mgmt:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: intVL_mgmt }
+#     admin_state_up: true  # default value
+#     allowed_address_pairs: []  # default value
+#     binding:vnic_type: normal # TODO
+#     device_id: "" # default value
+#     device_owner: "" # default value
+#     dns_name: "" # TODO
+      fixed_ips:
+        - subnet: { get_resource: intVL_mgmt_subnet_ipv4 }
+#     mac_address: MAC_ADDRESS
+#     name: # set by Heat Engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+#     security_groups: [ SECURITY_GROUP ]
+#     tags: [] # default value
+#     value_specs: {} # default value
+      # TODO: Translate description: Proxy Backend management interface
+
+  #
+  # Node 'cp_proxy_backend_data' of type 'tosca.nodes.nfv.VduCp' translated into the following resource(s):
+  #
+
+  cp_proxy_backend_data:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: intVL_data }
+#     admin_state_up: true  # default value
+#     allowed_address_pairs: []  # default value
+#     binding:vnic_type: normal # TODO
+#     device_id: "" # default value
+#     device_owner: "" # default value
+#     dns_name: "" # TODO
+      fixed_ips:
+        - subnet: { get_resource: intVL_data_subnet_ipv4 }
+#     mac_address: MAC_ADDRESS
+#     name: # set by Heat Engine
+#     port_security_enabled: true # default value
+#     qos_policy: QOS_POLICY_ID_OR_NAME
+#     security_groups: [ SECURITY_GROUP ]
+#     tags: [] # default value
+#     value_specs: {} # default value
+      # TODO: Translate description: Proxy Backend data interface
+      # TODO: Translate order: 1
+
+  #
+  # Policy 'scaling_aspects' of type 'tosca.policies.nfv.ScalingAspects' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'scaling_aspects' of type 'tosca.policies.nfv.ScalingAspects'!
+
+  #
+  # Policy 'vdu_proxy_frontend_initial_delta' of type 'tosca.policies.nfv.VduInitialDelta' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'vdu_proxy_frontend_initial_delta' of type 'tosca.policies.nfv.VduInitialDelta'!
+
+  #
+  # Policy 'vdu_proxy_frontend_scaling_delta' of type 'tosca.policies.nfv.VduScalingAspectDeltas' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'vdu_proxy_frontend_scaling_delta' of type 'tosca.policies.nfv.VduScalingAspectDeltas'!
+
+  #
+  # Policy 'vdu_proxy_backend_initial_delta' of type 'tosca.policies.nfv.VduInitialDelta' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'vdu_proxy_backend_initial_delta' of type 'tosca.policies.nfv.VduInitialDelta'!
+
+  #
+  # Policy 'vdu_proxy_backend_scaling_delta' of type 'tosca.policies.nfv.VduScalingAspectDeltas' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'vdu_proxy_backend_scaling_delta' of type 'tosca.policies.nfv.VduScalingAspectDeltas'!
+
+  #
+  # Policy 'instantiation_levels' of type 'tosca.policies.nfv.InstantiationLevels' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'instantiation_levels' of type 'tosca.policies.nfv.InstantiationLevels'!
+
+  #
+  # Policy 'vdu_proxy_frontend_instantiation_levels' of type 'tosca.policies.nfv.VduInstantiationLevels' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'vdu_proxy_frontend_instantiation_levels' of type 'tosca.policies.nfv.VduInstantiationLevels'!
+
+  #
+  # Policy 'vdu_proxy_backend_instantiation_levels' of type 'tosca.policies.nfv.VduInstantiationLevels' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'vdu_proxy_backend_instantiation_levels' of type 'tosca.policies.nfv.VduInstantiationLevels'!
+
+  #
+  # Policy 'proxy_frontend_anti_affinity' of type 'tosca.policies.nfv.AntiAffinityRule' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'proxy_frontend_anti_affinity' of type 'tosca.policies.nfv.AntiAffinityRule'!
+
+  #
+  # Policy 'proxy_backend_anti_affinity' of type 'tosca.policies.nfv.AntiAffinityRule' translated into the following resource(s):
+  #
+  # TODO: Undefined translation for node 'proxy_backend_anti_affinity' of type 'tosca.policies.nfv.AntiAffinityRule'!
+

@@ -1,0 +1,138 @@
+@startuml
+skinparam componentStyle uml2
+skinparam component {
+  backgroundColor<<relationship>> White
+}
+
+component ": tosca.nodes.nfv.IDS_VNF" <<node>> as substitution_mappings {
+component "extCp_mgmt: VnfExtCp" <<node>> as node_extCp_mgmt
+
+component "intVL_mgmt: VnfVirtualLink" <<node>> as node_intVL_mgmt
+interface "virtual_linkable" as node_intVL_mgmt_virtual_linkable
+node_intVL_mgmt_virtual_linkable -- node_intVL_mgmt
+
+component "intVL_data: VnfVirtualLink" <<node>> as node_intVL_data
+interface "virtual_linkable" as node_intVL_data_virtual_linkable
+node_intVL_data_virtual_linkable -- node_intVL_data
+
+component "vdu_ids_detection: Compute" <<node>> as node_vdu_ids_detection
+interface "virtual_binding" as node_vdu_ids_detection_virtual_binding
+node_vdu_ids_detection_virtual_binding -- node_vdu_ids_detection
+interface "virtual_compute" as node_vdu_ids_detection_virtual_compute
+node_vdu_ids_detection_virtual_compute -- node_vdu_ids_detection
+
+component "vdu_ids_analysis: Compute" <<node>> as node_vdu_ids_analysis
+interface "virtual_binding" as node_vdu_ids_analysis_virtual_binding
+node_vdu_ids_analysis_virtual_binding -- node_vdu_ids_analysis
+interface "virtual_compute" as node_vdu_ids_analysis_virtual_compute
+node_vdu_ids_analysis_virtual_compute -- node_vdu_ids_analysis
+
+component "cp_ids_detection_mgmt: VduCp" <<node>> as node_cp_ids_detection_mgmt
+component ": VirtualBindsTo" <<relationship>> as node_cp_ids_detection_mgmt_virtual_binding_relationship0
+interface " " as node_cp_ids_detection_mgmt_virtual_binding_relationship0_source
+node_cp_ids_detection_mgmt_virtual_binding_relationship0_source -- node_cp_ids_detection_mgmt_virtual_binding_relationship0
+node_cp_ids_detection_mgmt --( node_cp_ids_detection_mgmt_virtual_binding_relationship0_source : virtual_binding
+component ": VirtualLinksTo" <<relationship>> as node_cp_ids_detection_mgmt_virtual_link_relationship1
+interface " " as node_cp_ids_detection_mgmt_virtual_link_relationship1_source
+node_cp_ids_detection_mgmt_virtual_link_relationship1_source -- node_cp_ids_detection_mgmt_virtual_link_relationship1
+node_cp_ids_detection_mgmt --( node_cp_ids_detection_mgmt_virtual_link_relationship1_source : virtual_link
+
+component "cp_ids_detection_data: VduCp" <<node>> as node_cp_ids_detection_data
+component ": VirtualBindsTo" <<relationship>> as node_cp_ids_detection_data_virtual_binding_relationship0
+interface " " as node_cp_ids_detection_data_virtual_binding_relationship0_source
+node_cp_ids_detection_data_virtual_binding_relationship0_source -- node_cp_ids_detection_data_virtual_binding_relationship0
+node_cp_ids_detection_data --( node_cp_ids_detection_data_virtual_binding_relationship0_source : virtual_binding
+component ": VirtualLinksTo" <<relationship>> as node_cp_ids_detection_data_virtual_link_relationship1
+interface " " as node_cp_ids_detection_data_virtual_link_relationship1_source
+node_cp_ids_detection_data_virtual_link_relationship1_source -- node_cp_ids_detection_data_virtual_link_relationship1
+node_cp_ids_detection_data --( node_cp_ids_detection_data_virtual_link_relationship1_source : virtual_link
+
+component "cp_ids_analysis_mgmt: VduCp" <<node>> as node_cp_ids_analysis_mgmt
+component ": VirtualBindsTo" <<relationship>> as node_cp_ids_analysis_mgmt_virtual_binding_relationship0
+interface " " as node_cp_ids_analysis_mgmt_virtual_binding_relationship0_source
+node_cp_ids_analysis_mgmt_virtual_binding_relationship0_source -- node_cp_ids_analysis_mgmt_virtual_binding_relationship0
+node_cp_ids_analysis_mgmt --( node_cp_ids_analysis_mgmt_virtual_binding_relationship0_source : virtual_binding
+component ": VirtualLinksTo" <<relationship>> as node_cp_ids_analysis_mgmt_virtual_link_relationship1
+interface " " as node_cp_ids_analysis_mgmt_virtual_link_relationship1_source
+node_cp_ids_analysis_mgmt_virtual_link_relationship1_source -- node_cp_ids_analysis_mgmt_virtual_link_relationship1
+node_cp_ids_analysis_mgmt --( node_cp_ids_analysis_mgmt_virtual_link_relationship1_source : virtual_link
+
+component "cp_ids_analysis_data: VduCp" <<node>> as node_cp_ids_analysis_data
+component ": VirtualBindsTo" <<relationship>> as node_cp_ids_analysis_data_virtual_binding_relationship0
+interface " " as node_cp_ids_analysis_data_virtual_binding_relationship0_source
+node_cp_ids_analysis_data_virtual_binding_relationship0_source -- node_cp_ids_analysis_data_virtual_binding_relationship0
+node_cp_ids_analysis_data --( node_cp_ids_analysis_data_virtual_binding_relationship0_source : virtual_binding
+component ": VirtualLinksTo" <<relationship>> as node_cp_ids_analysis_data_virtual_link_relationship1
+interface " " as node_cp_ids_analysis_data_virtual_link_relationship1_source
+node_cp_ids_analysis_data_virtual_link_relationship1_source -- node_cp_ids_analysis_data_virtual_link_relationship1
+node_cp_ids_analysis_data --( node_cp_ids_analysis_data_virtual_link_relationship1_source : virtual_link
+
+node_cp_ids_detection_mgmt_virtual_binding_relationship0 --( node_vdu_ids_detection_virtual_binding
+node_cp_ids_detection_mgmt_virtual_link_relationship1 --( node_intVL_mgmt_virtual_linkable
+node_cp_ids_detection_data_virtual_binding_relationship0 --( node_vdu_ids_detection_virtual_binding
+node_cp_ids_detection_data_virtual_link_relationship1 --( node_intVL_data_virtual_linkable
+node_cp_ids_analysis_mgmt_virtual_binding_relationship0 --( node_vdu_ids_analysis_virtual_binding
+node_cp_ids_analysis_mgmt_virtual_link_relationship1 --( node_intVL_mgmt_virtual_linkable
+node_cp_ids_analysis_data_virtual_binding_relationship0 --( node_vdu_ids_analysis_virtual_binding
+node_cp_ids_analysis_data_virtual_link_relationship1 --( node_intVL_data_virtual_linkable
+agent policy_scaling_aspects <<policy>> #AliceBlue [
+ScalingAspects
+---
+.. properties ..
+aspects = {'ids_detection_scaling': {'name': 'ids_[[{ids_detection_scaling: \n  name: 'ids_detection_scaling_aspect'\n  description: 'Scaling for detection engine'\n  max_scale_level: 3\n  step_deltas: \n    - 'delta_1'\nids_analysis_scaling: \n  name: 'ids_analysis_scaling_aspect'\n  description: 'Scaling for analysis unit'\n  max_scale_level: 2\n  step_deltas: \n    - 'delta_1'} ...]]
+]
+agent policy_vdu_ids_detection_initial_delta <<policy>> #AliceBlue [
+VduInitialDelta
+---
+.. properties ..
+initial_delta = {'number_of_instances': 2}
+]
+policy_vdu_ids_detection_initial_delta -up-> node_vdu_ids_detection
+agent policy_vdu_ids_detection_scaling_delta <<policy>> #AliceBlue [
+VduScalingAspectDeltas
+---
+.. properties ..
+aspect = 'ids_detection_scaling'
+deltas = {'delta_1': {'number_of_instances': 1}}
+]
+policy_vdu_ids_detection_scaling_delta -up-> node_vdu_ids_detection
+agent policy_vdu_ids_analysis_initial_delta <<policy>> #AliceBlue [
+VduInitialDelta
+---
+.. properties ..
+initial_delta = {'number_of_instances': 2}
+]
+policy_vdu_ids_analysis_initial_delta -up-> node_vdu_ids_analysis
+agent policy_vdu_ids_analysis_scaling_delta <<policy>> #AliceBlue [
+VduScalingAspectDeltas
+---
+.. properties ..
+aspect = 'ids_analysis_scaling'
+deltas = {'delta_1': {'number_of_instances': 1}}
+]
+policy_vdu_ids_analysis_scaling_delta -up-> node_vdu_ids_analysis
+agent policy_instantiation_levels <<policy>> #AliceBlue [
+InstantiationLevels
+---
+.. properties ..
+levels = {'default': {'description': 'Default ins[[{default: \n  description: 'Default instantiation level'\n  scale_info: \n    ids_detection_scaling: \n      scale_level: 0\n    ids_analysis_scaling: \n      scale_level: 0\nmedium: \n  description: 'Medium instantiation level'\n  scale_info: \n    ids_detection_scaling: \n      scale_level: 1\n    ids_analysis_scaling: \n      scale_level: 1\nlarge: \n  description: 'Large instantiation level'\n  scale_info: \n    ids_detection_scaling: \n      scale_level: 3\n    ids_analysis_scaling: \n      scale_level: 2} ...]]
+default_level = 'default'
+]
+agent policy_vdu_ids_detection_instantiation_levels <<policy>> #AliceBlue [
+VduInstantiationLevels
+---
+.. properties ..
+levels = {'default': {'number_of_instances': 2}, [[{default: \n  number_of_instances: 2\nmedium: \n  number_of_instances: 3\nlarge: \n  number_of_instances: 5} ...]]
+]
+policy_vdu_ids_detection_instantiation_levels -up-> node_vdu_ids_detection
+agent policy_vdu_ids_analysis_instantiation_levels <<policy>> #AliceBlue [
+VduInstantiationLevels
+---
+.. properties ..
+levels = {'default': {'number_of_instances': 2}, [[{default: \n  number_of_instances: 2\nmedium: \n  number_of_instances: 3\nlarge: \n  number_of_instances: 4} ...]]
+]
+policy_vdu_ids_analysis_instantiation_levels -up-> node_vdu_ids_analysis
+}
+label "virtual_link_external" as substitution_mappings_virtual_link_external
+node_extCp_mgmt "internal_virtual_link" --( substitution_mappings_virtual_link_external
+@enduml

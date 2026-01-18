@@ -1,0 +1,332 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: CNF Proxy scalable et tolérant aux pannes basé sur des conteneurs (Frontend & Backend/Cache)
+
+imports:
+  - etsi_nfv_sol001_vnfd_types.yaml
+
+node_types:
+  tosca.nodes.nfv.Proxy_CNF:
+    derived_from: tosca.nodes.nfv.VNF
+    properties:
+      descriptor_id:
+        type: string
+        default: proxy-container-based
+      provider:
+        type: string
+        default: MyCompany
+      product_name:
+        type: string
+        default: Proxy_CNF
+      software_version:
+        type: string
+        default: '1.0'
+      descriptor_version:
+        type: string
+        default: '1.0'
+      flavour_id:
+        type: string
+        default: scalable_ha_container
+      flavour_description:
+        type: string
+        default: "Scalable containerized flavour with HA support for Proxy"
+      vnfm_info:
+        type: list
+        entry_schema:
+          type: string
+        default: ['etsivnfm:v3.3.1']
+    requirements:
+      - virtual_link_external:
+          capability: tosca.capabilities.nfv.VirtualLinkable
+          relationship: tosca.relationships.nfv.VirtualLinksTo
+
+topology_template:
+  inputs:
+    proxy_frontend_cpu_limit:
+      type: string
+      default: "2000m"
+    proxy_frontend_memory_limit:
+      type: string
+      default: "4Gi"
+    proxy_backend_cpu_limit:
+      type: string
+      default: "4000m"
+    proxy_backend_memory_limit:
+      type: string
+      default: "8Gi"
+
+  substitution_mappings:
+    node_type: tosca.nodes.nfv.Proxy_CNF
+    requirements:
+      virtual_link_external: [extCp_data, external_virtual_link]
+
+  node_templates:
+    # External Connection Point
+    extCp_mgmt:
+      type: tosca.nodes.nfv.VnfExtCp
+      properties:
+        layer_protocols: [ipv4]
+        description: Proxy Management interface
+      requirements:
+        - internal_virtual_link: intVL_mgmt
+
+    extCp_data:
+      type: tosca.nodes.nfv.VnfExtCp
+      properties:
+        layer_protocols: [ipv4]
+        description: Proxy Data plane interface
+      requirements:
+        - internal_virtual_link: intVL_data
+
+    # Internal Virtual Links
+    intVL_mgmt:
+      type: tosca.nodes.nfv.VnfVirtualLink
+      properties:
+        connectivity_type:
+          layer_protocols: [ipv4]
+        description: Proxy Management network
+        vl_profile:
+          max_bitrate_requirements:
+            root: 1000000
+            leaf: 100000
+          min_bitrate_requirements:
+            root: 100000
+            leaf: 10000
+
+    intVL_data:
+      type: tosca.nodes.nfv.VnfVirtualLink
+      properties:
+        connectivity_type:
+          layer_protocols: [ipv4]
+        description: Proxy Data plane network
+        vl_profile:
+          max_bitrate_requirements:
+            root: 10000000
+            leaf: 1000000
+          min_bitrate_requirements:
+            root: 1000000
+            leaf: 100000
+
+    # Proxy Frontend - Containerized (Load Balancer/Entry)
+    vdu_proxy_frontend:
+      type: tosca.nodes.nfv.Vdu.Compute
+      properties:
+        name: proxy-frontend
+        description: Proxy Frontend (Entry point/SSL Termination)
+        vdu_profile:
+          min_number_of_instances: 3
+          max_number_of_instances: 10
+      capabilities:
+        virtual_compute:
+          properties:
+            virtual_memory:
+              virtual_mem_size: 4 GB
+            virtual_cpu:
+              num_virtual_cpu: 2
+            requested_additional_capabilities:
+              properties:
+                requested_additional_capability_name: container_runtime
+                support_mandatory: true
+                target_performance_parameters:
+                  container_runtime: kubernetes
+      artifacts:
+        sw_image:
+          type: tosca.artifacts.nfv.SwImage
+          file: docker.io/mycompany/proxy-frontend:v1.0
+          properties:
+            name: proxy-frontend-img
+            version: '1.0'
+            container_format: docker
+            size: 500 MB
+            min_ram: 2 GB
+            operating_system: linux
+
+    # Proxy Backend - Containerized (Caching/Processing)
+    vdu_proxy_backend:
+      type: tosca.nodes.nfv.Vdu.Compute
+      properties:
+        name: proxy-backend
+        description: Proxy Backend (Caching and Content processing)
+        vdu_profile:
+          min_number_of_instances: 3
+          max_number_of_instances: 8
+      capabilities:
+        virtual_compute:
+          properties:
+            virtual_memory:
+              virtual_mem_size: 8 GB
+            virtual_cpu:
+              num_virtual_cpu: 4
+            virtual_local_storage:
+              - size_of_storage: 50 GB
+            requested_additional_capabilities:
+              properties:
+                requested_additional_capability_name: container_runtime
+                support_mandatory: true
+                target_performance_parameters:
+                  container_runtime: kubernetes
+      artifacts:
+        sw_image:
+          type: tosca.artifacts.nfv.SwImage
+          file: docker.io/mycompany/proxy-backend:v1.0
+          properties:
+            name: proxy-backend-img
+            version: '1.0'
+            container_format: docker
+            size: 800 MB
+            min_ram: 4 GB
+            operating_system: linux
+
+    # Connection Points for Frontend
+    cp_proxy_frontend_mgmt:
+      type: tosca.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ipv4]
+        order: 0
+        description: Proxy Frontend management interface
+      requirements:
+        - virtual_binding: vdu_proxy_frontend
+        - virtual_link: intVL_mgmt
+
+    cp_proxy_frontend_data:
+      type: tosca.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ipv4]
+        order: 1
+        description: Proxy Frontend data interface
+      requirements:
+        - virtual_binding: vdu_proxy_frontend
+        - virtual_link: intVL_data
+
+    # Connection Points for Backend
+    cp_proxy_backend_mgmt:
+      type: tosca.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ipv4]
+        order: 0
+        description: Proxy Backend management interface
+      requirements:
+        - virtual_binding: vdu_proxy_backend
+        - virtual_link: intVL_mgmt
+
+    cp_proxy_backend_data:
+      type: tosca.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ipv4]
+        order: 1
+        description: Proxy Backend data interface
+      requirements:
+        - virtual_binding: vdu_proxy_backend
+        - virtual_link: intVL_data
+
+  policies:
+    - scaling_aspects:
+        type: tosca.policies.nfv.ScalingAspects
+        properties:
+          aspects:
+            proxy_frontend_scaling:
+              name: proxy_frontend_scaling_aspect
+              description: Horizontal Pod Autoscaling for Proxy frontend
+              max_scale_level: 7
+              step_deltas:
+                - delta_1
+            proxy_backend_scaling:
+              name: proxy_backend_scaling_aspect
+              description: Horizontal Pod Autoscaling for Proxy backend
+              max_scale_level: 5
+              step_deltas:
+                - delta_1
+
+    - vdu_proxy_frontend_initial_delta:
+        type: tosca.policies.nfv.VduInitialDelta
+        properties:
+          initial_delta:
+            number_of_instances: 3
+        targets: [vdu_proxy_frontend]
+
+    - vdu_proxy_frontend_scaling_delta:
+        type: tosca.policies.nfv.VduScalingAspectDeltas
+        properties:
+          aspect: proxy_frontend_scaling
+          deltas:
+            delta_1:
+              number_of_instances: 1
+        targets: [vdu_proxy_frontend]
+
+    - vdu_proxy_backend_initial_delta:
+        type: tosca.policies.nfv.VduInitialDelta
+        properties:
+          initial_delta:
+            number_of_instances: 3
+        targets: [vdu_proxy_backend]
+
+    - vdu_proxy_backend_scaling_delta:
+        type: tosca.policies.nfv.VduScalingAspectDeltas
+        properties:
+          aspect: proxy_backend_scaling
+          deltas:
+            delta_1:
+              number_of_instances: 1
+        targets: [vdu_proxy_backend]
+
+    - instantiation_levels:
+        type: tosca.policies.nfv.InstantiationLevels
+        properties:
+          levels:
+            small:
+              description: Small instantiation level
+              scale_info:
+                proxy_frontend_scaling:
+                  scale_level: 0
+                proxy_backend_scaling:
+                  scale_level: 0
+            medium:
+              description: Medium instantiation level
+              scale_info:
+                proxy_frontend_scaling:
+                  scale_level: 3
+                proxy_backend_scaling:
+                  scale_level: 2
+            large:
+              description: Large instantiation level
+              scale_info:
+                proxy_frontend_scaling:
+                  scale_level: 7
+                proxy_backend_scaling:
+                  scale_level: 5
+          default_level: small
+
+    - vdu_proxy_frontend_instantiation_levels:
+        type: tosca.policies.nfv.VduInstantiationLevels
+        properties:
+          levels:
+            small:
+              number_of_instances: 3
+            medium:
+              number_of_instances: 6
+            large:
+              number_of_instances: 10
+        targets: [vdu_proxy_frontend]
+
+    - vdu_proxy_backend_instantiation_levels:
+        type: tosca.policies.nfv.VduInstantiationLevels
+        properties:
+          levels:
+            small:
+              number_of_instances: 3
+            medium:
+              number_of_instances: 5
+            large:
+              number_of_instances: 8
+        targets: [vdu_proxy_backend]
+
+    - proxy_frontend_anti_affinity:
+        type: tosca.policies.nfv.AntiAffinityRule
+        properties:
+          scope: nfvi_node
+        targets: [vdu_proxy_frontend]
+
+    - proxy_backend_anti_affinity:
+        type: tosca.policies.nfv.AntiAffinityRule
+        properties:
+          scope: nfvi_node
+        targets: [vdu_proxy_backend]

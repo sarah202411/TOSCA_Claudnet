@@ -1,0 +1,296 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: IDS VM-based scalable et tolérant aux pannes avec 2 composants (Detection & Analysis)
+
+imports:
+  - etsi_nfv_sol001_vnfd_types.yaml
+
+node_types:
+  tosca.nodes.nfv.IDS_VNF:
+    derived_from: tosca.nodes.nfv.VNF
+    properties:
+      descriptor_id:
+        type: string
+        default: ids-vnfd-1.0
+      provider:
+        type: string
+        default: MyCompany
+      product_name:
+        type: string
+        default: IDS_VM
+      software_version:
+        type: string
+        default: '1.0'
+      descriptor_version:
+        type: string
+        default: '1.0'
+      flavour_id:
+        type: string
+        default: scalable_ha
+      flavour_description:
+        type: string
+        default: "Scalable flavour with HA support for IDS"
+      vnfm_info:
+        type: list
+        entry_schema:
+          type: string
+        default: ['etsivnfm:v3.3.1']
+    requirements:
+      - virtual_link_external:
+          capability: tosca.capabilities.nfv.VirtualLinkable
+          relationship: tosca.relationships.nfv.VirtualLinksTo
+
+topology_template:
+  inputs:
+    ids_detection_flavour:
+      type: string
+      default: m1.medium
+    ids_analysis_flavour:
+      type: string
+      default: m1.small
+
+  substitution_mappings:
+    node_type: tosca.nodes.nfv.IDS_VNF
+    requirements:
+      virtual_link_external: [extCp_mgmt, internal_virtual_link]
+
+  node_templates:
+    # External Connection Point (Management)
+    extCp_mgmt:
+      type: tosca.nodes.nfv.VnfExtCp
+      properties:
+        layer_protocols: [ipv4]
+        description: IDS Management interface
+
+    # Internal Virtual Links
+    intVL_mgmt:
+      type: tosca.nodes.nfv.VnfVirtualLink
+      properties:
+        connectivity_type:
+          layer_protocols: [ipv4]
+        description: IDS Management network
+        vl_profile:
+          max_bitrate_requirements:
+            root: 1000000
+            leaf: 100000
+          min_bitrate_requirements:
+            root: 100000
+            leaf: 10000
+
+    intVL_data:
+      type: tosca.nodes.nfv.VnfVirtualLink
+      properties:
+        connectivity_type:
+          layer_protocols: [ipv4]
+        description: IDS Traffic Mirroring network
+        vl_profile:
+          max_bitrate_requirements:
+            root: 10000000
+            leaf: 1000000
+          min_bitrate_requirements:
+            root: 1000000
+            leaf: 100000
+
+    # Component A - VDU (IDS Detection Engine)
+    vdu_ids_detection:
+      type: tosca.nodes.nfv.Vdu.Compute
+      properties:
+        name: ids-detection
+        description: IDS Real-time Detection Engine
+        vdu_profile:
+          min_number_of_instances: 2
+          max_number_of_instances: 5
+      capabilities:
+        virtual_compute:
+          properties:
+            virtual_memory:
+              virtual_mem_size: 4 GB
+            virtual_cpu:
+              num_virtual_cpu: 2
+            virtual_local_storage:
+              - size_of_storage: 40 GB
+      artifacts:
+        sw_image:
+          type: tosca.artifacts.nfv.SwImage
+          file: ids-detection-image.qcow2
+          properties:
+            name: ids-detection-os
+            version: '1.0'
+            checksum:
+              algorithm: sha-256
+              hash: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+            container_format: bare
+            disk_format: qcow2
+            min_disk: 10 GB
+            size: 2 GB
+
+    # Component B - VDU (IDS Log Analysis)
+    vdu_ids_analysis:
+      type: tosca.nodes.nfv.Vdu.Compute
+      properties:
+        name: ids-analysis
+        description: IDS Log Correlation and Analysis Unit
+        vdu_profile:
+          min_number_of_instances: 2
+          max_number_of_instances: 4
+      capabilities:
+        virtual_compute:
+          properties:
+            virtual_memory:
+              virtual_mem_size: 8 GB
+            virtual_cpu:
+              num_virtual_cpu: 4
+            virtual_local_storage:
+              - size_of_storage: 100 GB
+      artifacts:
+        sw_image:
+          type: tosca.artifacts.nfv.SwImage
+          file: ids-analysis-image.qcow2
+          properties:
+            name: ids-analysis-os
+            version: '1.0'
+            checksum:
+              algorithm: sha-256
+              hash: abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+            container_format: bare
+            disk_format: qcow2
+            min_disk: 20 GB
+            size: 3 GB
+
+    # Connection Points for Detection Component
+    cp_ids_detection_mgmt:
+      type: tosca.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ipv4]
+        order: 0
+      requirements:
+        - virtual_binding: vdu_ids_detection
+        - virtual_link: intVL_mgmt
+
+    cp_ids_detection_data:
+      type: tosca.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ipv4]
+        order: 1
+      requirements:
+        - virtual_binding: vdu_ids_detection
+        - virtual_link: intVL_data
+
+    # Connection Points for Analysis Component
+    cp_ids_analysis_mgmt:
+      type: tosca.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ipv4]
+        order: 0
+      requirements:
+        - virtual_binding: vdu_ids_analysis
+        - virtual_link: intVL_mgmt
+
+    cp_ids_analysis_data:
+      type: tosca.nodes.nfv.VduCp
+      properties:
+        layer_protocols: [ipv4]
+        order: 1
+      requirements:
+        - virtual_binding: vdu_ids_analysis
+        - virtual_link: intVL_data
+
+  policies:
+    - scaling_aspects:
+        type: tosca.policies.nfv.ScalingAspects
+        properties:
+          aspects:
+            ids_detection_scaling:
+              name: ids_detection_scaling_aspect
+              description: Scaling for detection engine
+              max_scale_level: 3
+              step_deltas:
+                - delta_1
+            ids_analysis_scaling:
+              name: ids_analysis_scaling_aspect
+              description: Scaling for analysis unit
+              max_scale_level: 2
+              step_deltas:
+                - delta_1
+
+    - vdu_ids_detection_initial_delta:
+        type: tosca.policies.nfv.VduInitialDelta
+        properties:
+          initial_delta:
+            number_of_instances: 2
+        targets: [vdu_ids_detection]
+
+    - vdu_ids_detection_scaling_delta:
+        type: tosca.policies.nfv.VduScalingAspectDeltas
+        properties:
+          aspect: ids_detection_scaling
+          deltas:
+            delta_1:
+              number_of_instances: 1
+        targets: [vdu_ids_detection]
+
+    - vdu_ids_analysis_initial_delta:
+        type: tosca.policies.nfv.VduInitialDelta
+        properties:
+          initial_delta:
+            number_of_instances: 2
+        targets: [vdu_ids_analysis]
+
+    - vdu_ids_analysis_scaling_delta:
+        type: tosca.policies.nfv.VduScalingAspectDeltas
+        properties:
+          aspect: ids_analysis_scaling
+          deltas:
+            delta_1:
+              number_of_instances: 1
+        targets: [vdu_ids_analysis]
+
+    - instantiation_levels:
+        type: tosca.policies.nfv.InstantiationLevels
+        properties:
+          levels:
+            default:
+              description: Default instantiation level
+              scale_info:
+                ids_detection_scaling:
+                  scale_level: 0
+                ids_analysis_scaling:
+                  scale_level: 0
+            medium:
+              description: Medium instantiation level
+              scale_info:
+                ids_detection_scaling:
+                  scale_level: 1
+                ids_analysis_scaling:
+                  scale_level: 1
+            large:
+              description: Large instantiation level
+              scale_info:
+                ids_detection_scaling:
+                  scale_level: 3
+                ids_analysis_scaling:
+                  scale_level: 2
+          default_level: default
+
+    - vdu_ids_detection_instantiation_levels:
+        type: tosca.policies.nfv.VduInstantiationLevels
+        properties:
+          levels:
+            default:
+              number_of_instances: 2
+            medium:
+              number_of_instances: 3
+            large:
+              number_of_instances: 5
+        targets: [vdu_ids_detection]
+
+    - vdu_ids_analysis_instantiation_levels:
+        type: tosca.policies.nfv.VduInstantiationLevels
+        properties:
+          levels:
+            default:
+              number_of_instances: 2
+            medium:
+              number_of_instances: 3
+            large:
+              number_of_instances: 4
+        targets: [vdu_ids_analysis]

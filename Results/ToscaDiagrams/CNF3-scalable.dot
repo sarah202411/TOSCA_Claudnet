@@ -1,0 +1,102 @@
+graph ToscaDiagram {
+  rankdir="LR"
+  subgraph clusterSubstitutionMappings {
+    label="tosca.nodes.nfv.Proxy_CNF"
+    subgraph clusterextCp_mgmt {
+      color=white
+      label=""
+      extCp_mgmt[label="extCp_mgmt: VnfExtCp|\l\l\l\l" shape=record style=rounded]
+      extCp_mgmt_requirement_internal_virtual_link[label="internal_virtual_link" shape=cds style=filled fillcolor=turquoise]
+      extCp_mgmt -- extCp_mgmt_requirement_internal_virtual_link
+    }
+    subgraph clusterextCp_data {
+      color=white
+      label=""
+      extCp_data[label="extCp_data: VnfExtCp|\l\l\l\l" shape=record style=rounded]
+      extCp_data_requirement_external_virtual_link[label="external_virtual_link" shape=cds style=filled fillcolor=turquoise]
+      extCp_data -- extCp_data_requirement_external_virtual_link
+      extCp_data_requirement_internal_virtual_link[label="internal_virtual_link" shape=cds style=filled fillcolor=turquoise]
+      extCp_data -- extCp_data_requirement_internal_virtual_link
+    }
+    subgraph clusterintVL_mgmt {
+      color=white
+      label=""
+      intVL_mgmt[label="intVL_mgmt: VnfVirtualLink|\l\l\l\l" shape=record style=rounded]
+      intVL_mgmt_capability_virtual_linkable[label="virtual_linkable" shape=cds style=filled fillcolor=orange]
+      intVL_mgmt_capability_virtual_linkable -- intVL_mgmt
+    }
+    subgraph clusterintVL_data {
+      color=white
+      label=""
+      intVL_data[label="intVL_data: VnfVirtualLink|\l\l\l\l" shape=record style=rounded]
+      intVL_data_capability_virtual_linkable[label="virtual_linkable" shape=cds style=filled fillcolor=orange]
+      intVL_data_capability_virtual_linkable -- intVL_data
+    }
+    subgraph clustervdu_proxy_frontend {
+      color=white
+      label=""
+      vdu_proxy_frontend[label="vdu_proxy_frontend: Compute|\l\l\l\l" shape=record style=rounded]
+      vdu_proxy_frontend_capability_virtual_compute[label="virtual_compute" shape=cds style=filled fillcolor=orange]
+      vdu_proxy_frontend_capability_virtual_compute -- vdu_proxy_frontend
+      vdu_proxy_frontend_capability_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=orange]
+      vdu_proxy_frontend_capability_virtual_binding -- vdu_proxy_frontend
+    }
+    subgraph clustervdu_proxy_backend {
+      color=white
+      label=""
+      vdu_proxy_backend[label="vdu_proxy_backend: Compute|\l\l\l\l" shape=record style=rounded]
+      vdu_proxy_backend_capability_virtual_compute[label="virtual_compute" shape=cds style=filled fillcolor=orange]
+      vdu_proxy_backend_capability_virtual_compute -- vdu_proxy_backend
+      vdu_proxy_backend_capability_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=orange]
+      vdu_proxy_backend_capability_virtual_binding -- vdu_proxy_backend
+    }
+    subgraph clustercp_proxy_frontend_mgmt {
+      color=white
+      label=""
+      cp_proxy_frontend_mgmt[label="cp_proxy_frontend_mgmt: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_proxy_frontend_mgmt_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_proxy_frontend_mgmt -- cp_proxy_frontend_mgmt_requirement_virtual_link
+      cp_proxy_frontend_mgmt_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_proxy_frontend_mgmt -- cp_proxy_frontend_mgmt_requirement_virtual_binding
+    }
+    subgraph clustercp_proxy_frontend_data {
+      color=white
+      label=""
+      cp_proxy_frontend_data[label="cp_proxy_frontend_data: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_proxy_frontend_data_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_proxy_frontend_data -- cp_proxy_frontend_data_requirement_virtual_link
+      cp_proxy_frontend_data_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_proxy_frontend_data -- cp_proxy_frontend_data_requirement_virtual_binding
+    }
+    subgraph clustercp_proxy_backend_mgmt {
+      color=white
+      label=""
+      cp_proxy_backend_mgmt[label="cp_proxy_backend_mgmt: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_proxy_backend_mgmt_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_proxy_backend_mgmt -- cp_proxy_backend_mgmt_requirement_virtual_link
+      cp_proxy_backend_mgmt_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_proxy_backend_mgmt -- cp_proxy_backend_mgmt_requirement_virtual_binding
+    }
+    subgraph clustercp_proxy_backend_data {
+      color=white
+      label=""
+      cp_proxy_backend_data[label="cp_proxy_backend_data: VduCp|\l\l\l\l" shape=record style=rounded]
+      cp_proxy_backend_data_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
+      cp_proxy_backend_data -- cp_proxy_backend_data_requirement_virtual_link
+      cp_proxy_backend_data_requirement_virtual_binding[label="virtual_binding" shape=cds style=filled fillcolor=turquoise]
+      cp_proxy_backend_data -- cp_proxy_backend_data_requirement_virtual_binding
+    }
+    extCp_mgmt_requirement_internal_virtual_link -- intVL_mgmt_capability_virtual_linkable[style=dotted]
+    extCp_data_requirement_internal_virtual_link -- intVL_data_capability_virtual_linkable[style=dotted]
+    cp_proxy_frontend_mgmt_requirement_virtual_binding -- vdu_proxy_frontend_capability_virtual_binding[style=dotted]
+    cp_proxy_frontend_mgmt_requirement_virtual_link -- intVL_mgmt_capability_virtual_linkable[style=dotted]
+    cp_proxy_frontend_data_requirement_virtual_binding -- vdu_proxy_frontend_capability_virtual_binding[style=dotted]
+    cp_proxy_frontend_data_requirement_virtual_link -- intVL_data_capability_virtual_linkable[style=dotted]
+    cp_proxy_backend_mgmt_requirement_virtual_binding -- vdu_proxy_backend_capability_virtual_binding[style=dotted]
+    cp_proxy_backend_mgmt_requirement_virtual_link -- intVL_mgmt_capability_virtual_linkable[style=dotted]
+    cp_proxy_backend_data_requirement_virtual_binding -- vdu_proxy_backend_capability_virtual_binding[style=dotted]
+    cp_proxy_backend_data_requirement_virtual_link -- intVL_data_capability_virtual_linkable[style=dotted]
+  }
+  topology_template_substitution_mappings_requirement_virtual_link_external[label="virtual_link_external" shape=cds style=filled fillcolor=turquoise]
+  extCp_data_requirement_external_virtual_link -- topology_template_substitution_mappings_requirement_virtual_link_external[style=dotted]
+}

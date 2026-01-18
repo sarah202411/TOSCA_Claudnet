@@ -1,0 +1,300 @@
+@startuml
+hide empty description
+skinparam shadowing false
+skinparam state {
+  ArrowColor blue
+  BorderColor blue
+  EndColor black
+  StartColor green
+  BackGroundColor<< step >> white
+  BorderColor<< step >> black
+  BackGroundColor<< delegate >> lightgrey
+  BackGroundColor<< set_state >> white
+  BackGroundColor<< call_operation >> lightblue
+  BackGroundColor<< inline >> white
+}
+skinparam ActivityBarColor<<fork>> DarkGreen
+skinparam ActivityBarColor<<join>> DarkOrange
+
+state "create_extCp_mgmt" as step_declarative_deploy_create_extCp_mgmt << step >> {
+  state "extCp_mgmt creating" as step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_creating << set_state >>
+  state "extCp_mgmt Standard.create" as step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_Standard.create << call_operation >>
+  state "extCp_mgmt created" as step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_created << set_state >>
+  step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_creating --> step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_Standard.create
+  step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_Standard.create --> step_declarative_deploy_create_extCp_mgmt_extCp_mgmt_created
+}
+state "pre_configure_extCp_mgmt" as step_declarative_deploy_pre_configure_extCp_mgmt << step >> {
+  state "extCp_mgmt configuring" as step_declarative_deploy_pre_configure_extCp_mgmt_extCp_mgmt_configuring << set_state >>
+}
+state "configure_extCp_mgmt" as step_declarative_deploy_configure_extCp_mgmt << step >> {
+  state "extCp_mgmt Standard.configure" as step_declarative_deploy_configure_extCp_mgmt_extCp_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_extCp_mgmt" as step_declarative_deploy_post_configure_extCp_mgmt << step >> {
+  state "extCp_mgmt configured" as step_declarative_deploy_post_configure_extCp_mgmt_extCp_mgmt_configured << set_state >>
+}
+state "start_extCp_mgmt" as step_declarative_deploy_start_extCp_mgmt << step >> {
+  state "extCp_mgmt starting" as step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_starting << set_state >>
+  state "extCp_mgmt Standard.start" as step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_Standard.start << call_operation >>
+  state "extCp_mgmt started" as step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_started << set_state >>
+  step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_starting --> step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_Standard.start
+  step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_Standard.start --> step_declarative_deploy_start_extCp_mgmt_extCp_mgmt_started
+}
+state "create_intVL_mgmt" as step_declarative_deploy_create_intVL_mgmt << step >> {
+  state "intVL_mgmt creating" as step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_creating << set_state >>
+  state "intVL_mgmt Standard.create" as step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_Standard.create << call_operation >>
+  state "intVL_mgmt created" as step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_created << set_state >>
+  step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_creating --> step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_Standard.create
+  step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_Standard.create --> step_declarative_deploy_create_intVL_mgmt_intVL_mgmt_created
+}
+state "pre_configure_intVL_mgmt" as step_declarative_deploy_pre_configure_intVL_mgmt << step >> {
+  state "intVL_mgmt configuring" as step_declarative_deploy_pre_configure_intVL_mgmt_intVL_mgmt_configuring << set_state >>
+}
+state "configure_intVL_mgmt" as step_declarative_deploy_configure_intVL_mgmt << step >> {
+  state "intVL_mgmt Standard.configure" as step_declarative_deploy_configure_intVL_mgmt_intVL_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_intVL_mgmt" as step_declarative_deploy_post_configure_intVL_mgmt << step >> {
+  state "intVL_mgmt configured" as step_declarative_deploy_post_configure_intVL_mgmt_intVL_mgmt_configured << set_state >>
+}
+state "start_intVL_mgmt" as step_declarative_deploy_start_intVL_mgmt << step >> {
+  state "intVL_mgmt starting" as step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_starting << set_state >>
+  state "intVL_mgmt Standard.start" as step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_Standard.start << call_operation >>
+  state "intVL_mgmt started" as step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_started << set_state >>
+  step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_starting --> step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_Standard.start
+  step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_Standard.start --> step_declarative_deploy_start_intVL_mgmt_intVL_mgmt_started
+}
+state "create_intVL_data" as step_declarative_deploy_create_intVL_data << step >> {
+  state "intVL_data creating" as step_declarative_deploy_create_intVL_data_intVL_data_creating << set_state >>
+  state "intVL_data Standard.create" as step_declarative_deploy_create_intVL_data_intVL_data_Standard.create << call_operation >>
+  state "intVL_data created" as step_declarative_deploy_create_intVL_data_intVL_data_created << set_state >>
+  step_declarative_deploy_create_intVL_data_intVL_data_creating --> step_declarative_deploy_create_intVL_data_intVL_data_Standard.create
+  step_declarative_deploy_create_intVL_data_intVL_data_Standard.create --> step_declarative_deploy_create_intVL_data_intVL_data_created
+}
+state "pre_configure_intVL_data" as step_declarative_deploy_pre_configure_intVL_data << step >> {
+  state "intVL_data configuring" as step_declarative_deploy_pre_configure_intVL_data_intVL_data_configuring << set_state >>
+}
+state "configure_intVL_data" as step_declarative_deploy_configure_intVL_data << step >> {
+  state "intVL_data Standard.configure" as step_declarative_deploy_configure_intVL_data_intVL_data_Standard.configure << call_operation >>
+}
+state "post_configure_intVL_data" as step_declarative_deploy_post_configure_intVL_data << step >> {
+  state "intVL_data configured" as step_declarative_deploy_post_configure_intVL_data_intVL_data_configured << set_state >>
+}
+state "start_intVL_data" as step_declarative_deploy_start_intVL_data << step >> {
+  state "intVL_data starting" as step_declarative_deploy_start_intVL_data_intVL_data_starting << set_state >>
+  state "intVL_data Standard.start" as step_declarative_deploy_start_intVL_data_intVL_data_Standard.start << call_operation >>
+  state "intVL_data started" as step_declarative_deploy_start_intVL_data_intVL_data_started << set_state >>
+  step_declarative_deploy_start_intVL_data_intVL_data_starting --> step_declarative_deploy_start_intVL_data_intVL_data_Standard.start
+  step_declarative_deploy_start_intVL_data_intVL_data_Standard.start --> step_declarative_deploy_start_intVL_data_intVL_data_started
+}
+state "create_vdu_firewall_main" as step_declarative_deploy_create_vdu_firewall_main << step >> {
+  state "vdu_firewall_main creating" as step_declarative_deploy_create_vdu_firewall_main_vdu_firewall_main_creating << set_state >>
+  state "vdu_firewall_main Standard.create" as step_declarative_deploy_create_vdu_firewall_main_vdu_firewall_main_Standard.create << call_operation >>
+  state "vdu_firewall_main created" as step_declarative_deploy_create_vdu_firewall_main_vdu_firewall_main_created << set_state >>
+  step_declarative_deploy_create_vdu_firewall_main_vdu_firewall_main_creating --> step_declarative_deploy_create_vdu_firewall_main_vdu_firewall_main_Standard.create
+  step_declarative_deploy_create_vdu_firewall_main_vdu_firewall_main_Standard.create --> step_declarative_deploy_create_vdu_firewall_main_vdu_firewall_main_created
+}
+state "pre_configure_vdu_firewall_main" as step_declarative_deploy_pre_configure_vdu_firewall_main << step >> {
+  state "vdu_firewall_main configuring" as step_declarative_deploy_pre_configure_vdu_firewall_main_vdu_firewall_main_configuring << set_state >>
+}
+state "configure_vdu_firewall_main" as step_declarative_deploy_configure_vdu_firewall_main << step >> {
+  state "vdu_firewall_main Standard.configure" as step_declarative_deploy_configure_vdu_firewall_main_vdu_firewall_main_Standard.configure << call_operation >>
+}
+state "post_configure_vdu_firewall_main" as step_declarative_deploy_post_configure_vdu_firewall_main << step >> {
+  state "vdu_firewall_main configured" as step_declarative_deploy_post_configure_vdu_firewall_main_vdu_firewall_main_configured << set_state >>
+}
+state "start_vdu_firewall_main" as step_declarative_deploy_start_vdu_firewall_main << step >> {
+  state "vdu_firewall_main starting" as step_declarative_deploy_start_vdu_firewall_main_vdu_firewall_main_starting << set_state >>
+  state "vdu_firewall_main Standard.start" as step_declarative_deploy_start_vdu_firewall_main_vdu_firewall_main_Standard.start << call_operation >>
+  state "vdu_firewall_main started" as step_declarative_deploy_start_vdu_firewall_main_vdu_firewall_main_started << set_state >>
+  step_declarative_deploy_start_vdu_firewall_main_vdu_firewall_main_starting --> step_declarative_deploy_start_vdu_firewall_main_vdu_firewall_main_Standard.start
+  step_declarative_deploy_start_vdu_firewall_main_vdu_firewall_main_Standard.start --> step_declarative_deploy_start_vdu_firewall_main_vdu_firewall_main_started
+}
+state "create_vdu_firewall_mgmt" as step_declarative_deploy_create_vdu_firewall_mgmt << step >> {
+  state "vdu_firewall_mgmt creating" as step_declarative_deploy_create_vdu_firewall_mgmt_vdu_firewall_mgmt_creating << set_state >>
+  state "vdu_firewall_mgmt Standard.create" as step_declarative_deploy_create_vdu_firewall_mgmt_vdu_firewall_mgmt_Standard.create << call_operation >>
+  state "vdu_firewall_mgmt created" as step_declarative_deploy_create_vdu_firewall_mgmt_vdu_firewall_mgmt_created << set_state >>
+  step_declarative_deploy_create_vdu_firewall_mgmt_vdu_firewall_mgmt_creating --> step_declarative_deploy_create_vdu_firewall_mgmt_vdu_firewall_mgmt_Standard.create
+  step_declarative_deploy_create_vdu_firewall_mgmt_vdu_firewall_mgmt_Standard.create --> step_declarative_deploy_create_vdu_firewall_mgmt_vdu_firewall_mgmt_created
+}
+state "pre_configure_vdu_firewall_mgmt" as step_declarative_deploy_pre_configure_vdu_firewall_mgmt << step >> {
+  state "vdu_firewall_mgmt configuring" as step_declarative_deploy_pre_configure_vdu_firewall_mgmt_vdu_firewall_mgmt_configuring << set_state >>
+}
+state "configure_vdu_firewall_mgmt" as step_declarative_deploy_configure_vdu_firewall_mgmt << step >> {
+  state "vdu_firewall_mgmt Standard.configure" as step_declarative_deploy_configure_vdu_firewall_mgmt_vdu_firewall_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_vdu_firewall_mgmt" as step_declarative_deploy_post_configure_vdu_firewall_mgmt << step >> {
+  state "vdu_firewall_mgmt configured" as step_declarative_deploy_post_configure_vdu_firewall_mgmt_vdu_firewall_mgmt_configured << set_state >>
+}
+state "start_vdu_firewall_mgmt" as step_declarative_deploy_start_vdu_firewall_mgmt << step >> {
+  state "vdu_firewall_mgmt starting" as step_declarative_deploy_start_vdu_firewall_mgmt_vdu_firewall_mgmt_starting << set_state >>
+  state "vdu_firewall_mgmt Standard.start" as step_declarative_deploy_start_vdu_firewall_mgmt_vdu_firewall_mgmt_Standard.start << call_operation >>
+  state "vdu_firewall_mgmt started" as step_declarative_deploy_start_vdu_firewall_mgmt_vdu_firewall_mgmt_started << set_state >>
+  step_declarative_deploy_start_vdu_firewall_mgmt_vdu_firewall_mgmt_starting --> step_declarative_deploy_start_vdu_firewall_mgmt_vdu_firewall_mgmt_Standard.start
+  step_declarative_deploy_start_vdu_firewall_mgmt_vdu_firewall_mgmt_Standard.start --> step_declarative_deploy_start_vdu_firewall_mgmt_vdu_firewall_mgmt_started
+}
+state "create_cp_firewall_main_mgmt" as step_declarative_deploy_create_cp_firewall_main_mgmt << step >> {
+  state "cp_firewall_main_mgmt creating" as step_declarative_deploy_create_cp_firewall_main_mgmt_cp_firewall_main_mgmt_creating << set_state >>
+  state "cp_firewall_main_mgmt Standard.create" as step_declarative_deploy_create_cp_firewall_main_mgmt_cp_firewall_main_mgmt_Standard.create << call_operation >>
+  state "cp_firewall_main_mgmt created" as step_declarative_deploy_create_cp_firewall_main_mgmt_cp_firewall_main_mgmt_created << set_state >>
+  step_declarative_deploy_create_cp_firewall_main_mgmt_cp_firewall_main_mgmt_creating --> step_declarative_deploy_create_cp_firewall_main_mgmt_cp_firewall_main_mgmt_Standard.create
+  step_declarative_deploy_create_cp_firewall_main_mgmt_cp_firewall_main_mgmt_Standard.create --> step_declarative_deploy_create_cp_firewall_main_mgmt_cp_firewall_main_mgmt_created
+}
+state "pre_configure_cp_firewall_main_mgmt" as step_declarative_deploy_pre_configure_cp_firewall_main_mgmt << step >> {
+  state "cp_firewall_main_mgmt configuring" as step_declarative_deploy_pre_configure_cp_firewall_main_mgmt_cp_firewall_main_mgmt_configuring << set_state >>
+}
+state "configure_cp_firewall_main_mgmt" as step_declarative_deploy_configure_cp_firewall_main_mgmt << step >> {
+  state "cp_firewall_main_mgmt Standard.configure" as step_declarative_deploy_configure_cp_firewall_main_mgmt_cp_firewall_main_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_cp_firewall_main_mgmt" as step_declarative_deploy_post_configure_cp_firewall_main_mgmt << step >> {
+  state "cp_firewall_main_mgmt configured" as step_declarative_deploy_post_configure_cp_firewall_main_mgmt_cp_firewall_main_mgmt_configured << set_state >>
+}
+state "start_cp_firewall_main_mgmt" as step_declarative_deploy_start_cp_firewall_main_mgmt << step >> {
+  state "cp_firewall_main_mgmt starting" as step_declarative_deploy_start_cp_firewall_main_mgmt_cp_firewall_main_mgmt_starting << set_state >>
+  state "cp_firewall_main_mgmt Standard.start" as step_declarative_deploy_start_cp_firewall_main_mgmt_cp_firewall_main_mgmt_Standard.start << call_operation >>
+  state "cp_firewall_main_mgmt started" as step_declarative_deploy_start_cp_firewall_main_mgmt_cp_firewall_main_mgmt_started << set_state >>
+  step_declarative_deploy_start_cp_firewall_main_mgmt_cp_firewall_main_mgmt_starting --> step_declarative_deploy_start_cp_firewall_main_mgmt_cp_firewall_main_mgmt_Standard.start
+  step_declarative_deploy_start_cp_firewall_main_mgmt_cp_firewall_main_mgmt_Standard.start --> step_declarative_deploy_start_cp_firewall_main_mgmt_cp_firewall_main_mgmt_started
+}
+state "create_cp_firewall_main_data" as step_declarative_deploy_create_cp_firewall_main_data << step >> {
+  state "cp_firewall_main_data creating" as step_declarative_deploy_create_cp_firewall_main_data_cp_firewall_main_data_creating << set_state >>
+  state "cp_firewall_main_data Standard.create" as step_declarative_deploy_create_cp_firewall_main_data_cp_firewall_main_data_Standard.create << call_operation >>
+  state "cp_firewall_main_data created" as step_declarative_deploy_create_cp_firewall_main_data_cp_firewall_main_data_created << set_state >>
+  step_declarative_deploy_create_cp_firewall_main_data_cp_firewall_main_data_creating --> step_declarative_deploy_create_cp_firewall_main_data_cp_firewall_main_data_Standard.create
+  step_declarative_deploy_create_cp_firewall_main_data_cp_firewall_main_data_Standard.create --> step_declarative_deploy_create_cp_firewall_main_data_cp_firewall_main_data_created
+}
+state "pre_configure_cp_firewall_main_data" as step_declarative_deploy_pre_configure_cp_firewall_main_data << step >> {
+  state "cp_firewall_main_data configuring" as step_declarative_deploy_pre_configure_cp_firewall_main_data_cp_firewall_main_data_configuring << set_state >>
+}
+state "configure_cp_firewall_main_data" as step_declarative_deploy_configure_cp_firewall_main_data << step >> {
+  state "cp_firewall_main_data Standard.configure" as step_declarative_deploy_configure_cp_firewall_main_data_cp_firewall_main_data_Standard.configure << call_operation >>
+}
+state "post_configure_cp_firewall_main_data" as step_declarative_deploy_post_configure_cp_firewall_main_data << step >> {
+  state "cp_firewall_main_data configured" as step_declarative_deploy_post_configure_cp_firewall_main_data_cp_firewall_main_data_configured << set_state >>
+}
+state "start_cp_firewall_main_data" as step_declarative_deploy_start_cp_firewall_main_data << step >> {
+  state "cp_firewall_main_data starting" as step_declarative_deploy_start_cp_firewall_main_data_cp_firewall_main_data_starting << set_state >>
+  state "cp_firewall_main_data Standard.start" as step_declarative_deploy_start_cp_firewall_main_data_cp_firewall_main_data_Standard.start << call_operation >>
+  state "cp_firewall_main_data started" as step_declarative_deploy_start_cp_firewall_main_data_cp_firewall_main_data_started << set_state >>
+  step_declarative_deploy_start_cp_firewall_main_data_cp_firewall_main_data_starting --> step_declarative_deploy_start_cp_firewall_main_data_cp_firewall_main_data_Standard.start
+  step_declarative_deploy_start_cp_firewall_main_data_cp_firewall_main_data_Standard.start --> step_declarative_deploy_start_cp_firewall_main_data_cp_firewall_main_data_started
+}
+state "create_cp_firewall_mgmt_mgmt" as step_declarative_deploy_create_cp_firewall_mgmt_mgmt << step >> {
+  state "cp_firewall_mgmt_mgmt creating" as step_declarative_deploy_create_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_creating << set_state >>
+  state "cp_firewall_mgmt_mgmt Standard.create" as step_declarative_deploy_create_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_Standard.create << call_operation >>
+  state "cp_firewall_mgmt_mgmt created" as step_declarative_deploy_create_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_created << set_state >>
+  step_declarative_deploy_create_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_creating --> step_declarative_deploy_create_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_Standard.create
+  step_declarative_deploy_create_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_Standard.create --> step_declarative_deploy_create_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_created
+}
+state "pre_configure_cp_firewall_mgmt_mgmt" as step_declarative_deploy_pre_configure_cp_firewall_mgmt_mgmt << step >> {
+  state "cp_firewall_mgmt_mgmt configuring" as step_declarative_deploy_pre_configure_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_configuring << set_state >>
+}
+state "configure_cp_firewall_mgmt_mgmt" as step_declarative_deploy_configure_cp_firewall_mgmt_mgmt << step >> {
+  state "cp_firewall_mgmt_mgmt Standard.configure" as step_declarative_deploy_configure_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_cp_firewall_mgmt_mgmt" as step_declarative_deploy_post_configure_cp_firewall_mgmt_mgmt << step >> {
+  state "cp_firewall_mgmt_mgmt configured" as step_declarative_deploy_post_configure_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_configured << set_state >>
+}
+state "start_cp_firewall_mgmt_mgmt" as step_declarative_deploy_start_cp_firewall_mgmt_mgmt << step >> {
+  state "cp_firewall_mgmt_mgmt starting" as step_declarative_deploy_start_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_starting << set_state >>
+  state "cp_firewall_mgmt_mgmt Standard.start" as step_declarative_deploy_start_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_Standard.start << call_operation >>
+  state "cp_firewall_mgmt_mgmt started" as step_declarative_deploy_start_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_started << set_state >>
+  step_declarative_deploy_start_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_starting --> step_declarative_deploy_start_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_Standard.start
+  step_declarative_deploy_start_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_Standard.start --> step_declarative_deploy_start_cp_firewall_mgmt_mgmt_cp_firewall_mgmt_mgmt_started
+}
+state "create_cp_firewall_mgmt_data" as step_declarative_deploy_create_cp_firewall_mgmt_data << step >> {
+  state "cp_firewall_mgmt_data creating" as step_declarative_deploy_create_cp_firewall_mgmt_data_cp_firewall_mgmt_data_creating << set_state >>
+  state "cp_firewall_mgmt_data Standard.create" as step_declarative_deploy_create_cp_firewall_mgmt_data_cp_firewall_mgmt_data_Standard.create << call_operation >>
+  state "cp_firewall_mgmt_data created" as step_declarative_deploy_create_cp_firewall_mgmt_data_cp_firewall_mgmt_data_created << set_state >>
+  step_declarative_deploy_create_cp_firewall_mgmt_data_cp_firewall_mgmt_data_creating --> step_declarative_deploy_create_cp_firewall_mgmt_data_cp_firewall_mgmt_data_Standard.create
+  step_declarative_deploy_create_cp_firewall_mgmt_data_cp_firewall_mgmt_data_Standard.create --> step_declarative_deploy_create_cp_firewall_mgmt_data_cp_firewall_mgmt_data_created
+}
+state "pre_configure_cp_firewall_mgmt_data" as step_declarative_deploy_pre_configure_cp_firewall_mgmt_data << step >> {
+  state "cp_firewall_mgmt_data configuring" as step_declarative_deploy_pre_configure_cp_firewall_mgmt_data_cp_firewall_mgmt_data_configuring << set_state >>
+}
+state "configure_cp_firewall_mgmt_data" as step_declarative_deploy_configure_cp_firewall_mgmt_data << step >> {
+  state "cp_firewall_mgmt_data Standard.configure" as step_declarative_deploy_configure_cp_firewall_mgmt_data_cp_firewall_mgmt_data_Standard.configure << call_operation >>
+}
+state "post_configure_cp_firewall_mgmt_data" as step_declarative_deploy_post_configure_cp_firewall_mgmt_data << step >> {
+  state "cp_firewall_mgmt_data configured" as step_declarative_deploy_post_configure_cp_firewall_mgmt_data_cp_firewall_mgmt_data_configured << set_state >>
+}
+state "start_cp_firewall_mgmt_data" as step_declarative_deploy_start_cp_firewall_mgmt_data << step >> {
+  state "cp_firewall_mgmt_data starting" as step_declarative_deploy_start_cp_firewall_mgmt_data_cp_firewall_mgmt_data_starting << set_state >>
+  state "cp_firewall_mgmt_data Standard.start" as step_declarative_deploy_start_cp_firewall_mgmt_data_cp_firewall_mgmt_data_Standard.start << call_operation >>
+  state "cp_firewall_mgmt_data started" as step_declarative_deploy_start_cp_firewall_mgmt_data_cp_firewall_mgmt_data_started << set_state >>
+  step_declarative_deploy_start_cp_firewall_mgmt_data_cp_firewall_mgmt_data_starting --> step_declarative_deploy_start_cp_firewall_mgmt_data_cp_firewall_mgmt_data_Standard.start
+  step_declarative_deploy_start_cp_firewall_mgmt_data_cp_firewall_mgmt_data_Standard.start --> step_declarative_deploy_start_cp_firewall_mgmt_data_cp_firewall_mgmt_data_started
+}
+  state step_declarative_deploy_create_cp_firewall_main_mgmt_join <<join>>
+  step_declarative_deploy_create_cp_firewall_main_mgmt_join --> step_declarative_deploy_create_cp_firewall_main_mgmt
+  state step_declarative_deploy_create_cp_firewall_main_data_join <<join>>
+  step_declarative_deploy_create_cp_firewall_main_data_join --> step_declarative_deploy_create_cp_firewall_main_data
+  state step_declarative_deploy_create_cp_firewall_mgmt_mgmt_join <<join>>
+  step_declarative_deploy_create_cp_firewall_mgmt_mgmt_join --> step_declarative_deploy_create_cp_firewall_mgmt_mgmt
+  state step_declarative_deploy_create_cp_firewall_mgmt_data_join <<join>>
+  step_declarative_deploy_create_cp_firewall_mgmt_data_join --> step_declarative_deploy_create_cp_firewall_mgmt_data
+step_declarative_deploy_create_extCp_mgmt --> step_declarative_deploy_pre_configure_extCp_mgmt
+step_declarative_deploy_pre_configure_extCp_mgmt --> step_declarative_deploy_configure_extCp_mgmt
+step_declarative_deploy_configure_extCp_mgmt --> step_declarative_deploy_post_configure_extCp_mgmt
+step_declarative_deploy_post_configure_extCp_mgmt --> step_declarative_deploy_start_extCp_mgmt
+step_declarative_deploy_create_intVL_mgmt --> step_declarative_deploy_pre_configure_intVL_mgmt
+step_declarative_deploy_pre_configure_intVL_mgmt --> step_declarative_deploy_configure_intVL_mgmt
+step_declarative_deploy_configure_intVL_mgmt --> step_declarative_deploy_post_configure_intVL_mgmt
+step_declarative_deploy_post_configure_intVL_mgmt --> step_declarative_deploy_start_intVL_mgmt
+state step_declarative_deploy_start_intVL_mgmt_fork <<fork>>
+step_declarative_deploy_start_intVL_mgmt --> step_declarative_deploy_start_intVL_mgmt_fork
+step_declarative_deploy_start_intVL_mgmt_fork --> step_declarative_deploy_create_cp_firewall_main_mgmt_join
+step_declarative_deploy_start_intVL_mgmt_fork --> step_declarative_deploy_create_cp_firewall_mgmt_mgmt_join
+step_declarative_deploy_create_intVL_data --> step_declarative_deploy_pre_configure_intVL_data
+step_declarative_deploy_pre_configure_intVL_data --> step_declarative_deploy_configure_intVL_data
+step_declarative_deploy_configure_intVL_data --> step_declarative_deploy_post_configure_intVL_data
+step_declarative_deploy_post_configure_intVL_data --> step_declarative_deploy_start_intVL_data
+state step_declarative_deploy_start_intVL_data_fork <<fork>>
+step_declarative_deploy_start_intVL_data --> step_declarative_deploy_start_intVL_data_fork
+step_declarative_deploy_start_intVL_data_fork --> step_declarative_deploy_create_cp_firewall_main_data_join
+step_declarative_deploy_start_intVL_data_fork --> step_declarative_deploy_create_cp_firewall_mgmt_data_join
+step_declarative_deploy_create_vdu_firewall_main --> step_declarative_deploy_pre_configure_vdu_firewall_main
+step_declarative_deploy_pre_configure_vdu_firewall_main --> step_declarative_deploy_configure_vdu_firewall_main
+step_declarative_deploy_configure_vdu_firewall_main --> step_declarative_deploy_post_configure_vdu_firewall_main
+step_declarative_deploy_post_configure_vdu_firewall_main --> step_declarative_deploy_start_vdu_firewall_main
+state step_declarative_deploy_start_vdu_firewall_main_fork <<fork>>
+step_declarative_deploy_start_vdu_firewall_main --> step_declarative_deploy_start_vdu_firewall_main_fork
+step_declarative_deploy_start_vdu_firewall_main_fork --> step_declarative_deploy_create_cp_firewall_main_mgmt_join
+step_declarative_deploy_start_vdu_firewall_main_fork --> step_declarative_deploy_create_cp_firewall_main_data_join
+step_declarative_deploy_create_vdu_firewall_mgmt --> step_declarative_deploy_pre_configure_vdu_firewall_mgmt
+step_declarative_deploy_pre_configure_vdu_firewall_mgmt --> step_declarative_deploy_configure_vdu_firewall_mgmt
+step_declarative_deploy_configure_vdu_firewall_mgmt --> step_declarative_deploy_post_configure_vdu_firewall_mgmt
+step_declarative_deploy_post_configure_vdu_firewall_mgmt --> step_declarative_deploy_start_vdu_firewall_mgmt
+state step_declarative_deploy_start_vdu_firewall_mgmt_fork <<fork>>
+step_declarative_deploy_start_vdu_firewall_mgmt --> step_declarative_deploy_start_vdu_firewall_mgmt_fork
+step_declarative_deploy_start_vdu_firewall_mgmt_fork --> step_declarative_deploy_create_cp_firewall_mgmt_mgmt_join
+step_declarative_deploy_start_vdu_firewall_mgmt_fork --> step_declarative_deploy_create_cp_firewall_mgmt_data_join
+step_declarative_deploy_create_cp_firewall_main_mgmt --> step_declarative_deploy_pre_configure_cp_firewall_main_mgmt
+step_declarative_deploy_pre_configure_cp_firewall_main_mgmt --> step_declarative_deploy_configure_cp_firewall_main_mgmt
+step_declarative_deploy_configure_cp_firewall_main_mgmt --> step_declarative_deploy_post_configure_cp_firewall_main_mgmt
+step_declarative_deploy_post_configure_cp_firewall_main_mgmt --> step_declarative_deploy_start_cp_firewall_main_mgmt
+step_declarative_deploy_create_cp_firewall_main_data --> step_declarative_deploy_pre_configure_cp_firewall_main_data
+step_declarative_deploy_pre_configure_cp_firewall_main_data --> step_declarative_deploy_configure_cp_firewall_main_data
+step_declarative_deploy_configure_cp_firewall_main_data --> step_declarative_deploy_post_configure_cp_firewall_main_data
+step_declarative_deploy_post_configure_cp_firewall_main_data --> step_declarative_deploy_start_cp_firewall_main_data
+step_declarative_deploy_create_cp_firewall_mgmt_mgmt --> step_declarative_deploy_pre_configure_cp_firewall_mgmt_mgmt
+step_declarative_deploy_pre_configure_cp_firewall_mgmt_mgmt --> step_declarative_deploy_configure_cp_firewall_mgmt_mgmt
+step_declarative_deploy_configure_cp_firewall_mgmt_mgmt --> step_declarative_deploy_post_configure_cp_firewall_mgmt_mgmt
+step_declarative_deploy_post_configure_cp_firewall_mgmt_mgmt --> step_declarative_deploy_start_cp_firewall_mgmt_mgmt
+step_declarative_deploy_create_cp_firewall_mgmt_data --> step_declarative_deploy_pre_configure_cp_firewall_mgmt_data
+step_declarative_deploy_pre_configure_cp_firewall_mgmt_data --> step_declarative_deploy_configure_cp_firewall_mgmt_data
+step_declarative_deploy_configure_cp_firewall_mgmt_data --> step_declarative_deploy_post_configure_cp_firewall_mgmt_data
+step_declarative_deploy_post_configure_cp_firewall_mgmt_data --> step_declarative_deploy_start_cp_firewall_mgmt_data
+state declarative_deploy_fork <<fork>>
+[*] --> declarative_deploy_fork
+declarative_deploy_fork --> step_declarative_deploy_create_extCp_mgmt
+declarative_deploy_fork --> step_declarative_deploy_create_intVL_mgmt
+declarative_deploy_fork --> step_declarative_deploy_create_intVL_data
+declarative_deploy_fork --> step_declarative_deploy_create_vdu_firewall_main
+declarative_deploy_fork --> step_declarative_deploy_create_vdu_firewall_mgmt
+state declarative_deploy_join <<join>>
+declarative_deploy_join --> [*]
+step_declarative_deploy_start_extCp_mgmt --> declarative_deploy_join
+step_declarative_deploy_start_cp_firewall_main_mgmt --> declarative_deploy_join
+step_declarative_deploy_start_cp_firewall_main_data --> declarative_deploy_join
+step_declarative_deploy_start_cp_firewall_mgmt_mgmt --> declarative_deploy_join
+step_declarative_deploy_start_cp_firewall_mgmt_data --> declarative_deploy_join
+@enduml

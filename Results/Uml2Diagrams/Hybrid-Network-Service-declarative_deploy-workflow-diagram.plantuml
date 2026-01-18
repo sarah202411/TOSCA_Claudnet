@@ -1,0 +1,291 @@
+@startuml
+hide empty description
+skinparam shadowing false
+skinparam state {
+  ArrowColor blue
+  BorderColor blue
+  EndColor black
+  StartColor green
+  BackGroundColor<< step >> white
+  BorderColor<< step >> black
+  BackGroundColor<< delegate >> lightgrey
+  BackGroundColor<< set_state >> white
+  BackGroundColor<< call_operation >> lightblue
+  BackGroundColor<< inline >> white
+}
+skinparam ActivityBarColor<<fork>> DarkGreen
+skinparam ActivityBarColor<<join>> DarkOrange
+
+state "create_vl_mgmt_network" as step_declarative_deploy_create_vl_mgmt_network << step >> {
+  state "vl_mgmt_network creating" as step_declarative_deploy_create_vl_mgmt_network_vl_mgmt_network_creating << set_state >>
+  state "vl_mgmt_network Standard.create" as step_declarative_deploy_create_vl_mgmt_network_vl_mgmt_network_Standard.create << call_operation >>
+  state "vl_mgmt_network created" as step_declarative_deploy_create_vl_mgmt_network_vl_mgmt_network_created << set_state >>
+  step_declarative_deploy_create_vl_mgmt_network_vl_mgmt_network_creating --> step_declarative_deploy_create_vl_mgmt_network_vl_mgmt_network_Standard.create
+  step_declarative_deploy_create_vl_mgmt_network_vl_mgmt_network_Standard.create --> step_declarative_deploy_create_vl_mgmt_network_vl_mgmt_network_created
+}
+state "pre_configure_vl_mgmt_network" as step_declarative_deploy_pre_configure_vl_mgmt_network << step >> {
+  state "vl_mgmt_network configuring" as step_declarative_deploy_pre_configure_vl_mgmt_network_vl_mgmt_network_configuring << set_state >>
+}
+state "configure_vl_mgmt_network" as step_declarative_deploy_configure_vl_mgmt_network << step >> {
+  state "vl_mgmt_network Standard.configure" as step_declarative_deploy_configure_vl_mgmt_network_vl_mgmt_network_Standard.configure << call_operation >>
+}
+state "post_configure_vl_mgmt_network" as step_declarative_deploy_post_configure_vl_mgmt_network << step >> {
+  state "vl_mgmt_network configured" as step_declarative_deploy_post_configure_vl_mgmt_network_vl_mgmt_network_configured << set_state >>
+}
+state "start_vl_mgmt_network" as step_declarative_deploy_start_vl_mgmt_network << step >> {
+  state "vl_mgmt_network starting" as step_declarative_deploy_start_vl_mgmt_network_vl_mgmt_network_starting << set_state >>
+  state "vl_mgmt_network Standard.start" as step_declarative_deploy_start_vl_mgmt_network_vl_mgmt_network_Standard.start << call_operation >>
+  state "vl_mgmt_network started" as step_declarative_deploy_start_vl_mgmt_network_vl_mgmt_network_started << set_state >>
+  step_declarative_deploy_start_vl_mgmt_network_vl_mgmt_network_starting --> step_declarative_deploy_start_vl_mgmt_network_vl_mgmt_network_Standard.start
+  step_declarative_deploy_start_vl_mgmt_network_vl_mgmt_network_Standard.start --> step_declarative_deploy_start_vl_mgmt_network_vl_mgmt_network_started
+}
+state "create_vl_data_network" as step_declarative_deploy_create_vl_data_network << step >> {
+  state "vl_data_network creating" as step_declarative_deploy_create_vl_data_network_vl_data_network_creating << set_state >>
+  state "vl_data_network Standard.create" as step_declarative_deploy_create_vl_data_network_vl_data_network_Standard.create << call_operation >>
+  state "vl_data_network created" as step_declarative_deploy_create_vl_data_network_vl_data_network_created << set_state >>
+  step_declarative_deploy_create_vl_data_network_vl_data_network_creating --> step_declarative_deploy_create_vl_data_network_vl_data_network_Standard.create
+  step_declarative_deploy_create_vl_data_network_vl_data_network_Standard.create --> step_declarative_deploy_create_vl_data_network_vl_data_network_created
+}
+state "pre_configure_vl_data_network" as step_declarative_deploy_pre_configure_vl_data_network << step >> {
+  state "vl_data_network configuring" as step_declarative_deploy_pre_configure_vl_data_network_vl_data_network_configuring << set_state >>
+}
+state "configure_vl_data_network" as step_declarative_deploy_configure_vl_data_network << step >> {
+  state "vl_data_network Standard.configure" as step_declarative_deploy_configure_vl_data_network_vl_data_network_Standard.configure << call_operation >>
+}
+state "post_configure_vl_data_network" as step_declarative_deploy_post_configure_vl_data_network << step >> {
+  state "vl_data_network configured" as step_declarative_deploy_post_configure_vl_data_network_vl_data_network_configured << set_state >>
+}
+state "start_vl_data_network" as step_declarative_deploy_start_vl_data_network << step >> {
+  state "vl_data_network starting" as step_declarative_deploy_start_vl_data_network_vl_data_network_starting << set_state >>
+  state "vl_data_network Standard.start" as step_declarative_deploy_start_vl_data_network_vl_data_network_Standard.start << call_operation >>
+  state "vl_data_network started" as step_declarative_deploy_start_vl_data_network_vl_data_network_started << set_state >>
+  step_declarative_deploy_start_vl_data_network_vl_data_network_starting --> step_declarative_deploy_start_vl_data_network_vl_data_network_Standard.start
+  step_declarative_deploy_start_vl_data_network_vl_data_network_Standard.start --> step_declarative_deploy_start_vl_data_network_vl_data_network_started
+}
+state "create_vl_vnf1_to_vnf2" as step_declarative_deploy_create_vl_vnf1_to_vnf2 << step >> {
+  state "vl_vnf1_to_vnf2 creating" as step_declarative_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_creating << set_state >>
+  state "vl_vnf1_to_vnf2 Standard.create" as step_declarative_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.create << call_operation >>
+  state "vl_vnf1_to_vnf2 created" as step_declarative_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_created << set_state >>
+  step_declarative_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_creating --> step_declarative_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.create
+  step_declarative_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.create --> step_declarative_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_created
+}
+state "pre_configure_vl_vnf1_to_vnf2" as step_declarative_deploy_pre_configure_vl_vnf1_to_vnf2 << step >> {
+  state "vl_vnf1_to_vnf2 configuring" as step_declarative_deploy_pre_configure_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_configuring << set_state >>
+}
+state "configure_vl_vnf1_to_vnf2" as step_declarative_deploy_configure_vl_vnf1_to_vnf2 << step >> {
+  state "vl_vnf1_to_vnf2 Standard.configure" as step_declarative_deploy_configure_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.configure << call_operation >>
+}
+state "post_configure_vl_vnf1_to_vnf2" as step_declarative_deploy_post_configure_vl_vnf1_to_vnf2 << step >> {
+  state "vl_vnf1_to_vnf2 configured" as step_declarative_deploy_post_configure_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_configured << set_state >>
+}
+state "start_vl_vnf1_to_vnf2" as step_declarative_deploy_start_vl_vnf1_to_vnf2 << step >> {
+  state "vl_vnf1_to_vnf2 starting" as step_declarative_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_starting << set_state >>
+  state "vl_vnf1_to_vnf2 Standard.start" as step_declarative_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.start << call_operation >>
+  state "vl_vnf1_to_vnf2 started" as step_declarative_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_started << set_state >>
+  step_declarative_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_starting --> step_declarative_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.start
+  step_declarative_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.start --> step_declarative_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_started
+}
+state "create_vl_vnf2_to_cnf" as step_declarative_deploy_create_vl_vnf2_to_cnf << step >> {
+  state "vl_vnf2_to_cnf creating" as step_declarative_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_creating << set_state >>
+  state "vl_vnf2_to_cnf Standard.create" as step_declarative_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.create << call_operation >>
+  state "vl_vnf2_to_cnf created" as step_declarative_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_created << set_state >>
+  step_declarative_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_creating --> step_declarative_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.create
+  step_declarative_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.create --> step_declarative_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_created
+}
+state "pre_configure_vl_vnf2_to_cnf" as step_declarative_deploy_pre_configure_vl_vnf2_to_cnf << step >> {
+  state "vl_vnf2_to_cnf configuring" as step_declarative_deploy_pre_configure_vl_vnf2_to_cnf_vl_vnf2_to_cnf_configuring << set_state >>
+}
+state "configure_vl_vnf2_to_cnf" as step_declarative_deploy_configure_vl_vnf2_to_cnf << step >> {
+  state "vl_vnf2_to_cnf Standard.configure" as step_declarative_deploy_configure_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.configure << call_operation >>
+}
+state "post_configure_vl_vnf2_to_cnf" as step_declarative_deploy_post_configure_vl_vnf2_to_cnf << step >> {
+  state "vl_vnf2_to_cnf configured" as step_declarative_deploy_post_configure_vl_vnf2_to_cnf_vl_vnf2_to_cnf_configured << set_state >>
+}
+state "start_vl_vnf2_to_cnf" as step_declarative_deploy_start_vl_vnf2_to_cnf << step >> {
+  state "vl_vnf2_to_cnf starting" as step_declarative_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_starting << set_state >>
+  state "vl_vnf2_to_cnf Standard.start" as step_declarative_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.start << call_operation >>
+  state "vl_vnf2_to_cnf started" as step_declarative_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_started << set_state >>
+  step_declarative_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_starting --> step_declarative_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.start
+  step_declarative_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.start --> step_declarative_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_started
+}
+state "create_vnf1_instance" as step_declarative_deploy_create_vnf1_instance << step >> {
+  state "vnf1_instance creating" as step_declarative_deploy_create_vnf1_instance_vnf1_instance_creating << set_state >>
+  state "vnf1_instance Standard.create" as step_declarative_deploy_create_vnf1_instance_vnf1_instance_Standard.create << call_operation >>
+  state "vnf1_instance created" as step_declarative_deploy_create_vnf1_instance_vnf1_instance_created << set_state >>
+  step_declarative_deploy_create_vnf1_instance_vnf1_instance_creating --> step_declarative_deploy_create_vnf1_instance_vnf1_instance_Standard.create
+  step_declarative_deploy_create_vnf1_instance_vnf1_instance_Standard.create --> step_declarative_deploy_create_vnf1_instance_vnf1_instance_created
+}
+state "pre_configure_vnf1_instance" as step_declarative_deploy_pre_configure_vnf1_instance << step >> {
+  state "vnf1_instance configuring" as step_declarative_deploy_pre_configure_vnf1_instance_vnf1_instance_configuring << set_state >>
+}
+state "configure_vnf1_instance" as step_declarative_deploy_configure_vnf1_instance << step >> {
+  state "vnf1_instance Standard.configure" as step_declarative_deploy_configure_vnf1_instance_vnf1_instance_Standard.configure << call_operation >>
+}
+state "post_configure_vnf1_instance" as step_declarative_deploy_post_configure_vnf1_instance << step >> {
+  state "vnf1_instance configured" as step_declarative_deploy_post_configure_vnf1_instance_vnf1_instance_configured << set_state >>
+}
+state "start_vnf1_instance" as step_declarative_deploy_start_vnf1_instance << step >> {
+  state "vnf1_instance starting" as step_declarative_deploy_start_vnf1_instance_vnf1_instance_starting << set_state >>
+  state "vnf1_instance Standard.start" as step_declarative_deploy_start_vnf1_instance_vnf1_instance_Standard.start << call_operation >>
+  state "vnf1_instance started" as step_declarative_deploy_start_vnf1_instance_vnf1_instance_started << set_state >>
+  step_declarative_deploy_start_vnf1_instance_vnf1_instance_starting --> step_declarative_deploy_start_vnf1_instance_vnf1_instance_Standard.start
+  step_declarative_deploy_start_vnf1_instance_vnf1_instance_Standard.start --> step_declarative_deploy_start_vnf1_instance_vnf1_instance_started
+}
+state "create_vnf2_instance" as step_declarative_deploy_create_vnf2_instance << step >> {
+  state "vnf2_instance creating" as step_declarative_deploy_create_vnf2_instance_vnf2_instance_creating << set_state >>
+  state "vnf2_instance Standard.create" as step_declarative_deploy_create_vnf2_instance_vnf2_instance_Standard.create << call_operation >>
+  state "vnf2_instance created" as step_declarative_deploy_create_vnf2_instance_vnf2_instance_created << set_state >>
+  step_declarative_deploy_create_vnf2_instance_vnf2_instance_creating --> step_declarative_deploy_create_vnf2_instance_vnf2_instance_Standard.create
+  step_declarative_deploy_create_vnf2_instance_vnf2_instance_Standard.create --> step_declarative_deploy_create_vnf2_instance_vnf2_instance_created
+}
+state "pre_configure_vnf2_instance" as step_declarative_deploy_pre_configure_vnf2_instance << step >> {
+  state "vnf2_instance configuring" as step_declarative_deploy_pre_configure_vnf2_instance_vnf2_instance_configuring << set_state >>
+}
+state "configure_vnf2_instance" as step_declarative_deploy_configure_vnf2_instance << step >> {
+  state "vnf2_instance Standard.configure" as step_declarative_deploy_configure_vnf2_instance_vnf2_instance_Standard.configure << call_operation >>
+}
+state "post_configure_vnf2_instance" as step_declarative_deploy_post_configure_vnf2_instance << step >> {
+  state "vnf2_instance configured" as step_declarative_deploy_post_configure_vnf2_instance_vnf2_instance_configured << set_state >>
+}
+state "start_vnf2_instance" as step_declarative_deploy_start_vnf2_instance << step >> {
+  state "vnf2_instance starting" as step_declarative_deploy_start_vnf2_instance_vnf2_instance_starting << set_state >>
+  state "vnf2_instance Standard.start" as step_declarative_deploy_start_vnf2_instance_vnf2_instance_Standard.start << call_operation >>
+  state "vnf2_instance started" as step_declarative_deploy_start_vnf2_instance_vnf2_instance_started << set_state >>
+  step_declarative_deploy_start_vnf2_instance_vnf2_instance_starting --> step_declarative_deploy_start_vnf2_instance_vnf2_instance_Standard.start
+  step_declarative_deploy_start_vnf2_instance_vnf2_instance_Standard.start --> step_declarative_deploy_start_vnf2_instance_vnf2_instance_started
+}
+state "create_cnf_instance" as step_declarative_deploy_create_cnf_instance << step >> {
+  state "cnf_instance creating" as step_declarative_deploy_create_cnf_instance_cnf_instance_creating << set_state >>
+  state "cnf_instance Standard.create" as step_declarative_deploy_create_cnf_instance_cnf_instance_Standard.create << call_operation >>
+  state "cnf_instance created" as step_declarative_deploy_create_cnf_instance_cnf_instance_created << set_state >>
+  step_declarative_deploy_create_cnf_instance_cnf_instance_creating --> step_declarative_deploy_create_cnf_instance_cnf_instance_Standard.create
+  step_declarative_deploy_create_cnf_instance_cnf_instance_Standard.create --> step_declarative_deploy_create_cnf_instance_cnf_instance_created
+}
+state "pre_configure_cnf_instance" as step_declarative_deploy_pre_configure_cnf_instance << step >> {
+  state "cnf_instance configuring" as step_declarative_deploy_pre_configure_cnf_instance_cnf_instance_configuring << set_state >>
+}
+state "configure_cnf_instance" as step_declarative_deploy_configure_cnf_instance << step >> {
+  state "cnf_instance Standard.configure" as step_declarative_deploy_configure_cnf_instance_cnf_instance_Standard.configure << call_operation >>
+}
+state "post_configure_cnf_instance" as step_declarative_deploy_post_configure_cnf_instance << step >> {
+  state "cnf_instance configured" as step_declarative_deploy_post_configure_cnf_instance_cnf_instance_configured << set_state >>
+}
+state "start_cnf_instance" as step_declarative_deploy_start_cnf_instance << step >> {
+  state "cnf_instance starting" as step_declarative_deploy_start_cnf_instance_cnf_instance_starting << set_state >>
+  state "cnf_instance Standard.start" as step_declarative_deploy_start_cnf_instance_cnf_instance_Standard.start << call_operation >>
+  state "cnf_instance started" as step_declarative_deploy_start_cnf_instance_cnf_instance_started << set_state >>
+  step_declarative_deploy_start_cnf_instance_cnf_instance_starting --> step_declarative_deploy_start_cnf_instance_cnf_instance_Standard.start
+  step_declarative_deploy_start_cnf_instance_cnf_instance_Standard.start --> step_declarative_deploy_start_cnf_instance_cnf_instance_started
+}
+state "create_sap_mgmt" as step_declarative_deploy_create_sap_mgmt << step >> {
+  state "sap_mgmt creating" as step_declarative_deploy_create_sap_mgmt_sap_mgmt_creating << set_state >>
+  state "sap_mgmt Standard.create" as step_declarative_deploy_create_sap_mgmt_sap_mgmt_Standard.create << call_operation >>
+  state "sap_mgmt created" as step_declarative_deploy_create_sap_mgmt_sap_mgmt_created << set_state >>
+  step_declarative_deploy_create_sap_mgmt_sap_mgmt_creating --> step_declarative_deploy_create_sap_mgmt_sap_mgmt_Standard.create
+  step_declarative_deploy_create_sap_mgmt_sap_mgmt_Standard.create --> step_declarative_deploy_create_sap_mgmt_sap_mgmt_created
+}
+state "pre_configure_sap_mgmt" as step_declarative_deploy_pre_configure_sap_mgmt << step >> {
+  state "sap_mgmt configuring" as step_declarative_deploy_pre_configure_sap_mgmt_sap_mgmt_configuring << set_state >>
+}
+state "configure_sap_mgmt" as step_declarative_deploy_configure_sap_mgmt << step >> {
+  state "sap_mgmt Standard.configure" as step_declarative_deploy_configure_sap_mgmt_sap_mgmt_Standard.configure << call_operation >>
+}
+state "post_configure_sap_mgmt" as step_declarative_deploy_post_configure_sap_mgmt << step >> {
+  state "sap_mgmt configured" as step_declarative_deploy_post_configure_sap_mgmt_sap_mgmt_configured << set_state >>
+}
+state "start_sap_mgmt" as step_declarative_deploy_start_sap_mgmt << step >> {
+  state "sap_mgmt starting" as step_declarative_deploy_start_sap_mgmt_sap_mgmt_starting << set_state >>
+  state "sap_mgmt Standard.start" as step_declarative_deploy_start_sap_mgmt_sap_mgmt_Standard.start << call_operation >>
+  state "sap_mgmt started" as step_declarative_deploy_start_sap_mgmt_sap_mgmt_started << set_state >>
+  step_declarative_deploy_start_sap_mgmt_sap_mgmt_starting --> step_declarative_deploy_start_sap_mgmt_sap_mgmt_Standard.start
+  step_declarative_deploy_start_sap_mgmt_sap_mgmt_Standard.start --> step_declarative_deploy_start_sap_mgmt_sap_mgmt_started
+}
+state "create_sap_data" as step_declarative_deploy_create_sap_data << step >> {
+  state "sap_data creating" as step_declarative_deploy_create_sap_data_sap_data_creating << set_state >>
+  state "sap_data Standard.create" as step_declarative_deploy_create_sap_data_sap_data_Standard.create << call_operation >>
+  state "sap_data created" as step_declarative_deploy_create_sap_data_sap_data_created << set_state >>
+  step_declarative_deploy_create_sap_data_sap_data_creating --> step_declarative_deploy_create_sap_data_sap_data_Standard.create
+  step_declarative_deploy_create_sap_data_sap_data_Standard.create --> step_declarative_deploy_create_sap_data_sap_data_created
+}
+state "pre_configure_sap_data" as step_declarative_deploy_pre_configure_sap_data << step >> {
+  state "sap_data configuring" as step_declarative_deploy_pre_configure_sap_data_sap_data_configuring << set_state >>
+}
+state "configure_sap_data" as step_declarative_deploy_configure_sap_data << step >> {
+  state "sap_data Standard.configure" as step_declarative_deploy_configure_sap_data_sap_data_Standard.configure << call_operation >>
+}
+state "post_configure_sap_data" as step_declarative_deploy_post_configure_sap_data << step >> {
+  state "sap_data configured" as step_declarative_deploy_post_configure_sap_data_sap_data_configured << set_state >>
+}
+state "start_sap_data" as step_declarative_deploy_start_sap_data << step >> {
+  state "sap_data starting" as step_declarative_deploy_start_sap_data_sap_data_starting << set_state >>
+  state "sap_data Standard.start" as step_declarative_deploy_start_sap_data_sap_data_Standard.start << call_operation >>
+  state "sap_data started" as step_declarative_deploy_start_sap_data_sap_data_started << set_state >>
+  step_declarative_deploy_start_sap_data_sap_data_starting --> step_declarative_deploy_start_sap_data_sap_data_Standard.start
+  step_declarative_deploy_start_sap_data_sap_data_Standard.start --> step_declarative_deploy_start_sap_data_sap_data_started
+}
+  state step_declarative_deploy_create_vnf2_instance_join <<join>>
+  step_declarative_deploy_create_vnf2_instance_join --> step_declarative_deploy_create_vnf2_instance
+  state step_declarative_deploy_create_cnf_instance_join <<join>>
+  step_declarative_deploy_create_cnf_instance_join --> step_declarative_deploy_create_cnf_instance
+step_declarative_deploy_create_vl_mgmt_network --> step_declarative_deploy_pre_configure_vl_mgmt_network
+step_declarative_deploy_pre_configure_vl_mgmt_network --> step_declarative_deploy_configure_vl_mgmt_network
+step_declarative_deploy_configure_vl_mgmt_network --> step_declarative_deploy_post_configure_vl_mgmt_network
+step_declarative_deploy_post_configure_vl_mgmt_network --> step_declarative_deploy_start_vl_mgmt_network
+state step_declarative_deploy_start_vl_mgmt_network_fork <<fork>>
+step_declarative_deploy_start_vl_mgmt_network --> step_declarative_deploy_start_vl_mgmt_network_fork
+step_declarative_deploy_start_vl_mgmt_network_fork --> step_declarative_deploy_create_vnf1_instance
+step_declarative_deploy_start_vl_mgmt_network_fork --> step_declarative_deploy_create_vnf2_instance_join
+step_declarative_deploy_start_vl_mgmt_network_fork --> step_declarative_deploy_create_cnf_instance_join
+step_declarative_deploy_start_vl_mgmt_network_fork --> step_declarative_deploy_create_sap_mgmt
+step_declarative_deploy_create_vl_data_network --> step_declarative_deploy_pre_configure_vl_data_network
+step_declarative_deploy_pre_configure_vl_data_network --> step_declarative_deploy_configure_vl_data_network
+step_declarative_deploy_configure_vl_data_network --> step_declarative_deploy_post_configure_vl_data_network
+step_declarative_deploy_post_configure_vl_data_network --> step_declarative_deploy_start_vl_data_network
+state step_declarative_deploy_start_vl_data_network_fork <<fork>>
+step_declarative_deploy_start_vl_data_network --> step_declarative_deploy_start_vl_data_network_fork
+step_declarative_deploy_start_vl_data_network_fork --> step_declarative_deploy_create_vnf2_instance_join
+step_declarative_deploy_start_vl_data_network_fork --> step_declarative_deploy_create_sap_data
+step_declarative_deploy_create_vl_vnf1_to_vnf2 --> step_declarative_deploy_pre_configure_vl_vnf1_to_vnf2
+step_declarative_deploy_pre_configure_vl_vnf1_to_vnf2 --> step_declarative_deploy_configure_vl_vnf1_to_vnf2
+step_declarative_deploy_configure_vl_vnf1_to_vnf2 --> step_declarative_deploy_post_configure_vl_vnf1_to_vnf2
+step_declarative_deploy_post_configure_vl_vnf1_to_vnf2 --> step_declarative_deploy_start_vl_vnf1_to_vnf2
+step_declarative_deploy_create_vl_vnf2_to_cnf --> step_declarative_deploy_pre_configure_vl_vnf2_to_cnf
+step_declarative_deploy_pre_configure_vl_vnf2_to_cnf --> step_declarative_deploy_configure_vl_vnf2_to_cnf
+step_declarative_deploy_configure_vl_vnf2_to_cnf --> step_declarative_deploy_post_configure_vl_vnf2_to_cnf
+step_declarative_deploy_post_configure_vl_vnf2_to_cnf --> step_declarative_deploy_start_vl_vnf2_to_cnf
+step_declarative_deploy_start_vl_vnf2_to_cnf --> step_declarative_deploy_create_cnf_instance_join
+step_declarative_deploy_create_vnf1_instance --> step_declarative_deploy_pre_configure_vnf1_instance
+step_declarative_deploy_pre_configure_vnf1_instance --> step_declarative_deploy_configure_vnf1_instance
+step_declarative_deploy_configure_vnf1_instance --> step_declarative_deploy_post_configure_vnf1_instance
+step_declarative_deploy_post_configure_vnf1_instance --> step_declarative_deploy_start_vnf1_instance
+step_declarative_deploy_create_vnf2_instance --> step_declarative_deploy_pre_configure_vnf2_instance
+step_declarative_deploy_pre_configure_vnf2_instance --> step_declarative_deploy_configure_vnf2_instance
+step_declarative_deploy_configure_vnf2_instance --> step_declarative_deploy_post_configure_vnf2_instance
+step_declarative_deploy_post_configure_vnf2_instance --> step_declarative_deploy_start_vnf2_instance
+step_declarative_deploy_create_cnf_instance --> step_declarative_deploy_pre_configure_cnf_instance
+step_declarative_deploy_pre_configure_cnf_instance --> step_declarative_deploy_configure_cnf_instance
+step_declarative_deploy_configure_cnf_instance --> step_declarative_deploy_post_configure_cnf_instance
+step_declarative_deploy_post_configure_cnf_instance --> step_declarative_deploy_start_cnf_instance
+step_declarative_deploy_create_sap_mgmt --> step_declarative_deploy_pre_configure_sap_mgmt
+step_declarative_deploy_pre_configure_sap_mgmt --> step_declarative_deploy_configure_sap_mgmt
+step_declarative_deploy_configure_sap_mgmt --> step_declarative_deploy_post_configure_sap_mgmt
+step_declarative_deploy_post_configure_sap_mgmt --> step_declarative_deploy_start_sap_mgmt
+step_declarative_deploy_create_sap_data --> step_declarative_deploy_pre_configure_sap_data
+step_declarative_deploy_pre_configure_sap_data --> step_declarative_deploy_configure_sap_data
+step_declarative_deploy_configure_sap_data --> step_declarative_deploy_post_configure_sap_data
+step_declarative_deploy_post_configure_sap_data --> step_declarative_deploy_start_sap_data
+state declarative_deploy_fork <<fork>>
+[*] --> declarative_deploy_fork
+declarative_deploy_fork --> step_declarative_deploy_create_vl_mgmt_network
+declarative_deploy_fork --> step_declarative_deploy_create_vl_data_network
+declarative_deploy_fork --> step_declarative_deploy_create_vl_vnf1_to_vnf2
+declarative_deploy_fork --> step_declarative_deploy_create_vl_vnf2_to_cnf
+state declarative_deploy_join <<join>>
+declarative_deploy_join --> [*]
+step_declarative_deploy_start_vl_vnf1_to_vnf2 --> declarative_deploy_join
+step_declarative_deploy_start_vnf1_instance --> declarative_deploy_join
+step_declarative_deploy_start_vnf2_instance --> declarative_deploy_join
+step_declarative_deploy_start_cnf_instance --> declarative_deploy_join
+step_declarative_deploy_start_sap_mgmt --> declarative_deploy_join
+step_declarative_deploy_start_sap_data --> declarative_deploy_join
+@enduml

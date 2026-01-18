@@ -1,0 +1,1164 @@
+description: Network Service Descriptor for interconnecting VNF1, VNF2, and CNF
+imports:
+- etsi_nfv_sol001_nsd_types.yaml
+- VNF1-scalable.yaml
+- VNF2-scalable.yaml
+- CNF3-scalable.yaml
+node_types:
+  tosca.nodes.nfv.MultiVNF_NS:
+    derived_from: tosca.nodes.nfv.NS
+    properties:
+      descriptor_id:
+        default: multi-vnf-ns-001
+        type: string
+      designer:
+        default: MyCompany
+        type: string
+      flavour_description:
+        default: Default flavour for multi-VNF network service
+        type: string
+      flavour_id:
+        default: default_flavour
+        type: string
+      invariant_id:
+        default: multi-vnf-ns-invariant-001
+        type: string
+      name:
+        default: Multi-VNF Network Service
+        type: string
+      version:
+        default: '1.0'
+        type: string
+topology_template:
+  inputs:
+    external_data_network:
+      default: ext-data-net
+      description: External data network ID
+      type: string
+    external_mgmt_network:
+      default: ext-mgmt-net
+      description: External management network ID
+      type: string
+  node_templates:
+    cnf_instance:
+      properties:
+        flavour_id: scalable_ha_container
+      requirements:
+      - virtual_link: vl_vnf2_to_cnf
+      - virtual_link_external: vl_mgmt_network
+      type: tosca.nodes.nfv.example_CNF
+    sap_data:
+      properties:
+        description: Service access point for data plane
+        layer_protocols:
+        - ipv4
+        protocol: []
+        role: root
+        trunk_mode: false
+      requirements:
+      - internal_virtual_link: vl_data_network
+      type: tosca.nodes.nfv.Sap
+    sap_mgmt:
+      properties:
+        description: Service access point for management
+        layer_protocols:
+        - ipv4
+        protocol: []
+        role: root
+        trunk_mode: false
+      requirements:
+      - internal_virtual_link: vl_mgmt_network
+      type: tosca.nodes.nfv.Sap
+    vl_data_network:
+      properties:
+        connectivity_type:
+          flow_pattern: line
+          layer_protocols:
+          - ipv4
+        description: Data plane network connecting VNF1, VNF2, and CNF
+        test_access: []
+        vl_profile:
+          max_bitrate_requirements:
+            leaf: 1000000
+            root: 10000000
+          min_bitrate_requirements:
+            leaf: 100000
+            root: 1000000
+          qos:
+            latency: 5 ms
+            packet_delay_variation: 2 ms
+            packet_loss_ratio: 0.0001
+            priority: 1
+          service_availability_level: 7
+      type: tosca.nodes.nfv.NsVirtualLink
+    vl_mgmt_network:
+      properties:
+        connectivity_type:
+          flow_pattern: mesh
+          layer_protocols:
+          - ipv4
+        description: Management network for all VNFs and CNF
+        test_access: []
+        vl_profile:
+          max_bitrate_requirements:
+            leaf: 100000
+            root: 1000000
+          min_bitrate_requirements:
+            leaf: 10000
+            root: 100000
+          qos:
+            latency: 10 ms
+            packet_delay_variation: 5 ms
+            packet_loss_ratio: 0.001
+            priority: 2
+          service_availability_level: 7
+      type: tosca.nodes.nfv.NsVirtualLink
+    vl_vnf1_to_vnf2:
+      properties:
+        connectivity_type:
+          flow_pattern: line
+          layer_protocols:
+          - ipv4
+        description: Direct link from VNF1 to VNF2
+        test_access: []
+        vl_profile:
+          max_bitrate_requirements:
+            leaf: 500000
+            root: 5000000
+          min_bitrate_requirements:
+            leaf: 50000
+            root: 500000
+          qos:
+            latency: 3 ms
+            packet_delay_variation: 1 ms
+            packet_loss_ratio: 0.0001
+            priority: 1
+      type: tosca.nodes.nfv.NsVirtualLink
+    vl_vnf2_to_cnf:
+      properties:
+        connectivity_type:
+          flow_pattern: line
+          layer_protocols:
+          - ipv4
+        description: Direct link from VNF2 to CNF
+        test_access: []
+        vl_profile:
+          max_bitrate_requirements:
+            leaf: 500000
+            root: 5000000
+          min_bitrate_requirements:
+            leaf: 50000
+            root: 500000
+          qos:
+            latency: 3 ms
+            packet_delay_variation: 1 ms
+            packet_loss_ratio: 0.0001
+            priority: 1
+      type: tosca.nodes.nfv.NsVirtualLink
+    vnf1_instance:
+      properties:
+        flavour_id: scalable_ha
+      requirements:
+      - virtual_link: vl_mgmt_network
+      - virtual_link_external: vl_mgmt_network
+      type: tosca.nodes.nfv.example_VNF1
+    vnf2_instance:
+      properties:
+        flavour_id: scalable_ha
+      requirements:
+      - virtual_link: vl_data_network
+      - virtual_link_external: vl_mgmt_network
+      type: tosca.nodes.nfv.example_VNF2
+  policies:
+  - ns_instantiation_levels:
+      properties:
+        default_level: default
+        ns_levels:
+          default:
+            description: Default instantiation level
+          large:
+            description: Large deployment with maximum resources
+          medium:
+            description: Medium deployment with moderate resources
+          small:
+            description: Small deployment with minimal resources
+      type: tosca.policies.nfv.NsInstantiationLevels
+  - vnf1_to_level_mapping:
+      properties:
+        aspect: ns_scaling_aspect
+        number_of_instances:
+          default: 1
+          large: 3
+          medium: 2
+          small: 1
+      targets:
+      - vnf1_instance
+      type: tosca.policies.nfv.VnfToLevelMapping
+  - vnf2_to_level_mapping:
+      properties:
+        aspect: ns_scaling_aspect
+        number_of_instances:
+          default: 1
+          large: 3
+          medium: 2
+          small: 1
+      targets:
+      - vnf2_instance
+      type: tosca.policies.nfv.VnfToLevelMapping
+  - cnf_to_level_mapping:
+      properties:
+        aspect: ns_scaling_aspect
+        number_of_instances:
+          default: 1
+          large: 3
+          medium: 2
+          small: 1
+      targets:
+      - cnf_instance
+      type: tosca.policies.nfv.VnfToLevelMapping
+  - vl_mgmt_to_level_mapping:
+      properties:
+        aspect: ns_scaling_aspect
+        bit_rate_requirements:
+          default:
+            leaf: 10000
+            root: 100000
+          large:
+            leaf: 100000
+            root: 1000000
+          medium:
+            leaf: 50000
+            root: 500000
+          small:
+            leaf: 10000
+            root: 100000
+      targets:
+      - vl_mgmt_network
+      type: tosca.policies.nfv.VirtualLinkToLevelMapping
+  - vl_data_to_level_mapping:
+      properties:
+        aspect: ns_scaling_aspect
+        bit_rate_requirements:
+          default:
+            leaf: 100000
+            root: 1000000
+          large:
+            leaf: 1000000
+            root: 10000000
+          medium:
+            leaf: 500000
+            root: 5000000
+          small:
+            leaf: 100000
+            root: 1000000
+      targets:
+      - vl_data_network
+      type: tosca.policies.nfv.VirtualLinkToLevelMapping
+  - ns_scaling_aspects:
+      properties:
+        aspects:
+          ns_scaling_aspect:
+            description: Network Service horizontal scaling
+            name: ns_scaling_aspect
+            ns_scale_levels:
+              0:
+                description: Base level
+              1:
+                description: Scale level 1
+              2:
+                description: Scale level 2
+              3:
+                description: Maximum scale level
+      type: tosca.policies.nfv.NsScalingAspects
+  substitution_mappings:
+    node_type: tosca.nodes.nfv.MultiVNF_NS
+    requirements:
+    - virtual_link:
+      - sap_mgmt
+      - external_virtual_link
+  workflows:
+    declarative_deploy:
+      description: Deployment declarative workflow
+      steps:
+        configure_cnf_instance:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cnf_instance
+          target: cnf_instance
+        configure_sap_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_sap_data
+          target: sap_data
+        configure_sap_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_sap_mgmt
+          target: sap_mgmt
+        configure_vl_data_network:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vl_data_network
+          target: vl_data_network
+        configure_vl_mgmt_network:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vl_mgmt_network
+          target: vl_mgmt_network
+        configure_vl_vnf1_to_vnf2:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vl_vnf1_to_vnf2
+          target: vl_vnf1_to_vnf2
+        configure_vl_vnf2_to_cnf:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vl_vnf2_to_cnf
+          target: vl_vnf2_to_cnf
+        configure_vnf1_instance:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vnf1_instance
+          target: vnf1_instance
+        configure_vnf2_instance:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vnf2_instance
+          target: vnf2_instance
+        create_cnf_instance:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cnf_instance
+          target: cnf_instance
+        create_sap_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_sap_data
+          target: sap_data
+        create_sap_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_sap_mgmt
+          target: sap_mgmt
+        create_vl_data_network:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vl_data_network
+          target: vl_data_network
+        create_vl_mgmt_network:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vl_mgmt_network
+          target: vl_mgmt_network
+        create_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vl_vnf1_to_vnf2
+          target: vl_vnf1_to_vnf2
+        create_vl_vnf2_to_cnf:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vl_vnf2_to_cnf
+          target: vl_vnf2_to_cnf
+        create_vnf1_instance:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vnf1_instance
+          target: vnf1_instance
+        create_vnf2_instance:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vnf2_instance
+          target: vnf2_instance
+        post_configure_cnf_instance:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cnf_instance
+          target: cnf_instance
+        post_configure_sap_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_sap_data
+          target: sap_data
+        post_configure_sap_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_sap_mgmt
+          target: sap_mgmt
+        post_configure_vl_data_network:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vl_data_network
+          target: vl_data_network
+        post_configure_vl_mgmt_network:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vl_mgmt_network
+          target: vl_mgmt_network
+        post_configure_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vl_vnf1_to_vnf2
+          target: vl_vnf1_to_vnf2
+        post_configure_vl_vnf2_to_cnf:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vl_vnf2_to_cnf
+          target: vl_vnf2_to_cnf
+        post_configure_vnf1_instance:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vnf1_instance
+          target: vnf1_instance
+        post_configure_vnf2_instance:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vnf2_instance
+          target: vnf2_instance
+        pre_configure_cnf_instance:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cnf_instance
+          target: cnf_instance
+        pre_configure_sap_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_sap_data
+          target: sap_data
+        pre_configure_sap_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_sap_mgmt
+          target: sap_mgmt
+        pre_configure_vl_data_network:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vl_data_network
+          target: vl_data_network
+        pre_configure_vl_mgmt_network:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vl_mgmt_network
+          target: vl_mgmt_network
+        pre_configure_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vl_vnf1_to_vnf2
+          target: vl_vnf1_to_vnf2
+        pre_configure_vl_vnf2_to_cnf:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vl_vnf2_to_cnf
+          target: vl_vnf2_to_cnf
+        pre_configure_vnf1_instance:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vnf1_instance
+          target: vnf1_instance
+        pre_configure_vnf2_instance:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vnf2_instance
+          target: vnf2_instance
+        start_cnf_instance:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cnf_instance
+        start_sap_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: sap_data
+        start_sap_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: sap_mgmt
+        start_vl_data_network:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_vnf2_instance
+          - create_sap_data
+          target: vl_data_network
+        start_vl_mgmt_network:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_vnf1_instance
+          - create_vnf2_instance
+          - create_cnf_instance
+          - create_sap_mgmt
+          target: vl_mgmt_network
+        start_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: vl_vnf1_to_vnf2
+        start_vl_vnf2_to_cnf:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cnf_instance
+          target: vl_vnf2_to_cnf
+        start_vnf1_instance:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: vnf1_instance
+        start_vnf2_instance:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: vnf2_instance
+    declarative_undeploy:
+      description: Undeployment declarative workflow
+      steps:
+        delete_cnf_instance:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vl_vnf2_to_cnf
+          - stop_vl_mgmt_network
+          target: cnf_instance
+        delete_sap_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vl_data_network
+          target: sap_data
+        delete_sap_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vl_mgmt_network
+          target: sap_mgmt
+        delete_vl_data_network:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vl_data_network
+        delete_vl_mgmt_network:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vl_mgmt_network
+        delete_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vl_vnf1_to_vnf2
+        delete_vl_vnf2_to_cnf:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vl_vnf2_to_cnf
+        delete_vnf1_instance:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vl_mgmt_network
+          target: vnf1_instance
+        delete_vnf2_instance:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vl_data_network
+          - stop_vl_mgmt_network
+          target: vnf2_instance
+        stop_cnf_instance:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cnf_instance
+          target: cnf_instance
+        stop_sap_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_sap_data
+          target: sap_data
+        stop_sap_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_sap_mgmt
+          target: sap_mgmt
+        stop_vl_data_network:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vl_data_network
+          target: vl_data_network
+        stop_vl_mgmt_network:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vl_mgmt_network
+          target: vl_mgmt_network
+        stop_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vl_vnf1_to_vnf2
+          target: vl_vnf1_to_vnf2
+        stop_vl_vnf2_to_cnf:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vl_vnf2_to_cnf
+          target: vl_vnf2_to_cnf
+        stop_vnf1_instance:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vnf1_instance
+          target: vnf1_instance
+        stop_vnf2_instance:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vnf2_instance
+          target: vnf2_instance
+    parallel_deploy:
+      description: Parallel deployment declarative workflow
+      steps:
+        configure_cnf_instance:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cnf_instance
+          target: cnf_instance
+        configure_sap_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_sap_data
+          target: sap_data
+        configure_sap_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_sap_mgmt
+          target: sap_mgmt
+        configure_vl_data_network:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vl_data_network
+          target: vl_data_network
+        configure_vl_mgmt_network:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vl_mgmt_network
+          target: vl_mgmt_network
+        configure_vl_vnf1_to_vnf2:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vl_vnf1_to_vnf2
+          target: vl_vnf1_to_vnf2
+        configure_vl_vnf2_to_cnf:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vl_vnf2_to_cnf
+          target: vl_vnf2_to_cnf
+        configure_vnf1_instance:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vnf1_instance
+          target: vnf1_instance
+        configure_vnf2_instance:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vnf2_instance
+          target: vnf2_instance
+        create_cnf_instance:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cnf_instance
+          target: cnf_instance
+        create_sap_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_sap_data
+          target: sap_data
+        create_sap_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_sap_mgmt
+          target: sap_mgmt
+        create_vl_data_network:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vl_data_network
+          target: vl_data_network
+        create_vl_mgmt_network:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vl_mgmt_network
+          target: vl_mgmt_network
+        create_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vl_vnf1_to_vnf2
+          target: vl_vnf1_to_vnf2
+        create_vl_vnf2_to_cnf:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vl_vnf2_to_cnf
+          target: vl_vnf2_to_cnf
+        create_vnf1_instance:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vnf1_instance
+          target: vnf1_instance
+        create_vnf2_instance:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vnf2_instance
+          target: vnf2_instance
+        post_configure_cnf_instance:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cnf_instance
+          target: cnf_instance
+        post_configure_sap_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_sap_data
+          target: sap_data
+        post_configure_sap_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_sap_mgmt
+          target: sap_mgmt
+        post_configure_vl_data_network:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vl_data_network
+          target: vl_data_network
+        post_configure_vl_mgmt_network:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vl_mgmt_network
+          target: vl_mgmt_network
+        post_configure_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vl_vnf1_to_vnf2
+          target: vl_vnf1_to_vnf2
+        post_configure_vl_vnf2_to_cnf:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vl_vnf2_to_cnf
+          target: vl_vnf2_to_cnf
+        post_configure_vnf1_instance:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vnf1_instance
+          target: vnf1_instance
+        post_configure_vnf2_instance:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vnf2_instance
+          target: vnf2_instance
+        pre_configure_cnf_instance:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cnf_instance
+          target: cnf_instance
+        pre_configure_sap_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_sap_data
+          target: sap_data
+        pre_configure_sap_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_sap_mgmt
+          target: sap_mgmt
+        pre_configure_vl_data_network:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vl_data_network
+          target: vl_data_network
+        pre_configure_vl_mgmt_network:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vl_mgmt_network
+          target: vl_mgmt_network
+        pre_configure_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vl_vnf1_to_vnf2
+          target: vl_vnf1_to_vnf2
+        pre_configure_vl_vnf2_to_cnf:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vl_vnf2_to_cnf
+          target: vl_vnf2_to_cnf
+        pre_configure_vnf1_instance:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vnf1_instance
+          target: vnf1_instance
+        pre_configure_vnf2_instance:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vnf2_instance
+          target: vnf2_instance
+        start_cnf_instance:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cnf_instance
+        start_sap_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: sap_data
+        start_sap_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: sap_mgmt
+        start_vl_data_network:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_vnf2_instance
+          - create_sap_data
+          target: vl_data_network
+        start_vl_mgmt_network:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_vnf1_instance
+          - create_vnf2_instance
+          - create_cnf_instance
+          - create_sap_mgmt
+          target: vl_mgmt_network
+        start_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: vl_vnf1_to_vnf2
+        start_vl_vnf2_to_cnf:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cnf_instance
+          target: vl_vnf2_to_cnf
+        start_vnf1_instance:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: vnf1_instance
+        start_vnf2_instance:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: vnf2_instance
+    parallel_undeploy:
+      description: Parallel undeployment declarative workflow
+      steps:
+        delete_cnf_instance:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vl_vnf2_to_cnf
+          - stop_vl_mgmt_network
+          target: cnf_instance
+        delete_sap_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vl_data_network
+          target: sap_data
+        delete_sap_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vl_mgmt_network
+          target: sap_mgmt
+        delete_vl_data_network:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vl_data_network
+        delete_vl_mgmt_network:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vl_mgmt_network
+        delete_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vl_vnf1_to_vnf2
+        delete_vl_vnf2_to_cnf:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vl_vnf2_to_cnf
+        delete_vnf1_instance:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vl_mgmt_network
+          target: vnf1_instance
+        delete_vnf2_instance:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vl_data_network
+          - stop_vl_mgmt_network
+          target: vnf2_instance
+        stop_cnf_instance:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cnf_instance
+          target: cnf_instance
+        stop_sap_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_sap_data
+          target: sap_data
+        stop_sap_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_sap_mgmt
+          target: sap_mgmt
+        stop_vl_data_network:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vl_data_network
+          target: vl_data_network
+        stop_vl_mgmt_network:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vl_mgmt_network
+          target: vl_mgmt_network
+        stop_vl_vnf1_to_vnf2:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vl_vnf1_to_vnf2
+          target: vl_vnf1_to_vnf2
+        stop_vl_vnf2_to_cnf:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vl_vnf2_to_cnf
+          target: vl_vnf2_to_cnf
+        stop_vnf1_instance:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vnf1_instance
+          target: vnf1_instance
+        stop_vnf2_instance:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vnf2_instance
+          target: vnf2_instance
+tosca_definitions_version: tosca_simple_yaml_1_3

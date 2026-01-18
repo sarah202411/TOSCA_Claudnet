@@ -1,0 +1,26 @@
+@startuml
+skinparam componentStyle uml2
+allowmixing
+
+component ": tosca.nodes.nfv.MultiVNF_NS" as substitution_mappings {
+queue "vl_mgmt_network: NsVirtualLink" as node_vl_mgmt_network
+queue "vl_data_network: NsVirtualLink" as node_vl_data_network
+queue "vl_vnf1_to_vnf2: NsVirtualLink" as node_vl_vnf1_to_vnf2
+queue "vl_vnf2_to_cnf: NsVirtualLink" as node_vl_vnf2_to_cnf
+component "vnf1_instance: example_VNF1" as node_vnf1_instance
+component "vnf2_instance: example_VNF2" as node_vnf2_instance
+component "cnf_instance: example_CNF" as node_cnf_instance
+component "sap_mgmt: Sap" as node_sap_mgmt
+component "sap_data: Sap" as node_sap_data
+node_vnf1_instance ..> node_vl_mgmt_network : <<VirtualLinksTo>>
+node_vnf1_instance ..> node_vl_mgmt_network : <<VirtualLinksTo>>
+node_vnf2_instance ..> node_vl_data_network : <<VirtualLinksTo>>
+node_vnf2_instance ..> node_vl_mgmt_network : <<VirtualLinksTo>>
+node_cnf_instance ..> node_vl_vnf2_to_cnf : <<VirtualLinksTo>>
+node_cnf_instance ..> node_vl_mgmt_network : <<VirtualLinksTo>>
+node_sap_mgmt ..> node_vl_mgmt_network : <<VirtualLinksTo>>
+node_sap_data ..> node_vl_data_network : <<VirtualLinksTo>>
+}
+queue "virtual_link" as substitution_mappings_requirement_virtual_link
+node_sap_mgmt ..>  substitution_mappings_requirement_virtual_link
+@enduml

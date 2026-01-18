@@ -1,0 +1,93 @@
+@startuml
+skinparam componentStyle uml2
+
+component ": tosca.nodes.nfv.MultiVNF_NS" <<node>> as substitution_mappings {
+component "vl_mgmt_network: NsVirtualLink" <<node>> as node_vl_mgmt_network
+interface "virtual_linkable" as node_vl_mgmt_network_virtual_linkable
+node_vl_mgmt_network_virtual_linkable -- node_vl_mgmt_network
+
+component "vl_data_network: NsVirtualLink" <<node>> as node_vl_data_network
+interface "virtual_linkable" as node_vl_data_network_virtual_linkable
+node_vl_data_network_virtual_linkable -- node_vl_data_network
+
+component "vl_vnf1_to_vnf2: NsVirtualLink" <<node>> as node_vl_vnf1_to_vnf2
+
+component "vl_vnf2_to_cnf: NsVirtualLink" <<node>> as node_vl_vnf2_to_cnf
+interface "virtual_linkable" as node_vl_vnf2_to_cnf_virtual_linkable
+node_vl_vnf2_to_cnf_virtual_linkable -- node_vl_vnf2_to_cnf
+
+component "vnf1_instance: example_VNF1" <<node>> as node_vnf1_instance
+
+component "vnf2_instance: example_VNF2" <<node>> as node_vnf2_instance
+
+component "cnf_instance: example_CNF" <<node>> as node_cnf_instance
+
+component "sap_mgmt: Sap" <<node>> as node_sap_mgmt
+
+component "sap_data: Sap" <<node>> as node_sap_data
+
+node_vnf1_instance "virtual_link" --( node_vl_mgmt_network_virtual_linkable
+node_vnf1_instance "virtual_link_external" --( node_vl_mgmt_network_virtual_linkable
+node_vnf2_instance "virtual_link" --( node_vl_data_network_virtual_linkable
+node_vnf2_instance "virtual_link_external" --( node_vl_mgmt_network_virtual_linkable
+node_cnf_instance "virtual_link" --( node_vl_vnf2_to_cnf_virtual_linkable
+node_cnf_instance "virtual_link_external" --( node_vl_mgmt_network_virtual_linkable
+node_sap_mgmt "internal_virtual_link" --( node_vl_mgmt_network_virtual_linkable
+node_sap_data "internal_virtual_link" --( node_vl_data_network_virtual_linkable
+agent policy_ns_instantiation_levels <<policy>> #AliceBlue [
+NsInstantiationLevels
+---
+.. properties ..
+ns_levels = {'default': {'description': 'Default ins[[{default: \n  description: 'Default instantiation level'\nsmall: \n  description: 'Small deployment with minimal resources'\nmedium: \n  description: 'Medium deployment with moderate resources'\nlarge: \n  description: 'Large deployment with maximum resources'} ...]]
+default_level = 'default'
+]
+agent policy_vnf1_to_level_mapping <<policy>> #AliceBlue [
+VnfToLevelMapping
+---
+.. properties ..
+aspect = 'ns_scaling_aspect'
+number_of_instances = {'default': 1, 'small': 1, 'medium': 2, [[{default: 1\nsmall: 1\nmedium: 2\nlarge: 3} ...]]
+]
+policy_vnf1_to_level_mapping -up-> node_vnf1_instance
+agent policy_vnf2_to_level_mapping <<policy>> #AliceBlue [
+VnfToLevelMapping
+---
+.. properties ..
+aspect = 'ns_scaling_aspect'
+number_of_instances = {'default': 1, 'small': 1, 'medium': 2, [[{default: 1\nsmall: 1\nmedium: 2\nlarge: 3} ...]]
+]
+policy_vnf2_to_level_mapping -up-> node_vnf2_instance
+agent policy_cnf_to_level_mapping <<policy>> #AliceBlue [
+VnfToLevelMapping
+---
+.. properties ..
+aspect = 'ns_scaling_aspect'
+number_of_instances = {'default': 1, 'small': 1, 'medium': 2, [[{default: 1\nsmall: 1\nmedium: 2\nlarge: 3} ...]]
+]
+policy_cnf_to_level_mapping -up-> node_cnf_instance
+agent policy_vl_mgmt_to_level_mapping <<policy>> #AliceBlue [
+VirtualLinkToLevelMapping
+---
+.. properties ..
+aspect = 'ns_scaling_aspect'
+bit_rate_requirements = {'default': {'root': 100000, 'leaf': 100[[{default: \n  root: 100000\n  leaf: 10000\nsmall: \n  root: 100000\n  leaf: 10000\nmedium: \n  root: 500000\n  leaf: 50000\nlarge: \n  root: 1000000\n  leaf: 100000} ...]]
+]
+policy_vl_mgmt_to_level_mapping -up-> node_vl_mgmt_network
+agent policy_vl_data_to_level_mapping <<policy>> #AliceBlue [
+VirtualLinkToLevelMapping
+---
+.. properties ..
+aspect = 'ns_scaling_aspect'
+bit_rate_requirements = {'default': {'root': 1000000, 'leaf': 10[[{default: \n  root: 1000000\n  leaf: 100000\nsmall: \n  root: 1000000\n  leaf: 100000\nmedium: \n  root: 5000000\n  leaf: 500000\nlarge: \n  root: 10000000\n  leaf: 1000000} ...]]
+]
+policy_vl_data_to_level_mapping -up-> node_vl_data_network
+agent policy_ns_scaling_aspects <<policy>> #AliceBlue [
+NsScalingAspects
+---
+.. properties ..
+aspects = {'ns_scaling_aspect': {'name': 'ns_scali[[{ns_scaling_aspect: \n  name: 'ns_scaling_aspect'\n  description: 'Network Service horizontal scaling'\n  ns_scale_levels: \n    0: \n      description: 'Base level'\n    1: \n      description: 'Scale level 1'\n    2: \n      description: 'Scale level 2'\n    3: \n      description: 'Maximum scale level'} ...]]
+]
+}
+label "virtual_link" as substitution_mappings_virtual_link
+node_sap_mgmt "external_virtual_link" --( substitution_mappings_virtual_link
+@enduml

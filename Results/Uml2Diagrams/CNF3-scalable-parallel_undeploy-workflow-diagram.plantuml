@@ -1,0 +1,209 @@
+@startuml
+hide empty description
+skinparam shadowing false
+skinparam state {
+  ArrowColor blue
+  BorderColor blue
+  EndColor black
+  StartColor green
+  BackGroundColor<< step >> white
+  BorderColor<< step >> black
+  BackGroundColor<< delegate >> lightgrey
+  BackGroundColor<< set_state >> white
+  BackGroundColor<< call_operation >> lightblue
+  BackGroundColor<< inline >> white
+}
+skinparam ActivityBarColor<<fork>> DarkGreen
+skinparam ActivityBarColor<<join>> DarkOrange
+
+state "stop_extCp_mgmt" as step_parallel_undeploy_stop_extCp_mgmt << step >> {
+  state "extCp_mgmt stopping" as step_parallel_undeploy_stop_extCp_mgmt_extCp_mgmt_stopping << set_state >>
+  state "extCp_mgmt Standard.stop" as step_parallel_undeploy_stop_extCp_mgmt_extCp_mgmt_Standard.stop << call_operation >>
+  state "extCp_mgmt stopped" as step_parallel_undeploy_stop_extCp_mgmt_extCp_mgmt_stopped << set_state >>
+  step_parallel_undeploy_stop_extCp_mgmt_extCp_mgmt_stopping --> step_parallel_undeploy_stop_extCp_mgmt_extCp_mgmt_Standard.stop
+  step_parallel_undeploy_stop_extCp_mgmt_extCp_mgmt_Standard.stop --> step_parallel_undeploy_stop_extCp_mgmt_extCp_mgmt_stopped
+}
+state "delete_extCp_mgmt" as step_parallel_undeploy_delete_extCp_mgmt << step >> {
+  state "extCp_mgmt deleting" as step_parallel_undeploy_delete_extCp_mgmt_extCp_mgmt_deleting << set_state >>
+  state "extCp_mgmt Standard.delete" as step_parallel_undeploy_delete_extCp_mgmt_extCp_mgmt_Standard.delete << call_operation >>
+  state "extCp_mgmt initial" as step_parallel_undeploy_delete_extCp_mgmt_extCp_mgmt_initial << set_state >>
+  step_parallel_undeploy_delete_extCp_mgmt_extCp_mgmt_deleting --> step_parallel_undeploy_delete_extCp_mgmt_extCp_mgmt_Standard.delete
+  step_parallel_undeploy_delete_extCp_mgmt_extCp_mgmt_Standard.delete --> step_parallel_undeploy_delete_extCp_mgmt_extCp_mgmt_initial
+}
+state "stop_extCp_data" as step_parallel_undeploy_stop_extCp_data << step >> {
+  state "extCp_data stopping" as step_parallel_undeploy_stop_extCp_data_extCp_data_stopping << set_state >>
+  state "extCp_data Standard.stop" as step_parallel_undeploy_stop_extCp_data_extCp_data_Standard.stop << call_operation >>
+  state "extCp_data stopped" as step_parallel_undeploy_stop_extCp_data_extCp_data_stopped << set_state >>
+  step_parallel_undeploy_stop_extCp_data_extCp_data_stopping --> step_parallel_undeploy_stop_extCp_data_extCp_data_Standard.stop
+  step_parallel_undeploy_stop_extCp_data_extCp_data_Standard.stop --> step_parallel_undeploy_stop_extCp_data_extCp_data_stopped
+}
+state "delete_extCp_data" as step_parallel_undeploy_delete_extCp_data << step >> {
+  state "extCp_data deleting" as step_parallel_undeploy_delete_extCp_data_extCp_data_deleting << set_state >>
+  state "extCp_data Standard.delete" as step_parallel_undeploy_delete_extCp_data_extCp_data_Standard.delete << call_operation >>
+  state "extCp_data initial" as step_parallel_undeploy_delete_extCp_data_extCp_data_initial << set_state >>
+  step_parallel_undeploy_delete_extCp_data_extCp_data_deleting --> step_parallel_undeploy_delete_extCp_data_extCp_data_Standard.delete
+  step_parallel_undeploy_delete_extCp_data_extCp_data_Standard.delete --> step_parallel_undeploy_delete_extCp_data_extCp_data_initial
+}
+state "stop_intVL_mgmt" as step_parallel_undeploy_stop_intVL_mgmt << step >> {
+  state "intVL_mgmt stopping" as step_parallel_undeploy_stop_intVL_mgmt_intVL_mgmt_stopping << set_state >>
+  state "intVL_mgmt Standard.stop" as step_parallel_undeploy_stop_intVL_mgmt_intVL_mgmt_Standard.stop << call_operation >>
+  state "intVL_mgmt stopped" as step_parallel_undeploy_stop_intVL_mgmt_intVL_mgmt_stopped << set_state >>
+  step_parallel_undeploy_stop_intVL_mgmt_intVL_mgmt_stopping --> step_parallel_undeploy_stop_intVL_mgmt_intVL_mgmt_Standard.stop
+  step_parallel_undeploy_stop_intVL_mgmt_intVL_mgmt_Standard.stop --> step_parallel_undeploy_stop_intVL_mgmt_intVL_mgmt_stopped
+}
+state "delete_intVL_mgmt" as step_parallel_undeploy_delete_intVL_mgmt << step >> {
+  state "intVL_mgmt deleting" as step_parallel_undeploy_delete_intVL_mgmt_intVL_mgmt_deleting << set_state >>
+  state "intVL_mgmt Standard.delete" as step_parallel_undeploy_delete_intVL_mgmt_intVL_mgmt_Standard.delete << call_operation >>
+  state "intVL_mgmt initial" as step_parallel_undeploy_delete_intVL_mgmt_intVL_mgmt_initial << set_state >>
+  step_parallel_undeploy_delete_intVL_mgmt_intVL_mgmt_deleting --> step_parallel_undeploy_delete_intVL_mgmt_intVL_mgmt_Standard.delete
+  step_parallel_undeploy_delete_intVL_mgmt_intVL_mgmt_Standard.delete --> step_parallel_undeploy_delete_intVL_mgmt_intVL_mgmt_initial
+}
+state "stop_intVL_data" as step_parallel_undeploy_stop_intVL_data << step >> {
+  state "intVL_data stopping" as step_parallel_undeploy_stop_intVL_data_intVL_data_stopping << set_state >>
+  state "intVL_data Standard.stop" as step_parallel_undeploy_stop_intVL_data_intVL_data_Standard.stop << call_operation >>
+  state "intVL_data stopped" as step_parallel_undeploy_stop_intVL_data_intVL_data_stopped << set_state >>
+  step_parallel_undeploy_stop_intVL_data_intVL_data_stopping --> step_parallel_undeploy_stop_intVL_data_intVL_data_Standard.stop
+  step_parallel_undeploy_stop_intVL_data_intVL_data_Standard.stop --> step_parallel_undeploy_stop_intVL_data_intVL_data_stopped
+}
+state "delete_intVL_data" as step_parallel_undeploy_delete_intVL_data << step >> {
+  state "intVL_data deleting" as step_parallel_undeploy_delete_intVL_data_intVL_data_deleting << set_state >>
+  state "intVL_data Standard.delete" as step_parallel_undeploy_delete_intVL_data_intVL_data_Standard.delete << call_operation >>
+  state "intVL_data initial" as step_parallel_undeploy_delete_intVL_data_intVL_data_initial << set_state >>
+  step_parallel_undeploy_delete_intVL_data_intVL_data_deleting --> step_parallel_undeploy_delete_intVL_data_intVL_data_Standard.delete
+  step_parallel_undeploy_delete_intVL_data_intVL_data_Standard.delete --> step_parallel_undeploy_delete_intVL_data_intVL_data_initial
+}
+state "stop_vdu_proxy_frontend" as step_parallel_undeploy_stop_vdu_proxy_frontend << step >> {
+  state "vdu_proxy_frontend stopping" as step_parallel_undeploy_stop_vdu_proxy_frontend_vdu_proxy_frontend_stopping << set_state >>
+  state "vdu_proxy_frontend Standard.stop" as step_parallel_undeploy_stop_vdu_proxy_frontend_vdu_proxy_frontend_Standard.stop << call_operation >>
+  state "vdu_proxy_frontend stopped" as step_parallel_undeploy_stop_vdu_proxy_frontend_vdu_proxy_frontend_stopped << set_state >>
+  step_parallel_undeploy_stop_vdu_proxy_frontend_vdu_proxy_frontend_stopping --> step_parallel_undeploy_stop_vdu_proxy_frontend_vdu_proxy_frontend_Standard.stop
+  step_parallel_undeploy_stop_vdu_proxy_frontend_vdu_proxy_frontend_Standard.stop --> step_parallel_undeploy_stop_vdu_proxy_frontend_vdu_proxy_frontend_stopped
+}
+state "delete_vdu_proxy_frontend" as step_parallel_undeploy_delete_vdu_proxy_frontend << step >> {
+  state "vdu_proxy_frontend deleting" as step_parallel_undeploy_delete_vdu_proxy_frontend_vdu_proxy_frontend_deleting << set_state >>
+  state "vdu_proxy_frontend Standard.delete" as step_parallel_undeploy_delete_vdu_proxy_frontend_vdu_proxy_frontend_Standard.delete << call_operation >>
+  state "vdu_proxy_frontend initial" as step_parallel_undeploy_delete_vdu_proxy_frontend_vdu_proxy_frontend_initial << set_state >>
+  step_parallel_undeploy_delete_vdu_proxy_frontend_vdu_proxy_frontend_deleting --> step_parallel_undeploy_delete_vdu_proxy_frontend_vdu_proxy_frontend_Standard.delete
+  step_parallel_undeploy_delete_vdu_proxy_frontend_vdu_proxy_frontend_Standard.delete --> step_parallel_undeploy_delete_vdu_proxy_frontend_vdu_proxy_frontend_initial
+}
+state "stop_vdu_proxy_backend" as step_parallel_undeploy_stop_vdu_proxy_backend << step >> {
+  state "vdu_proxy_backend stopping" as step_parallel_undeploy_stop_vdu_proxy_backend_vdu_proxy_backend_stopping << set_state >>
+  state "vdu_proxy_backend Standard.stop" as step_parallel_undeploy_stop_vdu_proxy_backend_vdu_proxy_backend_Standard.stop << call_operation >>
+  state "vdu_proxy_backend stopped" as step_parallel_undeploy_stop_vdu_proxy_backend_vdu_proxy_backend_stopped << set_state >>
+  step_parallel_undeploy_stop_vdu_proxy_backend_vdu_proxy_backend_stopping --> step_parallel_undeploy_stop_vdu_proxy_backend_vdu_proxy_backend_Standard.stop
+  step_parallel_undeploy_stop_vdu_proxy_backend_vdu_proxy_backend_Standard.stop --> step_parallel_undeploy_stop_vdu_proxy_backend_vdu_proxy_backend_stopped
+}
+state "delete_vdu_proxy_backend" as step_parallel_undeploy_delete_vdu_proxy_backend << step >> {
+  state "vdu_proxy_backend deleting" as step_parallel_undeploy_delete_vdu_proxy_backend_vdu_proxy_backend_deleting << set_state >>
+  state "vdu_proxy_backend Standard.delete" as step_parallel_undeploy_delete_vdu_proxy_backend_vdu_proxy_backend_Standard.delete << call_operation >>
+  state "vdu_proxy_backend initial" as step_parallel_undeploy_delete_vdu_proxy_backend_vdu_proxy_backend_initial << set_state >>
+  step_parallel_undeploy_delete_vdu_proxy_backend_vdu_proxy_backend_deleting --> step_parallel_undeploy_delete_vdu_proxy_backend_vdu_proxy_backend_Standard.delete
+  step_parallel_undeploy_delete_vdu_proxy_backend_vdu_proxy_backend_Standard.delete --> step_parallel_undeploy_delete_vdu_proxy_backend_vdu_proxy_backend_initial
+}
+state "stop_cp_proxy_frontend_mgmt" as step_parallel_undeploy_stop_cp_proxy_frontend_mgmt << step >> {
+  state "cp_proxy_frontend_mgmt stopping" as step_parallel_undeploy_stop_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_stopping << set_state >>
+  state "cp_proxy_frontend_mgmt Standard.stop" as step_parallel_undeploy_stop_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.stop << call_operation >>
+  state "cp_proxy_frontend_mgmt stopped" as step_parallel_undeploy_stop_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_stopped << set_state >>
+  step_parallel_undeploy_stop_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_stopping --> step_parallel_undeploy_stop_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.stop
+  step_parallel_undeploy_stop_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.stop --> step_parallel_undeploy_stop_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_stopped
+}
+state "delete_cp_proxy_frontend_mgmt" as step_parallel_undeploy_delete_cp_proxy_frontend_mgmt << step >> {
+  state "cp_proxy_frontend_mgmt deleting" as step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_deleting << set_state >>
+  state "cp_proxy_frontend_mgmt Standard.delete" as step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.delete << call_operation >>
+  state "cp_proxy_frontend_mgmt initial" as step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_initial << set_state >>
+  step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_deleting --> step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.delete
+  step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_Standard.delete --> step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_cp_proxy_frontend_mgmt_initial
+}
+state "stop_cp_proxy_frontend_data" as step_parallel_undeploy_stop_cp_proxy_frontend_data << step >> {
+  state "cp_proxy_frontend_data stopping" as step_parallel_undeploy_stop_cp_proxy_frontend_data_cp_proxy_frontend_data_stopping << set_state >>
+  state "cp_proxy_frontend_data Standard.stop" as step_parallel_undeploy_stop_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.stop << call_operation >>
+  state "cp_proxy_frontend_data stopped" as step_parallel_undeploy_stop_cp_proxy_frontend_data_cp_proxy_frontend_data_stopped << set_state >>
+  step_parallel_undeploy_stop_cp_proxy_frontend_data_cp_proxy_frontend_data_stopping --> step_parallel_undeploy_stop_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.stop
+  step_parallel_undeploy_stop_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.stop --> step_parallel_undeploy_stop_cp_proxy_frontend_data_cp_proxy_frontend_data_stopped
+}
+state "delete_cp_proxy_frontend_data" as step_parallel_undeploy_delete_cp_proxy_frontend_data << step >> {
+  state "cp_proxy_frontend_data deleting" as step_parallel_undeploy_delete_cp_proxy_frontend_data_cp_proxy_frontend_data_deleting << set_state >>
+  state "cp_proxy_frontend_data Standard.delete" as step_parallel_undeploy_delete_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.delete << call_operation >>
+  state "cp_proxy_frontend_data initial" as step_parallel_undeploy_delete_cp_proxy_frontend_data_cp_proxy_frontend_data_initial << set_state >>
+  step_parallel_undeploy_delete_cp_proxy_frontend_data_cp_proxy_frontend_data_deleting --> step_parallel_undeploy_delete_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.delete
+  step_parallel_undeploy_delete_cp_proxy_frontend_data_cp_proxy_frontend_data_Standard.delete --> step_parallel_undeploy_delete_cp_proxy_frontend_data_cp_proxy_frontend_data_initial
+}
+state "stop_cp_proxy_backend_mgmt" as step_parallel_undeploy_stop_cp_proxy_backend_mgmt << step >> {
+  state "cp_proxy_backend_mgmt stopping" as step_parallel_undeploy_stop_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_stopping << set_state >>
+  state "cp_proxy_backend_mgmt Standard.stop" as step_parallel_undeploy_stop_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.stop << call_operation >>
+  state "cp_proxy_backend_mgmt stopped" as step_parallel_undeploy_stop_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_stopped << set_state >>
+  step_parallel_undeploy_stop_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_stopping --> step_parallel_undeploy_stop_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.stop
+  step_parallel_undeploy_stop_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.stop --> step_parallel_undeploy_stop_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_stopped
+}
+state "delete_cp_proxy_backend_mgmt" as step_parallel_undeploy_delete_cp_proxy_backend_mgmt << step >> {
+  state "cp_proxy_backend_mgmt deleting" as step_parallel_undeploy_delete_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_deleting << set_state >>
+  state "cp_proxy_backend_mgmt Standard.delete" as step_parallel_undeploy_delete_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.delete << call_operation >>
+  state "cp_proxy_backend_mgmt initial" as step_parallel_undeploy_delete_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_initial << set_state >>
+  step_parallel_undeploy_delete_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_deleting --> step_parallel_undeploy_delete_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.delete
+  step_parallel_undeploy_delete_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_Standard.delete --> step_parallel_undeploy_delete_cp_proxy_backend_mgmt_cp_proxy_backend_mgmt_initial
+}
+state "stop_cp_proxy_backend_data" as step_parallel_undeploy_stop_cp_proxy_backend_data << step >> {
+  state "cp_proxy_backend_data stopping" as step_parallel_undeploy_stop_cp_proxy_backend_data_cp_proxy_backend_data_stopping << set_state >>
+  state "cp_proxy_backend_data Standard.stop" as step_parallel_undeploy_stop_cp_proxy_backend_data_cp_proxy_backend_data_Standard.stop << call_operation >>
+  state "cp_proxy_backend_data stopped" as step_parallel_undeploy_stop_cp_proxy_backend_data_cp_proxy_backend_data_stopped << set_state >>
+  step_parallel_undeploy_stop_cp_proxy_backend_data_cp_proxy_backend_data_stopping --> step_parallel_undeploy_stop_cp_proxy_backend_data_cp_proxy_backend_data_Standard.stop
+  step_parallel_undeploy_stop_cp_proxy_backend_data_cp_proxy_backend_data_Standard.stop --> step_parallel_undeploy_stop_cp_proxy_backend_data_cp_proxy_backend_data_stopped
+}
+state "delete_cp_proxy_backend_data" as step_parallel_undeploy_delete_cp_proxy_backend_data << step >> {
+  state "cp_proxy_backend_data deleting" as step_parallel_undeploy_delete_cp_proxy_backend_data_cp_proxy_backend_data_deleting << set_state >>
+  state "cp_proxy_backend_data Standard.delete" as step_parallel_undeploy_delete_cp_proxy_backend_data_cp_proxy_backend_data_Standard.delete << call_operation >>
+  state "cp_proxy_backend_data initial" as step_parallel_undeploy_delete_cp_proxy_backend_data_cp_proxy_backend_data_initial << set_state >>
+  step_parallel_undeploy_delete_cp_proxy_backend_data_cp_proxy_backend_data_deleting --> step_parallel_undeploy_delete_cp_proxy_backend_data_cp_proxy_backend_data_Standard.delete
+  step_parallel_undeploy_delete_cp_proxy_backend_data_cp_proxy_backend_data_Standard.delete --> step_parallel_undeploy_delete_cp_proxy_backend_data_cp_proxy_backend_data_initial
+}
+  state step_parallel_undeploy_stop_intVL_mgmt_join <<join>>
+  step_parallel_undeploy_stop_intVL_mgmt_join --> step_parallel_undeploy_stop_intVL_mgmt
+  state step_parallel_undeploy_stop_intVL_data_join <<join>>
+  step_parallel_undeploy_stop_intVL_data_join --> step_parallel_undeploy_stop_intVL_data
+  state step_parallel_undeploy_stop_vdu_proxy_frontend_join <<join>>
+  step_parallel_undeploy_stop_vdu_proxy_frontend_join --> step_parallel_undeploy_stop_vdu_proxy_frontend
+  state step_parallel_undeploy_stop_vdu_proxy_backend_join <<join>>
+  step_parallel_undeploy_stop_vdu_proxy_backend_join --> step_parallel_undeploy_stop_vdu_proxy_backend
+step_parallel_undeploy_stop_extCp_mgmt --> step_parallel_undeploy_delete_extCp_mgmt
+step_parallel_undeploy_delete_extCp_mgmt --> step_parallel_undeploy_stop_intVL_mgmt_join
+step_parallel_undeploy_stop_extCp_data --> step_parallel_undeploy_delete_extCp_data
+step_parallel_undeploy_delete_extCp_data --> step_parallel_undeploy_stop_intVL_data_join
+step_parallel_undeploy_stop_intVL_mgmt --> step_parallel_undeploy_delete_intVL_mgmt
+step_parallel_undeploy_stop_intVL_data --> step_parallel_undeploy_delete_intVL_data
+step_parallel_undeploy_stop_vdu_proxy_frontend --> step_parallel_undeploy_delete_vdu_proxy_frontend
+step_parallel_undeploy_stop_vdu_proxy_backend --> step_parallel_undeploy_delete_vdu_proxy_backend
+step_parallel_undeploy_stop_cp_proxy_frontend_mgmt --> step_parallel_undeploy_delete_cp_proxy_frontend_mgmt
+state step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_fork <<fork>>
+step_parallel_undeploy_delete_cp_proxy_frontend_mgmt --> step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_fork
+step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_fork --> step_parallel_undeploy_stop_vdu_proxy_frontend_join
+step_parallel_undeploy_delete_cp_proxy_frontend_mgmt_fork --> step_parallel_undeploy_stop_intVL_mgmt_join
+step_parallel_undeploy_stop_cp_proxy_frontend_data --> step_parallel_undeploy_delete_cp_proxy_frontend_data
+state step_parallel_undeploy_delete_cp_proxy_frontend_data_fork <<fork>>
+step_parallel_undeploy_delete_cp_proxy_frontend_data --> step_parallel_undeploy_delete_cp_proxy_frontend_data_fork
+step_parallel_undeploy_delete_cp_proxy_frontend_data_fork --> step_parallel_undeploy_stop_vdu_proxy_frontend_join
+step_parallel_undeploy_delete_cp_proxy_frontend_data_fork --> step_parallel_undeploy_stop_intVL_data_join
+step_parallel_undeploy_stop_cp_proxy_backend_mgmt --> step_parallel_undeploy_delete_cp_proxy_backend_mgmt
+state step_parallel_undeploy_delete_cp_proxy_backend_mgmt_fork <<fork>>
+step_parallel_undeploy_delete_cp_proxy_backend_mgmt --> step_parallel_undeploy_delete_cp_proxy_backend_mgmt_fork
+step_parallel_undeploy_delete_cp_proxy_backend_mgmt_fork --> step_parallel_undeploy_stop_vdu_proxy_backend_join
+step_parallel_undeploy_delete_cp_proxy_backend_mgmt_fork --> step_parallel_undeploy_stop_intVL_mgmt_join
+step_parallel_undeploy_stop_cp_proxy_backend_data --> step_parallel_undeploy_delete_cp_proxy_backend_data
+state step_parallel_undeploy_delete_cp_proxy_backend_data_fork <<fork>>
+step_parallel_undeploy_delete_cp_proxy_backend_data --> step_parallel_undeploy_delete_cp_proxy_backend_data_fork
+step_parallel_undeploy_delete_cp_proxy_backend_data_fork --> step_parallel_undeploy_stop_vdu_proxy_backend_join
+step_parallel_undeploy_delete_cp_proxy_backend_data_fork --> step_parallel_undeploy_stop_intVL_data_join
+state parallel_undeploy_fork <<fork>>
+[*] --> parallel_undeploy_fork
+parallel_undeploy_fork --> step_parallel_undeploy_stop_extCp_mgmt
+parallel_undeploy_fork --> step_parallel_undeploy_stop_extCp_data
+parallel_undeploy_fork --> step_parallel_undeploy_stop_cp_proxy_frontend_mgmt
+parallel_undeploy_fork --> step_parallel_undeploy_stop_cp_proxy_frontend_data
+parallel_undeploy_fork --> step_parallel_undeploy_stop_cp_proxy_backend_mgmt
+parallel_undeploy_fork --> step_parallel_undeploy_stop_cp_proxy_backend_data
+state parallel_undeploy_join <<join>>
+parallel_undeploy_join --> [*]
+step_parallel_undeploy_delete_intVL_mgmt --> parallel_undeploy_join
+step_parallel_undeploy_delete_intVL_data --> parallel_undeploy_join
+step_parallel_undeploy_delete_vdu_proxy_frontend --> parallel_undeploy_join
+step_parallel_undeploy_delete_vdu_proxy_backend --> parallel_undeploy_join
+@enduml

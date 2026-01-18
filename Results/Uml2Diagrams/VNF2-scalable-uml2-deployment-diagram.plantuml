@@ -1,0 +1,34 @@
+@startuml
+skinparam componentStyle uml2
+allowmixing
+
+component ": tosca.nodes.nfv.IDS_VNF" as substitution_mappings {
+component "extCp_mgmt: VnfExtCp" as node_extCp_mgmt
+queue "intVL_mgmt: VnfVirtualLink" as node_intVL_mgmt
+queue "intVL_data: VnfVirtualLink" as node_intVL_data
+node "vdu_ids_detection: Compute" as node_vdu_ids_detection {
+artifact "sw_image: SwImage" <<artifact>> as node_vdu_ids_detection_artifact_sw_image {
+label "file: ids-detection-image.qcow2" as node_vdu_ids_detection_artifact_sw_image_label
+}
+}
+node "vdu_ids_analysis: Compute" as node_vdu_ids_analysis {
+artifact "sw_image: SwImage" <<artifact>> as node_vdu_ids_analysis_artifact_sw_image {
+label "file: ids-analysis-image.qcow2" as node_vdu_ids_analysis_artifact_sw_image_label
+}
+}
+component "cp_ids_detection_mgmt: VduCp" as node_cp_ids_detection_mgmt
+component "cp_ids_detection_data: VduCp" as node_cp_ids_detection_data
+component "cp_ids_analysis_mgmt: VduCp" as node_cp_ids_analysis_mgmt
+component "cp_ids_analysis_data: VduCp" as node_cp_ids_analysis_data
+node_cp_ids_detection_mgmt ..> node_vdu_ids_detection : <<VirtualBindsTo>>
+node_cp_ids_detection_mgmt ..> node_intVL_mgmt : <<VirtualLinksTo>>
+node_cp_ids_detection_data ..> node_vdu_ids_detection : <<VirtualBindsTo>>
+node_cp_ids_detection_data ..> node_intVL_data : <<VirtualLinksTo>>
+node_cp_ids_analysis_mgmt ..> node_vdu_ids_analysis : <<VirtualBindsTo>>
+node_cp_ids_analysis_mgmt ..> node_intVL_mgmt : <<VirtualLinksTo>>
+node_cp_ids_analysis_data ..> node_vdu_ids_analysis : <<VirtualBindsTo>>
+node_cp_ids_analysis_data ..> node_intVL_data : <<VirtualLinksTo>>
+}
+queue "virtual_link_external" as substitution_mappings_requirement_virtual_link_external
+node_extCp_mgmt ..>  substitution_mappings_requirement_virtual_link_external
+@enduml

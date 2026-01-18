@@ -1,0 +1,1175 @@
+description: "IDS VM-based scalable et tol\xE9rant aux pannes avec 2 composants (Detection\
+  \ & Analysis)"
+imports:
+- etsi_nfv_sol001_vnfd_types.yaml
+node_types:
+  tosca.nodes.nfv.IDS_VNF:
+    derived_from: tosca.nodes.nfv.VNF
+    properties:
+      descriptor_id:
+        default: ids-vnfd-1.0
+        type: string
+      descriptor_version:
+        default: '1.0'
+        type: string
+      flavour_description:
+        default: Scalable flavour with HA support for IDS
+        type: string
+      flavour_id:
+        default: scalable_ha
+        type: string
+      product_name:
+        default: IDS_VM
+        type: string
+      provider:
+        default: MyCompany
+        type: string
+      software_version:
+        default: '1.0'
+        type: string
+      vnfm_info:
+        default:
+        - etsivnfm:v3.3.1
+        entry_schema:
+          type: string
+        type: list
+    requirements:
+      virtual_link_external:
+        capability: tosca.capabilities.nfv.VirtualLinkable
+        relationship: tosca.relationships.nfv.VirtualLinksTo
+topology_template:
+  inputs:
+    ids_analysis_flavour:
+      default: m1.small
+      type: string
+    ids_detection_flavour:
+      default: m1.medium
+      type: string
+  node_templates:
+    cp_ids_analysis_data:
+      properties:
+        layer_protocols:
+        - ipv4
+        order: 1
+      requirements:
+      - virtual_binding: vdu_ids_analysis
+      - virtual_link: intVL_data
+      type: tosca.nodes.nfv.VduCp
+    cp_ids_analysis_mgmt:
+      properties:
+        layer_protocols:
+        - ipv4
+        order: 0
+      requirements:
+      - virtual_binding: vdu_ids_analysis
+      - virtual_link: intVL_mgmt
+      type: tosca.nodes.nfv.VduCp
+    cp_ids_detection_data:
+      properties:
+        layer_protocols:
+        - ipv4
+        order: 1
+      requirements:
+      - virtual_binding: vdu_ids_detection
+      - virtual_link: intVL_data
+      type: tosca.nodes.nfv.VduCp
+    cp_ids_detection_mgmt:
+      properties:
+        layer_protocols:
+        - ipv4
+        order: 0
+      requirements:
+      - virtual_binding: vdu_ids_detection
+      - virtual_link: intVL_mgmt
+      type: tosca.nodes.nfv.VduCp
+    extCp_mgmt:
+      properties:
+        description: IDS Management interface
+        layer_protocols:
+        - ipv4
+      type: tosca.nodes.nfv.VnfExtCp
+    intVL_data:
+      properties:
+        connectivity_type:
+          layer_protocols:
+          - ipv4
+        description: IDS Traffic Mirroring network
+        vl_profile:
+          max_bitrate_requirements:
+            leaf: 1000000
+            root: 10000000
+          min_bitrate_requirements:
+            leaf: 100000
+            root: 1000000
+      type: tosca.nodes.nfv.VnfVirtualLink
+    intVL_mgmt:
+      properties:
+        connectivity_type:
+          layer_protocols:
+          - ipv4
+        description: IDS Management network
+        vl_profile:
+          max_bitrate_requirements:
+            leaf: 100000
+            root: 1000000
+          min_bitrate_requirements:
+            leaf: 10000
+            root: 100000
+      type: tosca.nodes.nfv.VnfVirtualLink
+    vdu_ids_analysis:
+      artifacts:
+        sw_image:
+          file: ids-analysis-image.qcow2
+          properties:
+            checksum:
+              algorithm: sha-256
+              hash: abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+            container_format: bare
+            disk_format: qcow2
+            min_disk: 20 GB
+            name: ids-analysis-os
+            size: 3 GB
+            version: '1.0'
+          type: tosca.artifacts.nfv.SwImage
+      capabilities:
+        virtual_compute:
+          properties:
+            virtual_cpu:
+              num_virtual_cpu: 4
+            virtual_local_storage:
+            - size_of_storage: 100 GB
+            virtual_memory:
+              virtual_mem_size: 8 GB
+      properties:
+        description: IDS Log Correlation and Analysis Unit
+        name: ids-analysis
+        vdu_profile:
+          max_number_of_instances: 4
+          min_number_of_instances: 2
+      type: tosca.nodes.nfv.Vdu.Compute
+    vdu_ids_detection:
+      artifacts:
+        sw_image:
+          file: ids-detection-image.qcow2
+          properties:
+            checksum:
+              algorithm: sha-256
+              hash: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+            container_format: bare
+            disk_format: qcow2
+            min_disk: 10 GB
+            name: ids-detection-os
+            size: 2 GB
+            version: '1.0'
+          type: tosca.artifacts.nfv.SwImage
+      capabilities:
+        virtual_compute:
+          properties:
+            virtual_cpu:
+              num_virtual_cpu: 2
+            virtual_local_storage:
+            - size_of_storage: 40 GB
+            virtual_memory:
+              virtual_mem_size: 4 GB
+      properties:
+        description: IDS Real-time Detection Engine
+        name: ids-detection
+        vdu_profile:
+          max_number_of_instances: 5
+          min_number_of_instances: 2
+      type: tosca.nodes.nfv.Vdu.Compute
+  policies:
+  - scaling_aspects:
+      properties:
+        aspects:
+          ids_analysis_scaling:
+            description: Scaling for analysis unit
+            max_scale_level: 2
+            name: ids_analysis_scaling_aspect
+            step_deltas:
+            - delta_1
+          ids_detection_scaling:
+            description: Scaling for detection engine
+            max_scale_level: 3
+            name: ids_detection_scaling_aspect
+            step_deltas:
+            - delta_1
+      type: tosca.policies.nfv.ScalingAspects
+  - vdu_ids_detection_initial_delta:
+      properties:
+        initial_delta:
+          number_of_instances: 2
+      targets:
+      - vdu_ids_detection
+      type: tosca.policies.nfv.VduInitialDelta
+  - vdu_ids_detection_scaling_delta:
+      properties:
+        aspect: ids_detection_scaling
+        deltas:
+          delta_1:
+            number_of_instances: 1
+      targets:
+      - vdu_ids_detection
+      type: tosca.policies.nfv.VduScalingAspectDeltas
+  - vdu_ids_analysis_initial_delta:
+      properties:
+        initial_delta:
+          number_of_instances: 2
+      targets:
+      - vdu_ids_analysis
+      type: tosca.policies.nfv.VduInitialDelta
+  - vdu_ids_analysis_scaling_delta:
+      properties:
+        aspect: ids_analysis_scaling
+        deltas:
+          delta_1:
+            number_of_instances: 1
+      targets:
+      - vdu_ids_analysis
+      type: tosca.policies.nfv.VduScalingAspectDeltas
+  - instantiation_levels:
+      properties:
+        default_level: default
+        levels:
+          default:
+            description: Default instantiation level
+            scale_info:
+              ids_analysis_scaling:
+                scale_level: 0
+              ids_detection_scaling:
+                scale_level: 0
+          large:
+            description: Large instantiation level
+            scale_info:
+              ids_analysis_scaling:
+                scale_level: 2
+              ids_detection_scaling:
+                scale_level: 3
+          medium:
+            description: Medium instantiation level
+            scale_info:
+              ids_analysis_scaling:
+                scale_level: 1
+              ids_detection_scaling:
+                scale_level: 1
+      type: tosca.policies.nfv.InstantiationLevels
+  - vdu_ids_detection_instantiation_levels:
+      properties:
+        levels:
+          default:
+            number_of_instances: 2
+          large:
+            number_of_instances: 5
+          medium:
+            number_of_instances: 3
+      targets:
+      - vdu_ids_detection
+      type: tosca.policies.nfv.VduInstantiationLevels
+  - vdu_ids_analysis_instantiation_levels:
+      properties:
+        levels:
+          default:
+            number_of_instances: 2
+          large:
+            number_of_instances: 4
+          medium:
+            number_of_instances: 3
+      targets:
+      - vdu_ids_analysis
+      type: tosca.policies.nfv.VduInstantiationLevels
+  substitution_mappings:
+    node_type: tosca.nodes.nfv.IDS_VNF
+    requirements:
+      virtual_link_external:
+      - extCp_mgmt
+      - internal_virtual_link
+  workflows:
+    declarative_deploy:
+      description: Deployment declarative workflow
+      steps:
+        configure_cp_ids_analysis_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_ids_analysis_data
+          target: cp_ids_analysis_data
+        configure_cp_ids_analysis_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_ids_analysis_mgmt
+          target: cp_ids_analysis_mgmt
+        configure_cp_ids_detection_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_ids_detection_data
+          target: cp_ids_detection_data
+        configure_cp_ids_detection_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_ids_detection_mgmt
+          target: cp_ids_detection_mgmt
+        configure_extCp_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_extCp_mgmt
+          target: extCp_mgmt
+        configure_intVL_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_data
+          target: intVL_data
+        configure_intVL_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_mgmt
+          target: intVL_mgmt
+        configure_vdu_ids_analysis:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_ids_analysis
+          target: vdu_ids_analysis
+        configure_vdu_ids_detection:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_ids_detection
+          target: vdu_ids_detection
+        create_cp_ids_analysis_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_ids_analysis_data
+          target: cp_ids_analysis_data
+        create_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_ids_analysis_mgmt
+          target: cp_ids_analysis_mgmt
+        create_cp_ids_detection_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_ids_detection_data
+          target: cp_ids_detection_data
+        create_cp_ids_detection_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_ids_detection_mgmt
+          target: cp_ids_detection_mgmt
+        create_extCp_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_extCp_mgmt
+          target: extCp_mgmt
+        create_intVL_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_data
+          target: intVL_data
+        create_intVL_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_mgmt
+          target: intVL_mgmt
+        create_vdu_ids_analysis:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_ids_analysis
+          target: vdu_ids_analysis
+        create_vdu_ids_detection:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_ids_detection
+          target: vdu_ids_detection
+        post_configure_cp_ids_analysis_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_ids_analysis_data
+          target: cp_ids_analysis_data
+        post_configure_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_ids_analysis_mgmt
+          target: cp_ids_analysis_mgmt
+        post_configure_cp_ids_detection_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_ids_detection_data
+          target: cp_ids_detection_data
+        post_configure_cp_ids_detection_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_ids_detection_mgmt
+          target: cp_ids_detection_mgmt
+        post_configure_extCp_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_extCp_mgmt
+          target: extCp_mgmt
+        post_configure_intVL_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_data
+          target: intVL_data
+        post_configure_intVL_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_mgmt
+          target: intVL_mgmt
+        post_configure_vdu_ids_analysis:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_ids_analysis
+          target: vdu_ids_analysis
+        post_configure_vdu_ids_detection:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_ids_detection
+          target: vdu_ids_detection
+        pre_configure_cp_ids_analysis_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_ids_analysis_data
+          target: cp_ids_analysis_data
+        pre_configure_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_ids_analysis_mgmt
+          target: cp_ids_analysis_mgmt
+        pre_configure_cp_ids_detection_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_ids_detection_data
+          target: cp_ids_detection_data
+        pre_configure_cp_ids_detection_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_ids_detection_mgmt
+          target: cp_ids_detection_mgmt
+        pre_configure_extCp_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_extCp_mgmt
+          target: extCp_mgmt
+        pre_configure_intVL_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_data
+          target: intVL_data
+        pre_configure_intVL_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_mgmt
+          target: intVL_mgmt
+        pre_configure_vdu_ids_analysis:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_ids_analysis
+          target: vdu_ids_analysis
+        pre_configure_vdu_ids_detection:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_ids_detection
+          target: vdu_ids_detection
+        start_cp_ids_analysis_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_ids_analysis_data
+        start_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_ids_analysis_mgmt
+        start_cp_ids_detection_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_ids_detection_data
+        start_cp_ids_detection_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_ids_detection_mgmt
+        start_extCp_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: extCp_mgmt
+        start_intVL_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_ids_detection_data
+          - create_cp_ids_analysis_data
+          target: intVL_data
+        start_intVL_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_ids_detection_mgmt
+          - create_cp_ids_analysis_mgmt
+          target: intVL_mgmt
+        start_vdu_ids_analysis:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_ids_analysis_mgmt
+          - create_cp_ids_analysis_data
+          target: vdu_ids_analysis
+        start_vdu_ids_detection:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_ids_detection_mgmt
+          - create_cp_ids_detection_data
+          target: vdu_ids_detection
+    declarative_undeploy:
+      description: Undeployment declarative workflow
+      steps:
+        delete_cp_ids_analysis_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_ids_analysis
+          - stop_intVL_data
+          target: cp_ids_analysis_data
+        delete_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_ids_analysis
+          - stop_intVL_mgmt
+          target: cp_ids_analysis_mgmt
+        delete_cp_ids_detection_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_ids_detection
+          - stop_intVL_data
+          target: cp_ids_detection_data
+        delete_cp_ids_detection_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_ids_detection
+          - stop_intVL_mgmt
+          target: cp_ids_detection_mgmt
+        delete_extCp_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: extCp_mgmt
+        delete_intVL_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_data
+        delete_intVL_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_mgmt
+        delete_vdu_ids_analysis:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_ids_analysis
+        delete_vdu_ids_detection:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_ids_detection
+        stop_cp_ids_analysis_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_ids_analysis_data
+          target: cp_ids_analysis_data
+        stop_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_ids_analysis_mgmt
+          target: cp_ids_analysis_mgmt
+        stop_cp_ids_detection_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_ids_detection_data
+          target: cp_ids_detection_data
+        stop_cp_ids_detection_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_ids_detection_mgmt
+          target: cp_ids_detection_mgmt
+        stop_extCp_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_extCp_mgmt
+          target: extCp_mgmt
+        stop_intVL_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_data
+          target: intVL_data
+        stop_intVL_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_mgmt
+          target: intVL_mgmt
+        stop_vdu_ids_analysis:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_ids_analysis
+          target: vdu_ids_analysis
+        stop_vdu_ids_detection:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_ids_detection
+          target: vdu_ids_detection
+    parallel_deploy:
+      description: Parallel deployment declarative workflow
+      steps:
+        configure_cp_ids_analysis_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_ids_analysis_data
+          target: cp_ids_analysis_data
+        configure_cp_ids_analysis_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_ids_analysis_mgmt
+          target: cp_ids_analysis_mgmt
+        configure_cp_ids_detection_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_ids_detection_data
+          target: cp_ids_detection_data
+        configure_cp_ids_detection_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_cp_ids_detection_mgmt
+          target: cp_ids_detection_mgmt
+        configure_extCp_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_extCp_mgmt
+          target: extCp_mgmt
+        configure_intVL_data:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_data
+          target: intVL_data
+        configure_intVL_mgmt:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_intVL_mgmt
+          target: intVL_mgmt
+        configure_vdu_ids_analysis:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_ids_analysis
+          target: vdu_ids_analysis
+        configure_vdu_ids_detection:
+          activities:
+          - call_operation: Standard.configure
+          on_success:
+          - post_configure_vdu_ids_detection
+          target: vdu_ids_detection
+        create_cp_ids_analysis_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_ids_analysis_data
+          target: cp_ids_analysis_data
+        create_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_ids_analysis_mgmt
+          target: cp_ids_analysis_mgmt
+        create_cp_ids_detection_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_ids_detection_data
+          target: cp_ids_detection_data
+        create_cp_ids_detection_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_cp_ids_detection_mgmt
+          target: cp_ids_detection_mgmt
+        create_extCp_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_extCp_mgmt
+          target: extCp_mgmt
+        create_intVL_data:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_data
+          target: intVL_data
+        create_intVL_mgmt:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_intVL_mgmt
+          target: intVL_mgmt
+        create_vdu_ids_analysis:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_ids_analysis
+          target: vdu_ids_analysis
+        create_vdu_ids_detection:
+          activities:
+          - set_state: creating
+          - call_operation: Standard.create
+          - set_state: created
+          on_success:
+          - pre_configure_vdu_ids_detection
+          target: vdu_ids_detection
+        post_configure_cp_ids_analysis_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_ids_analysis_data
+          target: cp_ids_analysis_data
+        post_configure_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_ids_analysis_mgmt
+          target: cp_ids_analysis_mgmt
+        post_configure_cp_ids_detection_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_ids_detection_data
+          target: cp_ids_detection_data
+        post_configure_cp_ids_detection_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_cp_ids_detection_mgmt
+          target: cp_ids_detection_mgmt
+        post_configure_extCp_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_extCp_mgmt
+          target: extCp_mgmt
+        post_configure_intVL_data:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_data
+          target: intVL_data
+        post_configure_intVL_mgmt:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_intVL_mgmt
+          target: intVL_mgmt
+        post_configure_vdu_ids_analysis:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_ids_analysis
+          target: vdu_ids_analysis
+        post_configure_vdu_ids_detection:
+          activities:
+          - set_state: configured
+          on_success:
+          - start_vdu_ids_detection
+          target: vdu_ids_detection
+        pre_configure_cp_ids_analysis_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_ids_analysis_data
+          target: cp_ids_analysis_data
+        pre_configure_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_ids_analysis_mgmt
+          target: cp_ids_analysis_mgmt
+        pre_configure_cp_ids_detection_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_ids_detection_data
+          target: cp_ids_detection_data
+        pre_configure_cp_ids_detection_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_cp_ids_detection_mgmt
+          target: cp_ids_detection_mgmt
+        pre_configure_extCp_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_extCp_mgmt
+          target: extCp_mgmt
+        pre_configure_intVL_data:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_data
+          target: intVL_data
+        pre_configure_intVL_mgmt:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_intVL_mgmt
+          target: intVL_mgmt
+        pre_configure_vdu_ids_analysis:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_ids_analysis
+          target: vdu_ids_analysis
+        pre_configure_vdu_ids_detection:
+          activities:
+          - set_state: configuring
+          on_success:
+          - configure_vdu_ids_detection
+          target: vdu_ids_detection
+        start_cp_ids_analysis_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_ids_analysis_data
+        start_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_ids_analysis_mgmt
+        start_cp_ids_detection_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_ids_detection_data
+        start_cp_ids_detection_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: cp_ids_detection_mgmt
+        start_extCp_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          target: extCp_mgmt
+        start_intVL_data:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_ids_detection_data
+          - create_cp_ids_analysis_data
+          target: intVL_data
+        start_intVL_mgmt:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_ids_detection_mgmt
+          - create_cp_ids_analysis_mgmt
+          target: intVL_mgmt
+        start_vdu_ids_analysis:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_ids_analysis_mgmt
+          - create_cp_ids_analysis_data
+          target: vdu_ids_analysis
+        start_vdu_ids_detection:
+          activities:
+          - set_state: starting
+          - call_operation: Standard.start
+          - set_state: started
+          on_success:
+          - create_cp_ids_detection_mgmt
+          - create_cp_ids_detection_data
+          target: vdu_ids_detection
+    parallel_undeploy:
+      description: Parallel undeployment declarative workflow
+      steps:
+        delete_cp_ids_analysis_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_ids_analysis
+          - stop_intVL_data
+          target: cp_ids_analysis_data
+        delete_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_ids_analysis
+          - stop_intVL_mgmt
+          target: cp_ids_analysis_mgmt
+        delete_cp_ids_detection_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_ids_detection
+          - stop_intVL_data
+          target: cp_ids_detection_data
+        delete_cp_ids_detection_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          on_success:
+          - stop_vdu_ids_detection
+          - stop_intVL_mgmt
+          target: cp_ids_detection_mgmt
+        delete_extCp_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: extCp_mgmt
+        delete_intVL_data:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_data
+        delete_intVL_mgmt:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: intVL_mgmt
+        delete_vdu_ids_analysis:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_ids_analysis
+        delete_vdu_ids_detection:
+          activities:
+          - set_state: deleting
+          - call_operation: Standard.delete
+          - set_state: initial
+          target: vdu_ids_detection
+        stop_cp_ids_analysis_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_ids_analysis_data
+          target: cp_ids_analysis_data
+        stop_cp_ids_analysis_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_ids_analysis_mgmt
+          target: cp_ids_analysis_mgmt
+        stop_cp_ids_detection_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_ids_detection_data
+          target: cp_ids_detection_data
+        stop_cp_ids_detection_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_cp_ids_detection_mgmt
+          target: cp_ids_detection_mgmt
+        stop_extCp_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_extCp_mgmt
+          target: extCp_mgmt
+        stop_intVL_data:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_data
+          target: intVL_data
+        stop_intVL_mgmt:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_intVL_mgmt
+          target: intVL_mgmt
+        stop_vdu_ids_analysis:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_ids_analysis
+          target: vdu_ids_analysis
+        stop_vdu_ids_detection:
+          activities:
+          - set_state: stopping
+          - call_operation: Standard.stop
+          - set_state: stopped
+          on_success:
+          - delete_vdu_ids_detection
+          target: vdu_ids_detection
+tosca_definitions_version: tosca_simple_yaml_1_3
