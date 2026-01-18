@@ -1,7 +1,5 @@
 graph ToscaDiagram {
   rankdir="LR"
-  subgraph clusterSubstitutionMappings {
-    label="tosca.nodes.nfv.MultiVNF_NS"
     subgraph clustervl_mgmt_network {
       color=white
       label=""
@@ -16,22 +14,10 @@ graph ToscaDiagram {
       vl_data_network_capability_virtual_linkable[label="virtual_linkable" shape=cds style=filled fillcolor=orange]
       vl_data_network_capability_virtual_linkable -- vl_data_network
     }
-    subgraph clustervl_vnf1_to_vnf2 {
-      color=white
-      label=""
-      vl_vnf1_to_vnf2[label="vl_vnf1_to_vnf2: NsVirtualLink|\l\l\l\l" shape=record style=rounded]
-    }
-    subgraph clustervl_vnf2_to_cnf {
-      color=white
-      label=""
-      vl_vnf2_to_cnf[label="vl_vnf2_to_cnf: NsVirtualLink|\l\l\l\l" shape=record style=rounded]
-      vl_vnf2_to_cnf_capability_virtual_linkable[label="virtual_linkable" shape=cds style=filled fillcolor=orange]
-      vl_vnf2_to_cnf_capability_virtual_linkable -- vl_vnf2_to_cnf
-    }
     subgraph clustervnf1_instance {
       color=white
       label=""
-      vnf1_instance[label="vnf1_instance: example_VNF1|\l\l\l\l" shape=record style=rounded]
+      vnf1_instance[label="vnf1_instance: Firewall_VNF|\l\l\l\l" shape=record style=rounded]
       vnf1_instance_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
       vnf1_instance -- vnf1_instance_requirement_virtual_link
       vnf1_instance_requirement_virtual_link_external[label="virtual_link_external" shape=cds style=filled fillcolor=turquoise]
@@ -40,7 +26,7 @@ graph ToscaDiagram {
     subgraph clustervnf2_instance {
       color=white
       label=""
-      vnf2_instance[label="vnf2_instance: example_VNF2|\l\l\l\l" shape=record style=rounded]
+      vnf2_instance[label="vnf2_instance: IDS_VNF|\l\l\l\l" shape=record style=rounded]
       vnf2_instance_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
       vnf2_instance -- vnf2_instance_requirement_virtual_link
       vnf2_instance_requirement_virtual_link_external[label="virtual_link_external" shape=cds style=filled fillcolor=turquoise]
@@ -49,7 +35,7 @@ graph ToscaDiagram {
     subgraph clustercnf_instance {
       color=white
       label=""
-      cnf_instance[label="cnf_instance: example_CNF|\l\l\l\l" shape=record style=rounded]
+      cnf_instance[label="cnf_instance: Proxy_CNF|\l\l\l\l" shape=record style=rounded]
       cnf_instance_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
       cnf_instance -- cnf_instance_requirement_virtual_link
       cnf_instance_requirement_virtual_link_external[label="virtual_link_external" shape=cds style=filled fillcolor=turquoise]
@@ -59,8 +45,6 @@ graph ToscaDiagram {
       color=white
       label=""
       sap_mgmt[label="sap_mgmt: Sap|\l\l\l\l" shape=record style=rounded]
-      sap_mgmt_requirement_external_virtual_link[label="external_virtual_link" shape=cds style=filled fillcolor=turquoise]
-      sap_mgmt -- sap_mgmt_requirement_external_virtual_link
       sap_mgmt_requirement_internal_virtual_link[label="internal_virtual_link" shape=cds style=filled fillcolor=turquoise]
       sap_mgmt -- sap_mgmt_requirement_internal_virtual_link
     }
@@ -75,11 +59,8 @@ graph ToscaDiagram {
     vnf1_instance_requirement_virtual_link_external -- vl_mgmt_network_capability_virtual_linkable[style=dotted]
     vnf2_instance_requirement_virtual_link -- vl_data_network_capability_virtual_linkable[style=dotted]
     vnf2_instance_requirement_virtual_link_external -- vl_mgmt_network_capability_virtual_linkable[style=dotted]
-    cnf_instance_requirement_virtual_link -- vl_vnf2_to_cnf_capability_virtual_linkable[style=dotted]
+    cnf_instance_requirement_virtual_link -- vl_data_network_capability_virtual_linkable[style=dotted]
     cnf_instance_requirement_virtual_link_external -- vl_mgmt_network_capability_virtual_linkable[style=dotted]
     sap_mgmt_requirement_internal_virtual_link -- vl_mgmt_network_capability_virtual_linkable[style=dotted]
     sap_data_requirement_internal_virtual_link -- vl_data_network_capability_virtual_linkable[style=dotted]
-  }
-  topology_template_substitution_mappings_requirement_virtual_link[label="virtual_link" shape=cds style=filled fillcolor=turquoise]
-  sap_mgmt_requirement_external_virtual_link -- topology_template_substitution_mappings_requirement_virtual_link[style=dotted]
 }

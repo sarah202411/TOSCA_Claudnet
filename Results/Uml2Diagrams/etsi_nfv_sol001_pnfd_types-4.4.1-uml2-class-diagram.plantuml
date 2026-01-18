@@ -1,0 +1,72 @@
+@startuml
+set namespaceSeparator none
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.LocationInfo"
+class "tosca.datatypes.nfv.LocationInfo" << (D,green) >> {
+.. properties ..
++<b>country_code : string
++civic_address_element : list<tosca.datatypes.nfv.CivicAddressElement>
++geographic_coordinates : tosca.datatypes.nfv.GeographicCoordinates
+}
+"tosca.datatypes.nfv.LocationInfo" *-- "*" "tosca.datatypes.nfv.CivicAddressElement" : civic_address_element
+"tosca.datatypes.nfv.LocationInfo" *-- "1" "tosca.datatypes.nfv.GeographicCoordinates" : geographic_coordinates
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.CivicAddressElement"
+class "tosca.datatypes.nfv.CivicAddressElement" << (D,green) >> {
+.. properties ..
++<b>ca_type : string
++<b>ca_value : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.GeographicCoordinates"
+class "tosca.datatypes.nfv.GeographicCoordinates" << (D,green) >> {
+.. properties ..
++latitude_uncertainty : string
++<b>latitude : string
++longitude_uncertainty : string
++<b>longitude : string
++<b>altitude_type : string
++altitude_uncertainty : string
++<b>altitude : string
+}
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.PNF"
+class "tosca.nodes.nfv.PNF" << (N,green) >> {
+.. properties ..
++<b>descriptor_id : string
++<b>function_description : string
++<b>provider : string
++<b>version : string
++<b>descriptor_invariant_id : string
++ext_invariant_id : string
++<b>name : string
++geographical_location_info : tosca.datatypes.nfv.LocationInfo
++version_dependency : list<tosca.datatypes.nfv.VersionDependency>
+.. requirements ..
++virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[0..1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
+}
+"tosca.nodes.nfv.PNF" *-- "1" "tosca.datatypes.nfv.LocationInfo" : geographical_location_info
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.PNF" *- "0..1" "tosca.capabilities.nfv.VirtualLinkable" : virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.PNF" ..> "tosca.relationships.nfv.VirtualLinksTo" : virtual_link.relationship
+class "tosca.nodes.nfv.Cp" << (N,green) >> #DDDDDD
+"tosca.nodes.nfv.Cp" <|-- "tosca.nodes.nfv.PnfExtCp"
+class "tosca.nodes.nfv.PnfExtCp" << (N,green) >> {
+.. requirements ..
++external_virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[0..1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
+}
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.PnfExtCp" *- "0..1" "tosca.capabilities.nfv.VirtualLinkable" : external_virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.PnfExtCp" ..> "tosca.relationships.nfv.VirtualLinksTo" : external_virtual_link.relationship
+class "tosca.policies.nfv.Abstract.SecurityGroupRule" << (P,green) >> #DDDDDD
+"tosca.policies.nfv.Abstract.SecurityGroupRule" <|-- "tosca.policies.nfv.PnfSecurityGroupRule"
+class "tosca.policies.nfv.PnfSecurityGroupRule" << (P,green) >> {
+}
+"tosca.policies.nfv.PnfSecurityGroupRule" ..> "*" "tosca.nodes.nfv.PnfExtCp" : targets
+@enduml

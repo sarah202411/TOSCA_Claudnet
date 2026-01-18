@@ -3,7 +3,7 @@
 // --------------------------------------------------
 
 // tosca_definitions_version: tosca_simple_yaml_1_3
-// description: Network Service Descriptor for interconnecting VNF1, VNF2, and CNF
+// description: Network Service Descriptor (Final Version)
 
 open cloudnet/LocationGraphs
 open cloudnet/TOSCA
@@ -19,63 +19,6 @@ open VNF2_scalable
 open CNF3_scalable
 
 // --------------------------------------------------
-// Node Types
-// --------------------------------------------------
-
-sig tosca_nodes_nfv_MultiVNF_NS extends tosca_nodes_nfv_NS
-{
-  // --------------------------------------------------
-  // Properties
-  // --------------------------------------------------
-
-  // YAML descriptor_id: {'type': 'string', 'default': 'multi-vnf-ns-001'}
-  // NOTE: descriptor_id overloaded
-
-  // YAML designer: {'type': 'string', 'default': 'MyCompany'}
-  // NOTE: designer overloaded
-
-  // YAML version: {'type': 'string', 'default': '1.0'}
-  // NOTE: version overloaded
-
-  // YAML name: {'type': 'string', 'default': 'Multi-VNF Network Service'}
-  // NOTE: name overloaded
-
-  // YAML invariant_id: {'type': 'string', 'default': 'multi-vnf-ns-invariant-001'}
-  // NOTE: invariant_id overloaded
-
-  // YAML flavour_id: {'type': 'string', 'default': 'default_flavour'}
-  // NOTE: flavour_id overloaded
-
-  // YAML flavour_description: {'type': 'string', 'default': 'Default flavour for multi-VNF network service'}
-  property_flavour_description: one string,
-
-} {
-  // --------------------------------------------------
-  // Properties
-  // --------------------------------------------------
-
-
-}
-
-/** There exists some tosca.nodes.nfv.MultiVNF_NS */
-run Show_tosca_nodes_nfv_MultiVNF_NS {
-  tosca_nodes_nfv_MultiVNF_NS.no_name[]
-} for 5 but
-  8 Int,
-  5 seq,
-  // NOTE: Setting following scopes strongly reduces the research space.
-  exactly 0 LocationGraphs/LocationGraph,
-  exactly 1 LocationGraphs/Location,
-  exactly 35 LocationGraphs/Value,
-  exactly 1 LocationGraphs/Name,
-  exactly 1 LocationGraphs/Sort,
-  exactly 1 LocationGraphs/Process,
-  exactly 0 TOSCA/Group,
-  exactly 0 TOSCA/Policy,
-  exactly 1 tosca_nodes_nfv_MultiVNF_NS
-  expect 1
-
-// --------------------------------------------------
 // Topology Template
 // --------------------------------------------------
 
@@ -85,39 +28,31 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // YAML node_templates:
   // --------------------------------------------------
 
-  // YAML vl_mgmt_network: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'mesh'}, 'description': 'Management network for all VNFs and CNF', 'vl_profile': {'max_bitrate_requirements': {'root': 1000000, 'leaf': 100000}, 'min_bitrate_requirements': {'root': 100000, 'leaf': 10000}, 'qos': {'priority': 2, 'latency': '10 ms', 'packet_delay_variation': '5 ms', 'packet_loss_ratio': 0.001}, 'service_availability_level': 7}, 'test_access': []}}
+  // YAML vl_mgmt_network: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'mesh'}, 'vl_profile': {'max_bitrate_requirements': {'root': 1000000}, 'min_bitrate_requirements': {'root': 100000}}}}
   // YAML type: tosca.nodes.nfv.NsVirtualLink
   vl_mgmt_network: one tosca_nodes_nfv_NsVirtualLink,
 
-  // YAML vl_data_network: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'line'}, 'description': 'Data plane network connecting VNF1, VNF2, and CNF', 'vl_profile': {'max_bitrate_requirements': {'root': 10000000, 'leaf': 1000000}, 'min_bitrate_requirements': {'root': 1000000, 'leaf': 100000}, 'qos': {'priority': 1, 'latency': '5 ms', 'packet_delay_variation': '2 ms', 'packet_loss_ratio': 0.0001}, 'service_availability_level': 7}, 'test_access': []}}
+  // YAML vl_data_network: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'line'}, 'vl_profile': {'max_bitrate_requirements': {'root': 10000000}, 'min_bitrate_requirements': {'root': 1000000}}}}
   // YAML type: tosca.nodes.nfv.NsVirtualLink
   vl_data_network: one tosca_nodes_nfv_NsVirtualLink,
 
-  // YAML vl_vnf1_to_vnf2: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'line'}, 'description': 'Direct link from VNF1 to VNF2', 'vl_profile': {'max_bitrate_requirements': {'root': 5000000, 'leaf': 500000}, 'min_bitrate_requirements': {'root': 500000, 'leaf': 50000}, 'qos': {'priority': 1, 'latency': '3 ms', 'packet_delay_variation': '1 ms', 'packet_loss_ratio': 0.0001}}, 'test_access': []}}
-  // YAML type: tosca.nodes.nfv.NsVirtualLink
-  vl_vnf1_to_vnf2: one tosca_nodes_nfv_NsVirtualLink,
+  // YAML vnf1_instance: {'type': 'tosca.nodes.nfv.Firewall_VNF', 'properties': {'flavour_id': 'scalable_ha'}, 'requirements': [{'virtual_link': 'vl_mgmt_network'}, {'virtual_link_external': 'vl_mgmt_network'}]}
+  // YAML type: tosca.nodes.nfv.Firewall_VNF
+  vnf1_instance: one tosca_nodes_nfv_Firewall_VNF,
 
-  // YAML vl_vnf2_to_cnf: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'line'}, 'description': 'Direct link from VNF2 to CNF', 'vl_profile': {'max_bitrate_requirements': {'root': 5000000, 'leaf': 500000}, 'min_bitrate_requirements': {'root': 500000, 'leaf': 50000}, 'qos': {'priority': 1, 'latency': '3 ms', 'packet_delay_variation': '1 ms', 'packet_loss_ratio': 0.0001}}, 'test_access': []}}
-  // YAML type: tosca.nodes.nfv.NsVirtualLink
-  vl_vnf2_to_cnf: one tosca_nodes_nfv_NsVirtualLink,
+  // YAML vnf2_instance: {'type': 'tosca.nodes.nfv.IDS_VNF', 'properties': {'flavour_id': 'scalable_ha'}, 'requirements': [{'virtual_link': 'vl_data_network'}, {'virtual_link_external': 'vl_mgmt_network'}]}
+  // YAML type: tosca.nodes.nfv.IDS_VNF
+  vnf2_instance: one tosca_nodes_nfv_IDS_VNF,
 
-  // YAML vnf1_instance: {'type': 'tosca.nodes.nfv.example_VNF1', 'properties': {'flavour_id': 'scalable_ha'}, 'requirements': [{'virtual_link': 'vl_mgmt_network'}, {'virtual_link_external': 'vl_mgmt_network'}]}
-  // YAML type: tosca.nodes.nfv.example_VNF1
-  vnf1_instance: one tosca_nodes_nfv_example_VNF1,
+  // YAML cnf_instance: {'type': 'tosca.nodes.nfv.Proxy_CNF', 'properties': {'flavour_id': 'scalable_ha_container'}, 'requirements': [{'virtual_link': 'vl_data_network'}, {'virtual_link_external': 'vl_mgmt_network'}]}
+  // YAML type: tosca.nodes.nfv.Proxy_CNF
+  cnf_instance: one tosca_nodes_nfv_Proxy_CNF,
 
-  // YAML vnf2_instance: {'type': 'tosca.nodes.nfv.example_VNF2', 'properties': {'flavour_id': 'scalable_ha'}, 'requirements': [{'virtual_link': 'vl_data_network'}, {'virtual_link_external': 'vl_mgmt_network'}]}
-  // YAML type: tosca.nodes.nfv.example_VNF2
-  vnf2_instance: one tosca_nodes_nfv_example_VNF2,
-
-  // YAML cnf_instance: {'type': 'tosca.nodes.nfv.example_CNF', 'properties': {'flavour_id': 'scalable_ha_container'}, 'requirements': [{'virtual_link': 'vl_vnf2_to_cnf'}, {'virtual_link_external': 'vl_mgmt_network'}]}
-  // YAML type: tosca.nodes.nfv.example_CNF
-  cnf_instance: one tosca_nodes_nfv_example_CNF,
-
-  // YAML sap_mgmt: {'type': 'tosca.nodes.nfv.Sap', 'properties': {'layer_protocols': ['ipv4'], 'role': 'root', 'description': 'Service access point for management', 'protocol': [], 'trunk_mode': False}, 'requirements': [{'internal_virtual_link': 'vl_mgmt_network'}]}
+  // YAML sap_mgmt: {'type': 'tosca.nodes.nfv.Sap', 'properties': {'layer_protocols': ['ipv4'], 'role': 'root'}, 'requirements': [{'internal_virtual_link': 'vl_mgmt_network'}]}
   // YAML type: tosca.nodes.nfv.Sap
   sap_mgmt: one tosca_nodes_nfv_Sap,
 
-  // YAML sap_data: {'type': 'tosca.nodes.nfv.Sap', 'properties': {'layer_protocols': ['ipv4'], 'role': 'root', 'description': 'Service access point for data plane', 'protocol': [], 'trunk_mode': False}, 'requirements': [{'internal_virtual_link': 'vl_data_network'}]}
+  // YAML sap_data: {'type': 'tosca.nodes.nfv.Sap', 'properties': {'layer_protocols': ['ipv4'], 'role': 'root'}, 'requirements': [{'internal_virtual_link': 'vl_data_network'}]}
   // YAML type: tosca.nodes.nfv.Sap
   sap_data: one tosca_nodes_nfv_Sap,
 
@@ -133,45 +68,29 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // YAML policies:
   // --------------------------------------------------
 
-  // YAML ns_instantiation_levels: {'type': 'tosca.policies.nfv.NsInstantiationLevels', 'properties': {'ns_levels': {'default': {'description': 'Default instantiation level'}, 'small': {'description': 'Small deployment with minimal resources'}, 'medium': {'description': 'Medium deployment with moderate resources'}, 'large': {'description': 'Large deployment with maximum resources'}}, 'default_level': 'default'}}
+  // YAML ns_instantiation_levels: {'type': 'tosca.policies.nfv.NsInstantiationLevels', 'properties': {'ns_levels': {'small': {'description': 'Déploiement minimal'}, 'medium': {'description': 'Déploiement moyen'}, 'large': {'description': 'Déploiement haute performance'}}, 'default_level': 'small'}}
   // YAML type: tosca.policies.nfv.NsInstantiationLevels
   policy_ns_instantiation_levels: one tosca_policies_nfv_NsInstantiationLevels,
 
-  // YAML vnf1_to_level_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['vnf1_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'default': 1, 'small': 1, 'medium': 2, 'large': 3}}}
+  // YAML vnf1_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['vnf1_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'small': 1, 'medium': 2, 'large': 3}}}
   // YAML type: tosca.policies.nfv.VnfToLevelMapping
-  policy_vnf1_to_level_mapping: one tosca_policies_nfv_VnfToLevelMapping,
+  policy_vnf1_mapping: one tosca_policies_nfv_VnfToLevelMapping,
 
-  // YAML vnf2_to_level_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['vnf2_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'default': 1, 'small': 1, 'medium': 2, 'large': 3}}}
+  // YAML vnf2_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['vnf2_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'small': 1, 'medium': 2, 'large': 3}}}
   // YAML type: tosca.policies.nfv.VnfToLevelMapping
-  policy_vnf2_to_level_mapping: one tosca_policies_nfv_VnfToLevelMapping,
+  policy_vnf2_mapping: one tosca_policies_nfv_VnfToLevelMapping,
 
-  // YAML cnf_to_level_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['cnf_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'default': 1, 'small': 1, 'medium': 2, 'large': 3}}}
+  // YAML cnf_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['cnf_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'small': 1, 'medium': 2, 'large': 3}}}
   // YAML type: tosca.policies.nfv.VnfToLevelMapping
-  policy_cnf_to_level_mapping: one tosca_policies_nfv_VnfToLevelMapping,
+  policy_cnf_mapping: one tosca_policies_nfv_VnfToLevelMapping,
 
-  // YAML vl_mgmt_to_level_mapping: {'type': 'tosca.policies.nfv.VirtualLinkToLevelMapping', 'targets': ['vl_mgmt_network'], 'properties': {'aspect': 'ns_scaling_aspect', 'bit_rate_requirements': {'default': {'root': 100000, 'leaf': 10000}, 'small': {'root': 100000, 'leaf': 10000}, 'medium': {'root': 500000, 'leaf': 50000}, 'large': {'root': 1000000, 'leaf': 100000}}}}
-  // YAML type: tosca.policies.nfv.VirtualLinkToLevelMapping
-  policy_vl_mgmt_to_level_mapping: one tosca_policies_nfv_VirtualLinkToLevelMapping,
-
-  // YAML vl_data_to_level_mapping: {'type': 'tosca.policies.nfv.VirtualLinkToLevelMapping', 'targets': ['vl_data_network'], 'properties': {'aspect': 'ns_scaling_aspect', 'bit_rate_requirements': {'default': {'root': 1000000, 'leaf': 100000}, 'small': {'root': 1000000, 'leaf': 100000}, 'medium': {'root': 5000000, 'leaf': 500000}, 'large': {'root': 10000000, 'leaf': 1000000}}}}
-  // YAML type: tosca.policies.nfv.VirtualLinkToLevelMapping
-  policy_vl_data_to_level_mapping: one tosca_policies_nfv_VirtualLinkToLevelMapping,
-
-  // YAML ns_scaling_aspects: {'type': 'tosca.policies.nfv.NsScalingAspects', 'properties': {'aspects': {'ns_scaling_aspect': {'name': 'ns_scaling_aspect', 'description': 'Network Service horizontal scaling', 'ns_scale_levels': {0: {'description': 'Base level'}, 1: {'description': 'Scale level 1'}, 2: {'description': 'Scale level 2'}, 3: {'description': 'Maximum scale level'}}}}}}
+  // YAML ns_scaling_aspects: {'type': 'tosca.policies.nfv.NsScalingAspects', 'properties': {'aspects': {'ns_scaling_aspect': {'name': 'ns_scaling_aspect', 'description': 'Scaling horizontal', 'ns_scale_levels': {0: {'description': 'Base'}, 1: {'description': 'Niveau 1'}, 2: {'description': 'Niveau 2'}, 3: {'description': 'Maximum'}}}}}}
   // YAML type: tosca.policies.nfv.NsScalingAspects
   policy_ns_scaling_aspects: one tosca_policies_nfv_NsScalingAspects,
 
   // --------------------------------------------------
   // YAML outputs:
   // --------------------------------------------------
-
-  // --------------------------------------------------
-  // YAML substitution_mappings:
-  // --------------------------------------------------
-
-  // YAML substitution_mappings: {'node_type': 'tosca.nodes.nfv.MultiVNF_NS', 'requirements': [{'virtual_link': ['sap_mgmt', 'external_virtual_link']}]}
-  // YAML node_type: tosca.nodes.nfv.MultiVNF_NS
-  substitution_mappings: one tosca_nodes_nfv_MultiVNF_NS,
 
 } {
   // YAML description: None
@@ -181,73 +100,33 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // YAML inputs:
   // --------------------------------------------------
 
-  #inputs = 2
-  // YAML inputs:
-  // YAML   external_mgmt_network:
-  one input_external_mgmt_network : input["external_mgmt_network"] {
-    // YAML type: string
-    input_external_mgmt_network.type = "string"
-    input_external_mgmt_network.type[string]
-    // YAML description: External management network ID
-    input_external_mgmt_network.description = "External management network ID"
-    // YAML required: true
-    input_external_mgmt_network.required[true]
-    // YAML  default: ext-mgmt-net
-    (string<:input_external_mgmt_network.default) = "ext-mgmt-net"
-    // YAML status: supported
-    input_external_mgmt_network.status = "supported"
-    no input_external_mgmt_network.external_schema
-    no input_external_mgmt_network.metadata
-  }
-  // YAML   external_data_network:
-  one input_external_data_network : input["external_data_network"] {
-    // YAML type: string
-    input_external_data_network.type = "string"
-    input_external_data_network.type[string]
-    // YAML description: External data network ID
-    input_external_data_network.description = "External data network ID"
-    // YAML required: true
-    input_external_data_network.required[true]
-    // YAML  default: ext-data-net
-    (string<:input_external_data_network.default) = "ext-data-net"
-    // YAML status: supported
-    input_external_data_network.status = "supported"
-    no input_external_data_network.external_schema
-    no input_external_data_network.metadata
-  }
+  no inputs
 
   // --------------------------------------------------
   // YAML node_templates:
   // --------------------------------------------------
 
-  #nodes = 9
-  // YAML vl_mgmt_network: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'mesh'}, 'description': 'Management network for all VNFs and CNF', 'vl_profile': {'max_bitrate_requirements': {'root': 1000000, 'leaf': 100000}, 'min_bitrate_requirements': {'root': 100000, 'leaf': 10000}, 'qos': {'priority': 2, 'latency': '10 ms', 'packet_delay_variation': '5 ms', 'packet_loss_ratio': 0.001}, 'service_availability_level': 7}, 'test_access': []}}
+  #nodes = 7
+  // YAML vl_mgmt_network: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'mesh'}, 'vl_profile': {'max_bitrate_requirements': {'root': 1000000}, 'min_bitrate_requirements': {'root': 100000}}}}
   node[vl_mgmt_network]
   vl_mgmt_network.name["vl_mgmt_network"]
   vl_mgmt_network.node_type_name = "tosca.nodes.nfv.NsVirtualLink"
   // YAML properties:
-  // YAML vl_profile: {'max_bitrate_requirements': {'root': 1000000, 'leaf': 100000}, 'min_bitrate_requirements': {'root': 100000, 'leaf': 10000}, 'qos': {'priority': 2, 'latency': '10 ms', 'packet_delay_variation': '5 ms', 'packet_loss_ratio': 0.001}, 'service_availability_level': 7}
-  // YAML max_bitrate_requirements: {'root': 1000000, 'leaf': 100000}
+  // YAML vl_profile: {'max_bitrate_requirements': {'root': 1000000}, 'min_bitrate_requirements': {'root': 100000}}
+  // YAML max_bitrate_requirements: {'root': 1000000}
   // YAML root: 1000000
   vl_mgmt_network.property_vl_profile.max_bitrate_requirements.root = 127 // ISSUE: 1000000 is a too big integer!!!
-  // YAML leaf: 100000
-  vl_mgmt_network.property_vl_profile.max_bitrate_requirements.leaf = 127 // ISSUE: 100000 is a too big integer!!!
-  // YAML min_bitrate_requirements: {'root': 100000, 'leaf': 10000}
+  // NOTE: The property 'leaf' is not required.
+  no   vl_mgmt_network.property_vl_profile.max_bitrate_requirements.leaf
+  // YAML min_bitrate_requirements: {'root': 100000}
   // YAML root: 100000
   vl_mgmt_network.property_vl_profile.min_bitrate_requirements.root = 127 // ISSUE: 100000 is a too big integer!!!
-  // YAML leaf: 10000
-  vl_mgmt_network.property_vl_profile.min_bitrate_requirements.leaf = 127 // ISSUE: 10000 is a too big integer!!!
-  // YAML qos: {'priority': 2, 'latency': '10 ms', 'packet_delay_variation': '5 ms', 'packet_loss_ratio': 0.001}
-  // YAML latency: 10 ms
-  vl_mgmt_network.property_vl_profile.qos.latency.init[10, ms]
-  // YAML packet_delay_variation: 5 ms
-  vl_mgmt_network.property_vl_profile.qos.packet_delay_variation.init[5, ms]
-  // YAML packet_loss_ratio: 0.001
-  vl_mgmt_network.property_vl_profile.qos.packet_loss_ratio = "0.001"
-  // YAML priority: 2
-  vl_mgmt_network.property_vl_profile.qos.priority = 2
-  // YAML service_availability_level: 7
-  vl_mgmt_network.property_vl_profile.service_availability_level = 7
+  // NOTE: The property 'leaf' is not required.
+  no   vl_mgmt_network.property_vl_profile.min_bitrate_requirements.leaf
+  // NOTE: The property 'qos' is not required.
+  no   vl_mgmt_network.property_vl_profile.qos
+  // NOTE: The property 'service_availability_level' is not required.
+  no   vl_mgmt_network.property_vl_profile.service_availability_level
   // NOTE: The property 'virtual_link_protocol_data' is not required.
   no   vl_mgmt_network.property_vl_profile.virtual_link_protocol_data
   // NOTE: The property 'data_flow_mirroring' is not required.
@@ -258,10 +137,10 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   vl_mgmt_network.property_connectivity_type.layer_protocols[0] = "ipv4"
   // YAML flow_pattern: mesh
   vl_mgmt_network.property_connectivity_type.flow_pattern = "mesh"
-  // YAML test_access: []
-  no vl_mgmt_network.property_test_access
-  // YAML description: Management network for all VNFs and CNF
-  vl_mgmt_network.property_description = "Management network for all VNFs and CNF"
+  // NOTE: The property 'test_access' is not required.
+  no   vl_mgmt_network.property_test_access
+  // NOTE: The property 'description' is not required.
+  no   vl_mgmt_network.property_description
   // YAML interfaces:
   #vl_mgmt_network.interfaces = 1
   // YAML Standard:
@@ -287,33 +166,26 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // YAML   feature: None
   // YAML   virtual_linkable: None
 
-  // YAML vl_data_network: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'line'}, 'description': 'Data plane network connecting VNF1, VNF2, and CNF', 'vl_profile': {'max_bitrate_requirements': {'root': 10000000, 'leaf': 1000000}, 'min_bitrate_requirements': {'root': 1000000, 'leaf': 100000}, 'qos': {'priority': 1, 'latency': '5 ms', 'packet_delay_variation': '2 ms', 'packet_loss_ratio': 0.0001}, 'service_availability_level': 7}, 'test_access': []}}
+  // YAML vl_data_network: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'line'}, 'vl_profile': {'max_bitrate_requirements': {'root': 10000000}, 'min_bitrate_requirements': {'root': 1000000}}}}
   node[vl_data_network]
   vl_data_network.name["vl_data_network"]
   vl_data_network.node_type_name = "tosca.nodes.nfv.NsVirtualLink"
   // YAML properties:
-  // YAML vl_profile: {'max_bitrate_requirements': {'root': 10000000, 'leaf': 1000000}, 'min_bitrate_requirements': {'root': 1000000, 'leaf': 100000}, 'qos': {'priority': 1, 'latency': '5 ms', 'packet_delay_variation': '2 ms', 'packet_loss_ratio': 0.0001}, 'service_availability_level': 7}
-  // YAML max_bitrate_requirements: {'root': 10000000, 'leaf': 1000000}
+  // YAML vl_profile: {'max_bitrate_requirements': {'root': 10000000}, 'min_bitrate_requirements': {'root': 1000000}}
+  // YAML max_bitrate_requirements: {'root': 10000000}
   // YAML root: 10000000
   vl_data_network.property_vl_profile.max_bitrate_requirements.root = 127 // ISSUE: 10000000 is a too big integer!!!
-  // YAML leaf: 1000000
-  vl_data_network.property_vl_profile.max_bitrate_requirements.leaf = 127 // ISSUE: 1000000 is a too big integer!!!
-  // YAML min_bitrate_requirements: {'root': 1000000, 'leaf': 100000}
+  // NOTE: The property 'leaf' is not required.
+  no   vl_data_network.property_vl_profile.max_bitrate_requirements.leaf
+  // YAML min_bitrate_requirements: {'root': 1000000}
   // YAML root: 1000000
   vl_data_network.property_vl_profile.min_bitrate_requirements.root = 127 // ISSUE: 1000000 is a too big integer!!!
-  // YAML leaf: 100000
-  vl_data_network.property_vl_profile.min_bitrate_requirements.leaf = 127 // ISSUE: 100000 is a too big integer!!!
-  // YAML qos: {'priority': 1, 'latency': '5 ms', 'packet_delay_variation': '2 ms', 'packet_loss_ratio': 0.0001}
-  // YAML latency: 5 ms
-  vl_data_network.property_vl_profile.qos.latency.init[5, ms]
-  // YAML packet_delay_variation: 2 ms
-  vl_data_network.property_vl_profile.qos.packet_delay_variation.init[2, ms]
-  // YAML packet_loss_ratio: 0.0001
-  vl_data_network.property_vl_profile.qos.packet_loss_ratio = "0.0001"
-  // YAML priority: 1
-  vl_data_network.property_vl_profile.qos.priority = 1
-  // YAML service_availability_level: 7
-  vl_data_network.property_vl_profile.service_availability_level = 7
+  // NOTE: The property 'leaf' is not required.
+  no   vl_data_network.property_vl_profile.min_bitrate_requirements.leaf
+  // NOTE: The property 'qos' is not required.
+  no   vl_data_network.property_vl_profile.qos
+  // NOTE: The property 'service_availability_level' is not required.
+  no   vl_data_network.property_vl_profile.service_availability_level
   // NOTE: The property 'virtual_link_protocol_data' is not required.
   no   vl_data_network.property_vl_profile.virtual_link_protocol_data
   // NOTE: The property 'data_flow_mirroring' is not required.
@@ -324,10 +196,10 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   vl_data_network.property_connectivity_type.layer_protocols[0] = "ipv4"
   // YAML flow_pattern: line
   vl_data_network.property_connectivity_type.flow_pattern = "line"
-  // YAML test_access: []
-  no vl_data_network.property_test_access
-  // YAML description: Data plane network connecting VNF1, VNF2, and CNF
-  vl_data_network.property_description = "Data plane network connecting VNF1, VNF2, and CNF"
+  // NOTE: The property 'test_access' is not required.
+  no   vl_data_network.property_test_access
+  // NOTE: The property 'description' is not required.
+  no   vl_data_network.property_description
   // YAML interfaces:
   #vl_data_network.interfaces = 1
   // YAML Standard:
@@ -353,145 +225,13 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // YAML   feature: None
   // YAML   virtual_linkable: None
 
-  // YAML vl_vnf1_to_vnf2: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'line'}, 'description': 'Direct link from VNF1 to VNF2', 'vl_profile': {'max_bitrate_requirements': {'root': 5000000, 'leaf': 500000}, 'min_bitrate_requirements': {'root': 500000, 'leaf': 50000}, 'qos': {'priority': 1, 'latency': '3 ms', 'packet_delay_variation': '1 ms', 'packet_loss_ratio': 0.0001}}, 'test_access': []}}
-  node[vl_vnf1_to_vnf2]
-  vl_vnf1_to_vnf2.name["vl_vnf1_to_vnf2"]
-  vl_vnf1_to_vnf2.node_type_name = "tosca.nodes.nfv.NsVirtualLink"
-  // YAML properties:
-  // YAML vl_profile: {'max_bitrate_requirements': {'root': 5000000, 'leaf': 500000}, 'min_bitrate_requirements': {'root': 500000, 'leaf': 50000}, 'qos': {'priority': 1, 'latency': '3 ms', 'packet_delay_variation': '1 ms', 'packet_loss_ratio': 0.0001}}
-  // YAML max_bitrate_requirements: {'root': 5000000, 'leaf': 500000}
-  // YAML root: 5000000
-  vl_vnf1_to_vnf2.property_vl_profile.max_bitrate_requirements.root = 127 // ISSUE: 5000000 is a too big integer!!!
-  // YAML leaf: 500000
-  vl_vnf1_to_vnf2.property_vl_profile.max_bitrate_requirements.leaf = 127 // ISSUE: 500000 is a too big integer!!!
-  // YAML min_bitrate_requirements: {'root': 500000, 'leaf': 50000}
-  // YAML root: 500000
-  vl_vnf1_to_vnf2.property_vl_profile.min_bitrate_requirements.root = 127 // ISSUE: 500000 is a too big integer!!!
-  // YAML leaf: 50000
-  vl_vnf1_to_vnf2.property_vl_profile.min_bitrate_requirements.leaf = 127 // ISSUE: 50000 is a too big integer!!!
-  // YAML qos: {'priority': 1, 'latency': '3 ms', 'packet_delay_variation': '1 ms', 'packet_loss_ratio': 0.0001}
-  // YAML latency: 3 ms
-  vl_vnf1_to_vnf2.property_vl_profile.qos.latency.init[3, ms]
-  // YAML packet_delay_variation: 1 ms
-  vl_vnf1_to_vnf2.property_vl_profile.qos.packet_delay_variation.init[1, ms]
-  // YAML packet_loss_ratio: 0.0001
-  vl_vnf1_to_vnf2.property_vl_profile.qos.packet_loss_ratio = "0.0001"
-  // YAML priority: 1
-  vl_vnf1_to_vnf2.property_vl_profile.qos.priority = 1
-  // NOTE: The property 'service_availability_level' is not required.
-  no   vl_vnf1_to_vnf2.property_vl_profile.service_availability_level
-  // NOTE: The property 'virtual_link_protocol_data' is not required.
-  no   vl_vnf1_to_vnf2.property_vl_profile.virtual_link_protocol_data
-  // NOTE: The property 'data_flow_mirroring' is not required.
-  no   vl_vnf1_to_vnf2.property_vl_profile.data_flow_mirroring
-  // YAML connectivity_type: {'layer_protocols': ['ipv4'], 'flow_pattern': 'line'}
-  // YAML layer_protocols: ['ipv4']
-  #vl_vnf1_to_vnf2.property_connectivity_type.layer_protocols = 1
-  vl_vnf1_to_vnf2.property_connectivity_type.layer_protocols[0] = "ipv4"
-  // YAML flow_pattern: line
-  vl_vnf1_to_vnf2.property_connectivity_type.flow_pattern = "line"
-  // YAML test_access: []
-  no vl_vnf1_to_vnf2.property_test_access
-  // YAML description: Direct link from VNF1 to VNF2
-  vl_vnf1_to_vnf2.property_description = "Direct link from VNF1 to VNF2"
-  // YAML interfaces:
-  #vl_vnf1_to_vnf2.interfaces = 1
-  // YAML Standard:
-  // YAML create: {'description': 'Standard lifecycle create operation.'}
-  no vl_vnf1_to_vnf2.interface_Standard.operation_create.implementation
-  no vl_vnf1_to_vnf2.interface_Standard.operation_create.inputs
-  // YAML configure: {'description': 'Standard lifecycle configure operation.'}
-  no vl_vnf1_to_vnf2.interface_Standard.operation_configure.implementation
-  no vl_vnf1_to_vnf2.interface_Standard.operation_configure.inputs
-  // YAML start: {'description': 'Standard lifecycle start operation.'}
-  no vl_vnf1_to_vnf2.interface_Standard.operation_start.implementation
-  no vl_vnf1_to_vnf2.interface_Standard.operation_start.inputs
-  // YAML stop: {'description': 'Standard lifecycle stop operation.'}
-  no vl_vnf1_to_vnf2.interface_Standard.operation_stop.implementation
-  no vl_vnf1_to_vnf2.interface_Standard.operation_stop.inputs
-  // YAML delete: {'description': 'Standard lifecycle delete operation.'}
-  no vl_vnf1_to_vnf2.interface_Standard.operation_delete.implementation
-  no vl_vnf1_to_vnf2.interface_Standard.operation_delete.inputs
-  #vl_vnf1_to_vnf2.interface_Standard.operations = 5
-  // YAML artifacts:
-  no vl_vnf1_to_vnf2.artifacts
-  // YAML capabilities:
-  // YAML   feature: None
-  // YAML   virtual_linkable: None
-
-  // YAML vl_vnf2_to_cnf: {'type': 'tosca.nodes.nfv.NsVirtualLink', 'properties': {'connectivity_type': {'layer_protocols': ['ipv4'], 'flow_pattern': 'line'}, 'description': 'Direct link from VNF2 to CNF', 'vl_profile': {'max_bitrate_requirements': {'root': 5000000, 'leaf': 500000}, 'min_bitrate_requirements': {'root': 500000, 'leaf': 50000}, 'qos': {'priority': 1, 'latency': '3 ms', 'packet_delay_variation': '1 ms', 'packet_loss_ratio': 0.0001}}, 'test_access': []}}
-  node[vl_vnf2_to_cnf]
-  vl_vnf2_to_cnf.name["vl_vnf2_to_cnf"]
-  vl_vnf2_to_cnf.node_type_name = "tosca.nodes.nfv.NsVirtualLink"
-  // YAML properties:
-  // YAML vl_profile: {'max_bitrate_requirements': {'root': 5000000, 'leaf': 500000}, 'min_bitrate_requirements': {'root': 500000, 'leaf': 50000}, 'qos': {'priority': 1, 'latency': '3 ms', 'packet_delay_variation': '1 ms', 'packet_loss_ratio': 0.0001}}
-  // YAML max_bitrate_requirements: {'root': 5000000, 'leaf': 500000}
-  // YAML root: 5000000
-  vl_vnf2_to_cnf.property_vl_profile.max_bitrate_requirements.root = 127 // ISSUE: 5000000 is a too big integer!!!
-  // YAML leaf: 500000
-  vl_vnf2_to_cnf.property_vl_profile.max_bitrate_requirements.leaf = 127 // ISSUE: 500000 is a too big integer!!!
-  // YAML min_bitrate_requirements: {'root': 500000, 'leaf': 50000}
-  // YAML root: 500000
-  vl_vnf2_to_cnf.property_vl_profile.min_bitrate_requirements.root = 127 // ISSUE: 500000 is a too big integer!!!
-  // YAML leaf: 50000
-  vl_vnf2_to_cnf.property_vl_profile.min_bitrate_requirements.leaf = 127 // ISSUE: 50000 is a too big integer!!!
-  // YAML qos: {'priority': 1, 'latency': '3 ms', 'packet_delay_variation': '1 ms', 'packet_loss_ratio': 0.0001}
-  // YAML latency: 3 ms
-  vl_vnf2_to_cnf.property_vl_profile.qos.latency.init[3, ms]
-  // YAML packet_delay_variation: 1 ms
-  vl_vnf2_to_cnf.property_vl_profile.qos.packet_delay_variation.init[1, ms]
-  // YAML packet_loss_ratio: 0.0001
-  vl_vnf2_to_cnf.property_vl_profile.qos.packet_loss_ratio = "0.0001"
-  // YAML priority: 1
-  vl_vnf2_to_cnf.property_vl_profile.qos.priority = 1
-  // NOTE: The property 'service_availability_level' is not required.
-  no   vl_vnf2_to_cnf.property_vl_profile.service_availability_level
-  // NOTE: The property 'virtual_link_protocol_data' is not required.
-  no   vl_vnf2_to_cnf.property_vl_profile.virtual_link_protocol_data
-  // NOTE: The property 'data_flow_mirroring' is not required.
-  no   vl_vnf2_to_cnf.property_vl_profile.data_flow_mirroring
-  // YAML connectivity_type: {'layer_protocols': ['ipv4'], 'flow_pattern': 'line'}
-  // YAML layer_protocols: ['ipv4']
-  #vl_vnf2_to_cnf.property_connectivity_type.layer_protocols = 1
-  vl_vnf2_to_cnf.property_connectivity_type.layer_protocols[0] = "ipv4"
-  // YAML flow_pattern: line
-  vl_vnf2_to_cnf.property_connectivity_type.flow_pattern = "line"
-  // YAML test_access: []
-  no vl_vnf2_to_cnf.property_test_access
-  // YAML description: Direct link from VNF2 to CNF
-  vl_vnf2_to_cnf.property_description = "Direct link from VNF2 to CNF"
-  // YAML interfaces:
-  #vl_vnf2_to_cnf.interfaces = 1
-  // YAML Standard:
-  // YAML create: {'description': 'Standard lifecycle create operation.'}
-  no vl_vnf2_to_cnf.interface_Standard.operation_create.implementation
-  no vl_vnf2_to_cnf.interface_Standard.operation_create.inputs
-  // YAML configure: {'description': 'Standard lifecycle configure operation.'}
-  no vl_vnf2_to_cnf.interface_Standard.operation_configure.implementation
-  no vl_vnf2_to_cnf.interface_Standard.operation_configure.inputs
-  // YAML start: {'description': 'Standard lifecycle start operation.'}
-  no vl_vnf2_to_cnf.interface_Standard.operation_start.implementation
-  no vl_vnf2_to_cnf.interface_Standard.operation_start.inputs
-  // YAML stop: {'description': 'Standard lifecycle stop operation.'}
-  no vl_vnf2_to_cnf.interface_Standard.operation_stop.implementation
-  no vl_vnf2_to_cnf.interface_Standard.operation_stop.inputs
-  // YAML delete: {'description': 'Standard lifecycle delete operation.'}
-  no vl_vnf2_to_cnf.interface_Standard.operation_delete.implementation
-  no vl_vnf2_to_cnf.interface_Standard.operation_delete.inputs
-  #vl_vnf2_to_cnf.interface_Standard.operations = 5
-  // YAML artifacts:
-  no vl_vnf2_to_cnf.artifacts
-  // YAML capabilities:
-  // YAML   feature: None
-  // YAML   virtual_linkable: None
-
-  // YAML vnf1_instance: {'type': 'tosca.nodes.nfv.example_VNF1', 'properties': {'flavour_id': 'scalable_ha'}, 'requirements': [{'virtual_link': 'vl_mgmt_network'}, {'virtual_link_external': 'vl_mgmt_network'}]}
+  // YAML vnf1_instance: {'type': 'tosca.nodes.nfv.Firewall_VNF', 'properties': {'flavour_id': 'scalable_ha'}, 'requirements': [{'virtual_link': 'vl_mgmt_network'}, {'virtual_link_external': 'vl_mgmt_network'}]}
   node[vnf1_instance]
   vnf1_instance.name["vnf1_instance"]
-  vnf1_instance.node_type_name = "tosca.nodes.nfv.example_VNF1"
+  vnf1_instance.node_type_name = "tosca.nodes.nfv.Firewall_VNF"
   // YAML properties:
   // NOTE: The property 'descriptor_id' is set to its default value.
-  vnf1_instance.property_descriptor_id = "vnf1-vm-based"
+  vnf1_instance.property_descriptor_id = "firewall-vnfd-1.0"
   // NOTE: The property 'ext_invariant_id' is not required.
   no   vnf1_instance.property_ext_invariant_id
   // NOTE: The property 'descriptor_version' is set to its default value.
@@ -499,7 +239,7 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // NOTE: The property 'provider' is set to its default value.
   vnf1_instance.property_provider = "MyCompany"
   // NOTE: The property 'product_name' is set to its default value.
-  vnf1_instance.property_product_name = "VNF1_VM"
+  vnf1_instance.property_product_name = "Firewall_VM"
   // NOTE: The property 'software_version' is set to its default value.
   vnf1_instance.property_software_version = "1.0"
   // NOTE: The property 'product_info_name' is not required.
@@ -524,7 +264,7 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // YAML flavour_id: scalable_ha
   vnf1_instance.property_flavour_id = "scalable_ha"
   // NOTE: The property 'flavour_description' is set to its default value.
-  vnf1_instance.property_flavour_description = "Scalable flavour with HA support"
+  vnf1_instance.property_flavour_description = "Scalable flavour with HA support for Firewall"
   // NOTE: The property 'vnf_profile' is not required.
   no   vnf1_instance.property_vnf_profile
   // YAML interfaces:
@@ -725,13 +465,13 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   no vnf1_instance.requirement_virtual_link_external.relationship.interface_Configure.operation_remove_target.inputs
   #vnf1_instance.requirement_virtual_link_external.relationship.interface_Configure.operations = 8
 
-  // YAML vnf2_instance: {'type': 'tosca.nodes.nfv.example_VNF2', 'properties': {'flavour_id': 'scalable_ha'}, 'requirements': [{'virtual_link': 'vl_data_network'}, {'virtual_link_external': 'vl_mgmt_network'}]}
+  // YAML vnf2_instance: {'type': 'tosca.nodes.nfv.IDS_VNF', 'properties': {'flavour_id': 'scalable_ha'}, 'requirements': [{'virtual_link': 'vl_data_network'}, {'virtual_link_external': 'vl_mgmt_network'}]}
   node[vnf2_instance]
   vnf2_instance.name["vnf2_instance"]
-  vnf2_instance.node_type_name = "tosca.nodes.nfv.example_VNF2"
+  vnf2_instance.node_type_name = "tosca.nodes.nfv.IDS_VNF"
   // YAML properties:
   // NOTE: The property 'descriptor_id' is set to its default value.
-  vnf2_instance.property_descriptor_id = "vnf2-vm-based"
+  vnf2_instance.property_descriptor_id = "ids-vnfd-1.0"
   // NOTE: The property 'ext_invariant_id' is not required.
   no   vnf2_instance.property_ext_invariant_id
   // NOTE: The property 'descriptor_version' is set to its default value.
@@ -739,7 +479,7 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // NOTE: The property 'provider' is set to its default value.
   vnf2_instance.property_provider = "MyCompany"
   // NOTE: The property 'product_name' is set to its default value.
-  vnf2_instance.property_product_name = "VNF2_VM"
+  vnf2_instance.property_product_name = "IDS_VM"
   // NOTE: The property 'software_version' is set to its default value.
   vnf2_instance.property_software_version = "1.0"
   // NOTE: The property 'product_info_name' is not required.
@@ -764,7 +504,7 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // YAML flavour_id: scalable_ha
   vnf2_instance.property_flavour_id = "scalable_ha"
   // NOTE: The property 'flavour_description' is set to its default value.
-  vnf2_instance.property_flavour_description = "Scalable flavour with HA support"
+  vnf2_instance.property_flavour_description = "Scalable flavour with HA support for IDS"
   // NOTE: The property 'vnf_profile' is not required.
   no   vnf2_instance.property_vnf_profile
   // YAML interfaces:
@@ -965,13 +705,13 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   no vnf2_instance.requirement_virtual_link_external.relationship.interface_Configure.operation_remove_target.inputs
   #vnf2_instance.requirement_virtual_link_external.relationship.interface_Configure.operations = 8
 
-  // YAML cnf_instance: {'type': 'tosca.nodes.nfv.example_CNF', 'properties': {'flavour_id': 'scalable_ha_container'}, 'requirements': [{'virtual_link': 'vl_vnf2_to_cnf'}, {'virtual_link_external': 'vl_mgmt_network'}]}
+  // YAML cnf_instance: {'type': 'tosca.nodes.nfv.Proxy_CNF', 'properties': {'flavour_id': 'scalable_ha_container'}, 'requirements': [{'virtual_link': 'vl_data_network'}, {'virtual_link_external': 'vl_mgmt_network'}]}
   node[cnf_instance]
   cnf_instance.name["cnf_instance"]
-  cnf_instance.node_type_name = "tosca.nodes.nfv.example_CNF"
+  cnf_instance.node_type_name = "tosca.nodes.nfv.Proxy_CNF"
   // YAML properties:
   // NOTE: The property 'descriptor_id' is set to its default value.
-  cnf_instance.property_descriptor_id = "cnf-container-based"
+  cnf_instance.property_descriptor_id = "proxy-container-based"
   // NOTE: The property 'ext_invariant_id' is not required.
   no   cnf_instance.property_ext_invariant_id
   // NOTE: The property 'descriptor_version' is set to its default value.
@@ -979,7 +719,7 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // NOTE: The property 'provider' is set to its default value.
   cnf_instance.property_provider = "MyCompany"
   // NOTE: The property 'product_name' is set to its default value.
-  cnf_instance.property_product_name = "CNF_Container"
+  cnf_instance.property_product_name = "Proxy_CNF"
   // NOTE: The property 'software_version' is set to its default value.
   cnf_instance.property_software_version = "1.0"
   // NOTE: The property 'product_info_name' is not required.
@@ -1004,7 +744,7 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // YAML flavour_id: scalable_ha_container
   cnf_instance.property_flavour_id = "scalable_ha_container"
   // NOTE: The property 'flavour_description' is set to its default value.
-  cnf_instance.property_flavour_description = "Scalable containerized flavour with HA support"
+  cnf_instance.property_flavour_description = "Scalable containerized flavour with HA support for Proxy"
   // NOTE: The property 'vnf_profile' is not required.
   no   cnf_instance.property_vnf_profile
   // YAML interfaces:
@@ -1142,8 +882,8 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   no cnf_instance.artifacts
   // YAML capabilities:
   // YAML   feature: None
-  // YAML virtual_link: vl_vnf2_to_cnf
-  connect[cnf_instance.requirement_virtual_link, vl_vnf2_to_cnf.capability_virtual_linkable]
+  // YAML virtual_link: vl_data_network
+  connect[cnf_instance.requirement_virtual_link, vl_data_network.capability_virtual_linkable]
   cnf_instance.requirement_virtual_link.relationship._name_ = "(anonymous)"
   // YAML interfaces:
   #cnf_instance.requirement_virtual_link.relationship.interfaces = 1
@@ -1205,7 +945,7 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   no cnf_instance.requirement_virtual_link_external.relationship.interface_Configure.operation_remove_target.inputs
   #cnf_instance.requirement_virtual_link_external.relationship.interface_Configure.operations = 8
 
-  // YAML sap_mgmt: {'type': 'tosca.nodes.nfv.Sap', 'properties': {'layer_protocols': ['ipv4'], 'role': 'root', 'description': 'Service access point for management', 'protocol': [], 'trunk_mode': False}, 'requirements': [{'internal_virtual_link': 'vl_mgmt_network'}]}
+  // YAML sap_mgmt: {'type': 'tosca.nodes.nfv.Sap', 'properties': {'layer_protocols': ['ipv4'], 'role': 'root'}, 'requirements': [{'internal_virtual_link': 'vl_mgmt_network'}]}
   node[sap_mgmt]
   sap_mgmt.name["sap_mgmt"]
   sap_mgmt.node_type_name = "tosca.nodes.nfv.Sap"
@@ -1217,12 +957,12 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   no   sap_mgmt.property_ip_stack_mode
   // YAML role: root
   sap_mgmt.property_role = "root"
-  // YAML description: Service access point for management
-  sap_mgmt.property_description = "Service access point for management"
-  // YAML protocol: []
-  no sap_mgmt.property_protocol
-  // YAML trunk_mode: False
-  sap_mgmt.property_trunk_mode = false
+  // NOTE: The property 'description' is not required.
+  no   sap_mgmt.property_description
+  // NOTE: The property 'protocol' is not required.
+  no   sap_mgmt.property_protocol
+  // NOTE: The property 'trunk_mode' is not required.
+  no   sap_mgmt.property_trunk_mode
   // YAML interfaces:
   #sap_mgmt.interfaces = 1
   // YAML Standard:
@@ -1279,7 +1019,7 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   no sap_mgmt.requirement_internal_virtual_link.relationship.interface_Configure.operation_remove_target.inputs
   #sap_mgmt.requirement_internal_virtual_link.relationship.interface_Configure.operations = 8
 
-  // YAML sap_data: {'type': 'tosca.nodes.nfv.Sap', 'properties': {'layer_protocols': ['ipv4'], 'role': 'root', 'description': 'Service access point for data plane', 'protocol': [], 'trunk_mode': False}, 'requirements': [{'internal_virtual_link': 'vl_data_network'}]}
+  // YAML sap_data: {'type': 'tosca.nodes.nfv.Sap', 'properties': {'layer_protocols': ['ipv4'], 'role': 'root'}, 'requirements': [{'internal_virtual_link': 'vl_data_network'}]}
   node[sap_data]
   sap_data.name["sap_data"]
   sap_data.node_type_name = "tosca.nodes.nfv.Sap"
@@ -1291,12 +1031,12 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   no   sap_data.property_ip_stack_mode
   // YAML role: root
   sap_data.property_role = "root"
-  // YAML description: Service access point for data plane
-  sap_data.property_description = "Service access point for data plane"
-  // YAML protocol: []
-  no sap_data.property_protocol
-  // YAML trunk_mode: False
-  sap_data.property_trunk_mode = false
+  // NOTE: The property 'description' is not required.
+  no   sap_data.property_description
+  // NOTE: The property 'protocol' is not required.
+  no   sap_data.property_protocol
+  // NOTE: The property 'trunk_mode' is not required.
+  no   sap_data.property_trunk_mode
   // YAML interfaces:
   #sap_data.interfaces = 1
   // YAML Standard:
@@ -1370,192 +1110,115 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // YAML policies:
   // --------------------------------------------------
 
-  #policies = 7
-  // YAML ns_instantiation_levels: {'type': 'tosca.policies.nfv.NsInstantiationLevels', 'properties': {'ns_levels': {'default': {'description': 'Default instantiation level'}, 'small': {'description': 'Small deployment with minimal resources'}, 'medium': {'description': 'Medium deployment with moderate resources'}, 'large': {'description': 'Large deployment with maximum resources'}}, 'default_level': 'default'}}
+  #policies = 5
+  // YAML ns_instantiation_levels: {'type': 'tosca.policies.nfv.NsInstantiationLevels', 'properties': {'ns_levels': {'small': {'description': 'Déploiement minimal'}, 'medium': {'description': 'Déploiement moyen'}, 'large': {'description': 'Déploiement haute performance'}}, 'default_level': 'small'}}
   policy[policy_ns_instantiation_levels]
   policy_ns_instantiation_levels.name["ns_instantiation_levels"]
   // YAML properties:
-  // YAML ns_levels: {'default': {'description': 'Default instantiation level'}, 'small': {'description': 'Small deployment with minimal resources'}, 'medium': {'description': 'Medium deployment with moderate resources'}, 'large': {'description': 'Large deployment with maximum resources'}}
-  policy_ns_instantiation_levels.property_ns_levels.size[4]
-  policy_ns_instantiation_levels.property_ns_levels.one_entry["default"]
-  // YAML description: Default instantiation level
-  (tosca_datatypes_nfv_NsLevels<:(policy_ns_instantiation_levels.property_ns_levels.entry["default"])).description = "Default instantiation level"
+  // YAML ns_levels: {'small': {'description': 'Déploiement minimal'}, 'medium': {'description': 'Déploiement moyen'}, 'large': {'description': 'Déploiement haute performance'}}
+  policy_ns_instantiation_levels.property_ns_levels.size[3]
   policy_ns_instantiation_levels.property_ns_levels.one_entry["small"]
-  // YAML description: Small deployment with minimal resources
-  (tosca_datatypes_nfv_NsLevels<:(policy_ns_instantiation_levels.property_ns_levels.entry["small"])).description = "Small deployment with minimal resources"
+  // YAML description: Déploiement minimal
+  (tosca_datatypes_nfv_NsLevels<:(policy_ns_instantiation_levels.property_ns_levels.entry["small"])).description = "Déploiement minimal"
   policy_ns_instantiation_levels.property_ns_levels.one_entry["medium"]
-  // YAML description: Medium deployment with moderate resources
-  (tosca_datatypes_nfv_NsLevels<:(policy_ns_instantiation_levels.property_ns_levels.entry["medium"])).description = "Medium deployment with moderate resources"
+  // YAML description: Déploiement moyen
+  (tosca_datatypes_nfv_NsLevels<:(policy_ns_instantiation_levels.property_ns_levels.entry["medium"])).description = "Déploiement moyen"
   policy_ns_instantiation_levels.property_ns_levels.one_entry["large"]
-  // YAML description: Large deployment with maximum resources
-  (tosca_datatypes_nfv_NsLevels<:(policy_ns_instantiation_levels.property_ns_levels.entry["large"])).description = "Large deployment with maximum resources"
-  policy_ns_instantiation_levels.property_ns_levels.keys["default" + "small" + "medium" + "large"]
-  // YAML default_level: default
-  policy_ns_instantiation_levels.property_default_level = "default"
+  // YAML description: Déploiement haute performance
+  (tosca_datatypes_nfv_NsLevels<:(policy_ns_instantiation_levels.property_ns_levels.entry["large"])).description = "Déploiement haute performance"
+  policy_ns_instantiation_levels.property_ns_levels.keys["small" + "medium" + "large"]
+  // YAML default_level: small
+  policy_ns_instantiation_levels.property_default_level = "small"
   // YAML interfaces:
   no policy_ns_instantiation_levels.interfaces
   // YAML targets: None
   no policy_ns_instantiation_levels.targets
 
-  // YAML vnf1_to_level_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['vnf1_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'default': 1, 'small': 1, 'medium': 2, 'large': 3}}}
-  policy[policy_vnf1_to_level_mapping]
-  policy_vnf1_to_level_mapping.name["vnf1_to_level_mapping"]
+  // YAML vnf1_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['vnf1_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'small': 1, 'medium': 2, 'large': 3}}}
+  policy[policy_vnf1_mapping]
+  policy_vnf1_mapping.name["vnf1_mapping"]
   // YAML properties:
   // YAML aspect: ns_scaling_aspect
-  policy_vnf1_to_level_mapping.property_aspect = "ns_scaling_aspect"
-  // YAML number_of_instances: {'default': 1, 'small': 1, 'medium': 2, 'large': 3}
-  policy_vnf1_to_level_mapping.property_number_of_instances.size[4]
-  policy_vnf1_to_level_mapping.property_number_of_instances.one_entry["default"]
-  (integer<:(policy_vnf1_to_level_mapping.property_number_of_instances.entry["default"])) = 1
-  policy_vnf1_to_level_mapping.property_number_of_instances.one_entry["small"]
-  (integer<:(policy_vnf1_to_level_mapping.property_number_of_instances.entry["small"])) = 1
-  policy_vnf1_to_level_mapping.property_number_of_instances.one_entry["medium"]
-  (integer<:(policy_vnf1_to_level_mapping.property_number_of_instances.entry["medium"])) = 2
-  policy_vnf1_to_level_mapping.property_number_of_instances.one_entry["large"]
-  (integer<:(policy_vnf1_to_level_mapping.property_number_of_instances.entry["large"])) = 3
-  policy_vnf1_to_level_mapping.property_number_of_instances.keys["default" + "small" + "medium" + "large"]
+  policy_vnf1_mapping.property_aspect = "ns_scaling_aspect"
+  // YAML number_of_instances: {'small': 1, 'medium': 2, 'large': 3}
+  policy_vnf1_mapping.property_number_of_instances.size[3]
+  policy_vnf1_mapping.property_number_of_instances.one_entry["small"]
+  (integer<:(policy_vnf1_mapping.property_number_of_instances.entry["small"])) = 1
+  policy_vnf1_mapping.property_number_of_instances.one_entry["medium"]
+  (integer<:(policy_vnf1_mapping.property_number_of_instances.entry["medium"])) = 2
+  policy_vnf1_mapping.property_number_of_instances.one_entry["large"]
+  (integer<:(policy_vnf1_mapping.property_number_of_instances.entry["large"])) = 3
+  policy_vnf1_mapping.property_number_of_instances.keys["small" + "medium" + "large"]
   // YAML interfaces:
-  no policy_vnf1_to_level_mapping.interfaces
+  no policy_vnf1_mapping.interfaces
   // YAML targets: ['vnf1_instance']
-  policy_vnf1_to_level_mapping.targets[vnf1_instance]
+  policy_vnf1_mapping.targets[vnf1_instance]
 
-  // YAML vnf2_to_level_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['vnf2_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'default': 1, 'small': 1, 'medium': 2, 'large': 3}}}
-  policy[policy_vnf2_to_level_mapping]
-  policy_vnf2_to_level_mapping.name["vnf2_to_level_mapping"]
+  // YAML vnf2_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['vnf2_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'small': 1, 'medium': 2, 'large': 3}}}
+  policy[policy_vnf2_mapping]
+  policy_vnf2_mapping.name["vnf2_mapping"]
   // YAML properties:
   // YAML aspect: ns_scaling_aspect
-  policy_vnf2_to_level_mapping.property_aspect = "ns_scaling_aspect"
-  // YAML number_of_instances: {'default': 1, 'small': 1, 'medium': 2, 'large': 3}
-  policy_vnf2_to_level_mapping.property_number_of_instances.size[4]
-  policy_vnf2_to_level_mapping.property_number_of_instances.one_entry["default"]
-  (integer<:(policy_vnf2_to_level_mapping.property_number_of_instances.entry["default"])) = 1
-  policy_vnf2_to_level_mapping.property_number_of_instances.one_entry["small"]
-  (integer<:(policy_vnf2_to_level_mapping.property_number_of_instances.entry["small"])) = 1
-  policy_vnf2_to_level_mapping.property_number_of_instances.one_entry["medium"]
-  (integer<:(policy_vnf2_to_level_mapping.property_number_of_instances.entry["medium"])) = 2
-  policy_vnf2_to_level_mapping.property_number_of_instances.one_entry["large"]
-  (integer<:(policy_vnf2_to_level_mapping.property_number_of_instances.entry["large"])) = 3
-  policy_vnf2_to_level_mapping.property_number_of_instances.keys["default" + "small" + "medium" + "large"]
+  policy_vnf2_mapping.property_aspect = "ns_scaling_aspect"
+  // YAML number_of_instances: {'small': 1, 'medium': 2, 'large': 3}
+  policy_vnf2_mapping.property_number_of_instances.size[3]
+  policy_vnf2_mapping.property_number_of_instances.one_entry["small"]
+  (integer<:(policy_vnf2_mapping.property_number_of_instances.entry["small"])) = 1
+  policy_vnf2_mapping.property_number_of_instances.one_entry["medium"]
+  (integer<:(policy_vnf2_mapping.property_number_of_instances.entry["medium"])) = 2
+  policy_vnf2_mapping.property_number_of_instances.one_entry["large"]
+  (integer<:(policy_vnf2_mapping.property_number_of_instances.entry["large"])) = 3
+  policy_vnf2_mapping.property_number_of_instances.keys["small" + "medium" + "large"]
   // YAML interfaces:
-  no policy_vnf2_to_level_mapping.interfaces
+  no policy_vnf2_mapping.interfaces
   // YAML targets: ['vnf2_instance']
-  policy_vnf2_to_level_mapping.targets[vnf2_instance]
+  policy_vnf2_mapping.targets[vnf2_instance]
 
-  // YAML cnf_to_level_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['cnf_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'default': 1, 'small': 1, 'medium': 2, 'large': 3}}}
-  policy[policy_cnf_to_level_mapping]
-  policy_cnf_to_level_mapping.name["cnf_to_level_mapping"]
+  // YAML cnf_mapping: {'type': 'tosca.policies.nfv.VnfToLevelMapping', 'targets': ['cnf_instance'], 'properties': {'aspect': 'ns_scaling_aspect', 'number_of_instances': {'small': 1, 'medium': 2, 'large': 3}}}
+  policy[policy_cnf_mapping]
+  policy_cnf_mapping.name["cnf_mapping"]
   // YAML properties:
   // YAML aspect: ns_scaling_aspect
-  policy_cnf_to_level_mapping.property_aspect = "ns_scaling_aspect"
-  // YAML number_of_instances: {'default': 1, 'small': 1, 'medium': 2, 'large': 3}
-  policy_cnf_to_level_mapping.property_number_of_instances.size[4]
-  policy_cnf_to_level_mapping.property_number_of_instances.one_entry["default"]
-  (integer<:(policy_cnf_to_level_mapping.property_number_of_instances.entry["default"])) = 1
-  policy_cnf_to_level_mapping.property_number_of_instances.one_entry["small"]
-  (integer<:(policy_cnf_to_level_mapping.property_number_of_instances.entry["small"])) = 1
-  policy_cnf_to_level_mapping.property_number_of_instances.one_entry["medium"]
-  (integer<:(policy_cnf_to_level_mapping.property_number_of_instances.entry["medium"])) = 2
-  policy_cnf_to_level_mapping.property_number_of_instances.one_entry["large"]
-  (integer<:(policy_cnf_to_level_mapping.property_number_of_instances.entry["large"])) = 3
-  policy_cnf_to_level_mapping.property_number_of_instances.keys["default" + "small" + "medium" + "large"]
+  policy_cnf_mapping.property_aspect = "ns_scaling_aspect"
+  // YAML number_of_instances: {'small': 1, 'medium': 2, 'large': 3}
+  policy_cnf_mapping.property_number_of_instances.size[3]
+  policy_cnf_mapping.property_number_of_instances.one_entry["small"]
+  (integer<:(policy_cnf_mapping.property_number_of_instances.entry["small"])) = 1
+  policy_cnf_mapping.property_number_of_instances.one_entry["medium"]
+  (integer<:(policy_cnf_mapping.property_number_of_instances.entry["medium"])) = 2
+  policy_cnf_mapping.property_number_of_instances.one_entry["large"]
+  (integer<:(policy_cnf_mapping.property_number_of_instances.entry["large"])) = 3
+  policy_cnf_mapping.property_number_of_instances.keys["small" + "medium" + "large"]
   // YAML interfaces:
-  no policy_cnf_to_level_mapping.interfaces
+  no policy_cnf_mapping.interfaces
   // YAML targets: ['cnf_instance']
-  policy_cnf_to_level_mapping.targets[cnf_instance]
+  policy_cnf_mapping.targets[cnf_instance]
 
-  // YAML vl_mgmt_to_level_mapping: {'type': 'tosca.policies.nfv.VirtualLinkToLevelMapping', 'targets': ['vl_mgmt_network'], 'properties': {'aspect': 'ns_scaling_aspect', 'bit_rate_requirements': {'default': {'root': 100000, 'leaf': 10000}, 'small': {'root': 100000, 'leaf': 10000}, 'medium': {'root': 500000, 'leaf': 50000}, 'large': {'root': 1000000, 'leaf': 100000}}}}
-  policy[policy_vl_mgmt_to_level_mapping]
-  policy_vl_mgmt_to_level_mapping.name["vl_mgmt_to_level_mapping"]
-  // YAML properties:
-  // YAML aspect: ns_scaling_aspect
-  policy_vl_mgmt_to_level_mapping.property_aspect = "ns_scaling_aspect"
-  // YAML bit_rate_requirements: {'default': {'root': 100000, 'leaf': 10000}, 'small': {'root': 100000, 'leaf': 10000}, 'medium': {'root': 500000, 'leaf': 50000}, 'large': {'root': 1000000, 'leaf': 100000}}
-  policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.size[4]
-  policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.one_entry["default"]
-  // YAML root: 100000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.entry["default"])).root = 127 // ISSUE: 100000 is a too big integer!!!
-  // YAML leaf: 10000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.entry["default"])).leaf = 127 // ISSUE: 10000 is a too big integer!!!
-  policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.one_entry["small"]
-  // YAML root: 100000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.entry["small"])).root = 127 // ISSUE: 100000 is a too big integer!!!
-  // YAML leaf: 10000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.entry["small"])).leaf = 127 // ISSUE: 10000 is a too big integer!!!
-  policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.one_entry["medium"]
-  // YAML root: 500000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.entry["medium"])).root = 127 // ISSUE: 500000 is a too big integer!!!
-  // YAML leaf: 50000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.entry["medium"])).leaf = 127 // ISSUE: 50000 is a too big integer!!!
-  policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.one_entry["large"]
-  // YAML root: 1000000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.entry["large"])).root = 127 // ISSUE: 1000000 is a too big integer!!!
-  // YAML leaf: 100000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.entry["large"])).leaf = 127 // ISSUE: 100000 is a too big integer!!!
-  policy_vl_mgmt_to_level_mapping.property_bit_rate_requirements.keys["default" + "small" + "medium" + "large"]
-  // YAML interfaces:
-  no policy_vl_mgmt_to_level_mapping.interfaces
-  // YAML targets: ['vl_mgmt_network']
-  policy_vl_mgmt_to_level_mapping.targets[vl_mgmt_network]
-
-  // YAML vl_data_to_level_mapping: {'type': 'tosca.policies.nfv.VirtualLinkToLevelMapping', 'targets': ['vl_data_network'], 'properties': {'aspect': 'ns_scaling_aspect', 'bit_rate_requirements': {'default': {'root': 1000000, 'leaf': 100000}, 'small': {'root': 1000000, 'leaf': 100000}, 'medium': {'root': 5000000, 'leaf': 500000}, 'large': {'root': 10000000, 'leaf': 1000000}}}}
-  policy[policy_vl_data_to_level_mapping]
-  policy_vl_data_to_level_mapping.name["vl_data_to_level_mapping"]
-  // YAML properties:
-  // YAML aspect: ns_scaling_aspect
-  policy_vl_data_to_level_mapping.property_aspect = "ns_scaling_aspect"
-  // YAML bit_rate_requirements: {'default': {'root': 1000000, 'leaf': 100000}, 'small': {'root': 1000000, 'leaf': 100000}, 'medium': {'root': 5000000, 'leaf': 500000}, 'large': {'root': 10000000, 'leaf': 1000000}}
-  policy_vl_data_to_level_mapping.property_bit_rate_requirements.size[4]
-  policy_vl_data_to_level_mapping.property_bit_rate_requirements.one_entry["default"]
-  // YAML root: 1000000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_data_to_level_mapping.property_bit_rate_requirements.entry["default"])).root = 127 // ISSUE: 1000000 is a too big integer!!!
-  // YAML leaf: 100000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_data_to_level_mapping.property_bit_rate_requirements.entry["default"])).leaf = 127 // ISSUE: 100000 is a too big integer!!!
-  policy_vl_data_to_level_mapping.property_bit_rate_requirements.one_entry["small"]
-  // YAML root: 1000000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_data_to_level_mapping.property_bit_rate_requirements.entry["small"])).root = 127 // ISSUE: 1000000 is a too big integer!!!
-  // YAML leaf: 100000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_data_to_level_mapping.property_bit_rate_requirements.entry["small"])).leaf = 127 // ISSUE: 100000 is a too big integer!!!
-  policy_vl_data_to_level_mapping.property_bit_rate_requirements.one_entry["medium"]
-  // YAML root: 5000000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_data_to_level_mapping.property_bit_rate_requirements.entry["medium"])).root = 127 // ISSUE: 5000000 is a too big integer!!!
-  // YAML leaf: 500000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_data_to_level_mapping.property_bit_rate_requirements.entry["medium"])).leaf = 127 // ISSUE: 500000 is a too big integer!!!
-  policy_vl_data_to_level_mapping.property_bit_rate_requirements.one_entry["large"]
-  // YAML root: 10000000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_data_to_level_mapping.property_bit_rate_requirements.entry["large"])).root = 127 // ISSUE: 10000000 is a too big integer!!!
-  // YAML leaf: 1000000
-  (tosca_datatypes_nfv_LinkBitrateRequirements<:(policy_vl_data_to_level_mapping.property_bit_rate_requirements.entry["large"])).leaf = 127 // ISSUE: 1000000 is a too big integer!!!
-  policy_vl_data_to_level_mapping.property_bit_rate_requirements.keys["default" + "small" + "medium" + "large"]
-  // YAML interfaces:
-  no policy_vl_data_to_level_mapping.interfaces
-  // YAML targets: ['vl_data_network']
-  policy_vl_data_to_level_mapping.targets[vl_data_network]
-
-  // YAML ns_scaling_aspects: {'type': 'tosca.policies.nfv.NsScalingAspects', 'properties': {'aspects': {'ns_scaling_aspect': {'name': 'ns_scaling_aspect', 'description': 'Network Service horizontal scaling', 'ns_scale_levels': {0: {'description': 'Base level'}, 1: {'description': 'Scale level 1'}, 2: {'description': 'Scale level 2'}, 3: {'description': 'Maximum scale level'}}}}}}
+  // YAML ns_scaling_aspects: {'type': 'tosca.policies.nfv.NsScalingAspects', 'properties': {'aspects': {'ns_scaling_aspect': {'name': 'ns_scaling_aspect', 'description': 'Scaling horizontal', 'ns_scale_levels': {0: {'description': 'Base'}, 1: {'description': 'Niveau 1'}, 2: {'description': 'Niveau 2'}, 3: {'description': 'Maximum'}}}}}}
   policy[policy_ns_scaling_aspects]
   policy_ns_scaling_aspects.name["ns_scaling_aspects"]
   // YAML properties:
-  // YAML aspects: {'ns_scaling_aspect': {'name': 'ns_scaling_aspect', 'description': 'Network Service horizontal scaling', 'ns_scale_levels': {0: {'description': 'Base level'}, 1: {'description': 'Scale level 1'}, 2: {'description': 'Scale level 2'}, 3: {'description': 'Maximum scale level'}}}}
+  // YAML aspects: {'ns_scaling_aspect': {'name': 'ns_scaling_aspect', 'description': 'Scaling horizontal', 'ns_scale_levels': {0: {'description': 'Base'}, 1: {'description': 'Niveau 1'}, 2: {'description': 'Niveau 2'}, 3: {'description': 'Maximum'}}}}
   policy_ns_scaling_aspects.property_aspects.size[1]
   policy_ns_scaling_aspects.property_aspects.one_entry["ns_scaling_aspect"]
   // YAML name: ns_scaling_aspect
   (tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).name = "ns_scaling_aspect"
-  // YAML description: Network Service horizontal scaling
-  (tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).description = "Network Service horizontal scaling"
-  // YAML ns_scale_levels: {0: {'description': 'Base level'}, 1: {'description': 'Scale level 1'}, 2: {'description': 'Scale level 2'}, 3: {'description': 'Maximum scale level'}}
+  // YAML description: Scaling horizontal
+  (tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).description = "Scaling horizontal"
+  // YAML ns_scale_levels: {0: {'description': 'Base'}, 1: {'description': 'Niveau 1'}, 2: {'description': 'Niveau 2'}, 3: {'description': 'Maximum'}}
   (tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.size[4]
   (tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.one_entry["0"]
-  // YAML description: Base level
-  (tosca_datatypes_nfv_NsLevels<:((tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.entry["0"])).description = "Base level"
+  // YAML description: Base
+  (tosca_datatypes_nfv_NsLevels<:((tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.entry["0"])).description = "Base"
   (tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.one_entry["1"]
-  // YAML description: Scale level 1
-  (tosca_datatypes_nfv_NsLevels<:((tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.entry["1"])).description = "Scale level 1"
+  // YAML description: Niveau 1
+  (tosca_datatypes_nfv_NsLevels<:((tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.entry["1"])).description = "Niveau 1"
   (tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.one_entry["2"]
-  // YAML description: Scale level 2
-  (tosca_datatypes_nfv_NsLevels<:((tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.entry["2"])).description = "Scale level 2"
+  // YAML description: Niveau 2
+  (tosca_datatypes_nfv_NsLevels<:((tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.entry["2"])).description = "Niveau 2"
   (tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.one_entry["3"]
-  // YAML description: Maximum scale level
-  (tosca_datatypes_nfv_NsLevels<:((tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.entry["3"])).description = "Maximum scale level"
+  // YAML description: Maximum
+  (tosca_datatypes_nfv_NsLevels<:((tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.entry["3"])).description = "Maximum"
   (tosca_datatypes_nfv_NsScalingAspect<:(policy_ns_scaling_aspects.property_aspects.entry["ns_scaling_aspect"])).ns_scale_levels.keys["0" + "1" + "2" + "3"]
   policy_ns_scaling_aspects.property_aspects.keys["ns_scaling_aspect"]
   // YAML interfaces:
@@ -1573,12 +1236,8 @@ sig Hybrid_Network_Service_topology_template extends TOSCA/TopologyTemplate
   // Substitution Mappings
   // --------------------------------------------------
 
-  // YAML substitution_mappings: {'node_type': 'tosca.nodes.nfv.MultiVNF_NS', 'requirements': [{'virtual_link': ['sap_mgmt', 'external_virtual_link']}]}
-  substitution_mappings[substitution_mappings]
-  substitution_mappings.node_type_name = "tosca.nodes.nfv.MultiVNF_NS"
-  // YAML   requirements:
-  // YAML     virtual_link: ['sap_mgmt', 'external_virtual_link']
-  connectRequirement[substitution_mappings.requirement_virtual_link, sap_mgmt.requirement_external_virtual_link]
+  // YAML substitution_mappings: None
+  no substitution_mapping
 }
 
 /** There exists some Hybrid_Network_Service_topology_template */
@@ -1586,38 +1245,38 @@ run Show_Hybrid_Network_Service_topology_template {
 } for 0 but
   // NOTE: Setting following scopes strongly reduces the research space.
   exactly 1 LocationGraphs/LocationGraph,
-  exactly 25 LocationGraphs/Location,
-  exactly 166 LocationGraphs/Value,
-  exactly 24 LocationGraphs/Name,
+  exactly 20 LocationGraphs/Location,
+  exactly 118 LocationGraphs/Value,
+  exactly 20 LocationGraphs/Name,
   exactly 1 LocationGraphs/Process,
   exactly 1 LocationGraphs/Sort,
-  exactly 32 LocationGraphs/Role,
-  exactly 8 TOSCA/Scalar,
+  exactly 27 LocationGraphs/Role,
+  exactly 0 TOSCA/Scalar,
   exactly 0 TOSCA/scalar_unit_size,
   exactly 0 TOSCA/scalar_unit_frequency,
-  exactly 8 TOSCA/scalar_unit_time,
-  exactly 4 TOSCA/map_integer/Map,
+  exactly 0 TOSCA/scalar_unit_time,
+  exactly 3 TOSCA/map_integer/Map,
   exactly 0 TOSCA/map_string/Map,
-  exactly 8 TOSCA/map_data/Map,
+  exactly 6 TOSCA/map_data/Map,
   exactly 0 TOSCA/map_map_data/Map,
-  exactly 25 TOSCA/ToscaComponent,
-  exactly 32 TOSCA/ToscaRole,
-  exactly 71 TOSCA/ToscaValue,
+  exactly 20 TOSCA/ToscaComponent,
+  exactly 27 TOSCA/ToscaRole,
+  exactly 53 TOSCA/ToscaValue,
   exactly 1 TOSCA/TopologyTemplate,
-  exactly 10 TOSCA/Node,
-  exactly 9 TOSCA/Requirement,
-  exactly 23 TOSCA/Capability,
+  exactly 7 TOSCA/Node,
+  exactly 8 TOSCA/Requirement,
+  exactly 19 TOSCA/Capability,
   exactly 8 TOSCA/Relationship,
   exactly 0 TOSCA/Group,
-  exactly 7 TOSCA/Policy,
-  exactly 5 TOSCA/Interface,
-  exactly 64 TOSCA/Operation,
+  exactly 5 TOSCA/Policy,
+  exactly 4 TOSCA/Interface,
+  exactly 49 TOSCA/Operation,
   exactly 0 TOSCA/Attribute,
   exactly 0 TOSCA/Artifact,
-  exactly 37 TOSCA/Data,
-  exactly 2 TOSCA/AbstractProperty,
+  exactly 16 TOSCA/Data,
+  exactly 0 TOSCA/AbstractProperty,
   exactly 0 TOSCA/Property,
-  exactly 2 TOSCA/Parameter,
+  exactly 0 TOSCA/Parameter,
   exactly 0 tosca_artifacts_Root,
   exactly 0 tosca_artifacts_File,
   exactly 0 tosca_artifacts_Deployment,
@@ -1630,7 +1289,7 @@ run Show_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_artifacts_nfv_SwImage,
   exactly 0 tosca_artifacts_Implementation_nfv_Mistral,
   exactly 0 tosca_artifacts_nfv_HelmChart,
-  exactly 37 tosca_datatypes_Root,
+  exactly 16 tosca_datatypes_Root,
   exactly 0 tosca_datatypes_Credential,
   exactly 0 tosca_datatypes_TimeInterval,
   exactly 0 tosca_datatypes_network_NetworkInfo,
@@ -1639,11 +1298,11 @@ run Show_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_datatypes_nfv_L2AddressData,
   exactly 0 tosca_datatypes_nfv_L3AddressData,
   exactly 0 tosca_datatypes_nfv_AddressData,
-  exactly 4 tosca_datatypes_nfv_ConnectivityType,
-  exactly 16 tosca_datatypes_nfv_LinkBitrateRequirements,
+  exactly 2 tosca_datatypes_nfv_ConnectivityType,
+  exactly 4 tosca_datatypes_nfv_LinkBitrateRequirements,
   exactly 0 tosca_datatypes_nfv_CpProtocolData,
   exactly 0 tosca_datatypes_nfv_VnfProfile,
-  exactly 4 tosca_datatypes_nfv_Qos,
+  exactly 0 tosca_datatypes_nfv_Qos,
   exactly 0 tosca_datatypes_nfv_VnfMonitoringParameter,
   exactly 0 tosca_datatypes_nfv_VersionDependency,
   exactly 0 tosca_datatypes_nfv_VersionDependencyStatement,
@@ -1717,8 +1376,8 @@ run Show_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_datatypes_nfv_LocationInfo,
   exactly 0 tosca_datatypes_nfv_CivicAddressElement,
   exactly 0 tosca_datatypes_nfv_GeographicCoordinates,
-  exactly 4 tosca_datatypes_nfv_NsVlProfile,
-  exactly 4 tosca_datatypes_nfv_NsVirtualLinkQos,
+  exactly 2 tosca_datatypes_nfv_NsVlProfile,
+  exactly 0 tosca_datatypes_nfv_NsVirtualLinkQos,
   exactly 0 tosca_datatypes_nfv_NsProfile,
   exactly 0 tosca_datatypes_nfv_Mask,
   exactly 0 tosca_datatypes_nfv_NsOperationAdditionalParameters,
@@ -1728,13 +1387,13 @@ run Show_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_datatypes_nfv_NsL3ProtocolData,
   exactly 0 tosca_datatypes_nfv_NsIpAllocationPool,
   exactly 1 tosca_datatypes_nfv_NsScalingAspect,
-  exactly 8 tosca_datatypes_nfv_NsLevels,
+  exactly 7 tosca_datatypes_nfv_NsLevels,
   exactly 0 tosca_datatypes_nfv_ScaleNsByStepsData,
   exactly 0 tosca_datatypes_nfv_ScaleNsToLevelData,
   exactly 0 tosca_datatypes_nfv_NsDataFlowMirroring,
   exactly 0 tosca_datatypes_nfv_NsScaleInfo,
-  exactly 23 tosca_capabilities_Root,
-  exactly 21 tosca_capabilities_Node,
+  exactly 19 tosca_capabilities_Root,
+  exactly 17 tosca_capabilities_Node,
   exactly 0 tosca_capabilities_Container,
   exactly 0 tosca_capabilities_Compute,
   exactly 0 tosca_capabilities_Network,
@@ -1748,7 +1407,7 @@ run Show_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_capabilities_Scalable,
   exactly 0 tosca_capabilities_network_Bindable,
   exactly 0 tosca_capabilities_network_Linkable,
-  exactly 12 tosca_capabilities_nfv_VirtualLinkable,
+  exactly 10 tosca_capabilities_nfv_VirtualLinkable,
   exactly 0 tosca_capabilities_nfv_VirtualBindable,
   exactly 0 tosca_capabilities_nfv_VirtualCompute,
   exactly 0 tosca_capabilities_nfv_VirtualStorage,
@@ -1756,13 +1415,13 @@ run Show_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_capabilities_nfv_ContainerDeployable,
   exactly 0 tosca_capabilities_nfv_AssociableVdu,
   exactly 2 tosca_capabilities_nfv_Forwarding,
-  exactly 5 tosca_interfaces_Root,
+  exactly 4 tosca_interfaces_Root,
   exactly 1 tosca_interfaces_node_lifecycle_Standard,
   exactly 1 tosca_interfaces_relationship_Configure,
   exactly 1 tosca_interfaces_nfv_Vnflcm,
   exactly 1 tosca_interfaces_nfv_VnfIndicator,
   exactly 0 tosca_interfaces_nfv_ChangeCurrentVnfPackage,
-  exactly 1 tosca_interfaces_nfv_Nslcm,
+  exactly 0 tosca_interfaces_nfv_Nslcm,
   exactly 0 tosca_interfaces_nfv_NsVnfIndicator,
   exactly 8 tosca_relationships_Root,
   exactly 8 tosca_relationships_DependsOn,
@@ -1780,7 +1439,7 @@ run Show_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_relationships_nfv_DeploysTo,
   exactly 0 tosca_relationships_nfv_MciopAssociates,
   exactly 0 tosca_relationships_nfv_ForwardTo,
-  exactly 10 tosca_nodes_Root,
+  exactly 7 tosca_nodes_Root,
   exactly 0 tosca_nodes_Abstract_Compute,
   exactly 0 tosca_nodes_Compute,
   exactly 0 tosca_nodes_SoftwareComponent,
@@ -1813,22 +1472,21 @@ run Show_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_nodes_nfv_VirtualCp,
   exactly 0 tosca_nodes_nfv_PNF,
   exactly 0 tosca_nodes_nfv_PnfExtCp,
-  exactly 1 tosca_nodes_nfv_NS,
+  exactly 0 tosca_nodes_nfv_NS,
   exactly 2 tosca_nodes_nfv_Sap,
-  exactly 4 tosca_nodes_nfv_NsVirtualLink,
+  exactly 2 tosca_nodes_nfv_NsVirtualLink,
   exactly 0 tosca_nodes_nfv_NfpPositionElement,
   exactly 0 tosca_nodes_nfv_NfpPosition,
   exactly 0 tosca_nodes_nfv_NFP,
   exactly 0 tosca_nodes_nfv_Forwarding,
-  exactly 1 tosca_nodes_nfv_example_VNF1,
-  exactly 1 tosca_nodes_nfv_example_VNF2,
-  exactly 1 tosca_nodes_nfv_example_CNF,
-  exactly 1 tosca_nodes_nfv_MultiVNF_NS,
+  exactly 1 tosca_nodes_nfv_Firewall_VNF,
+  exactly 1 tosca_nodes_nfv_IDS_VNF,
+  exactly 1 tosca_nodes_nfv_Proxy_CNF,
   exactly 0 tosca_groups_Root,
   exactly 0 tosca_groups_nfv_PlacementGroup,
   exactly 0 tosca_groups_nfv_NsPlacementGroup,
   exactly 0 tosca_groups_nfv_VNFFG,
-  exactly 7 tosca_policies_Root,
+  exactly 5 tosca_policies_Root,
   exactly 0 tosca_policies_Placement,
   exactly 0 tosca_policies_Scaling,
   exactly 0 tosca_policies_Update,
@@ -1863,7 +1521,7 @@ run Show_Hybrid_Network_Service_topology_template {
   exactly 1 tosca_policies_nfv_NsScalingAspects,
   exactly 3 tosca_policies_nfv_VnfToLevelMapping,
   exactly 0 tosca_policies_nfv_NsToLevelMapping,
-  exactly 2 tosca_policies_nfv_VirtualLinkToLevelMapping,
+  exactly 0 tosca_policies_nfv_VirtualLinkToLevelMapping,
   exactly 1 tosca_policies_nfv_NsInstantiationLevels,
   exactly 0 tosca_policies_nfv_VnfToInstantiationLevelMapping,
   exactly 0 tosca_policies_nfv_NsToInstantiationLevelMapping,
@@ -1881,38 +1539,38 @@ run Substitute_Hybrid_Network_Service_topology_template {
 } for 0 but
   // NOTE: Setting following scopes strongly reduces the research space.
   exactly 4 LocationGraphs/LocationGraph,
-  exactly 108 LocationGraphs/Location,
-  exactly 479 LocationGraphs/Value,
-  exactly 104 LocationGraphs/Name,
+  exactly 103 LocationGraphs/Location,
+  exactly 431 LocationGraphs/Value,
+  exactly 100 LocationGraphs/Name,
   exactly 1 LocationGraphs/Process,
   exactly 1 LocationGraphs/Sort,
-  exactly 135 LocationGraphs/Role,
-  exactly 31 TOSCA/Scalar,
+  exactly 130 LocationGraphs/Role,
+  exactly 23 TOSCA/Scalar,
   exactly 23 TOSCA/scalar_unit_size,
   exactly 0 TOSCA/scalar_unit_frequency,
-  exactly 8 TOSCA/scalar_unit_time,
-  exactly 4 TOSCA/map_integer/Map,
+  exactly 0 TOSCA/scalar_unit_time,
+  exactly 3 TOSCA/map_integer/Map,
   exactly 2 TOSCA/map_string/Map,
-  exactly 40 TOSCA/map_data/Map,
+  exactly 38 TOSCA/map_data/Map,
   exactly 0 TOSCA/map_map_data/Map,
-  exactly 108 TOSCA/ToscaComponent,
-  exactly 135 TOSCA/ToscaRole,
-  exactly 85 TOSCA/ToscaValue,
+  exactly 103 TOSCA/ToscaComponent,
+  exactly 130 TOSCA/ToscaRole,
+  exactly 67 TOSCA/ToscaValue,
   exactly 4 TOSCA/TopologyTemplate,
-  exactly 41 TOSCA/Node,
-  exactly 40 TOSCA/Requirement,
-  exactly 95 TOSCA/Capability,
+  exactly 38 TOSCA/Node,
+  exactly 39 TOSCA/Requirement,
+  exactly 91 TOSCA/Capability,
   exactly 34 TOSCA/Relationship,
   exactly 0 TOSCA/Group,
-  exactly 33 TOSCA/Policy,
-  exactly 5 TOSCA/Interface,
-  exactly 64 TOSCA/Operation,
+  exactly 31 TOSCA/Policy,
+  exactly 4 TOSCA/Interface,
+  exactly 49 TOSCA/Operation,
   exactly 0 TOSCA/Attribute,
   exactly 6 TOSCA/Artifact,
-  exactly 153 TOSCA/Data,
-  exactly 10 TOSCA/AbstractProperty,
+  exactly 132 TOSCA/Data,
+  exactly 8 TOSCA/AbstractProperty,
   exactly 0 TOSCA/Property,
-  exactly 10 TOSCA/Parameter,
+  exactly 8 TOSCA/Parameter,
   exactly 6 tosca_artifacts_Root,
   exactly 0 tosca_artifacts_File,
   exactly 6 tosca_artifacts_Deployment,
@@ -1925,7 +1583,7 @@ run Substitute_Hybrid_Network_Service_topology_template {
   exactly 6 tosca_artifacts_nfv_SwImage,
   exactly 0 tosca_artifacts_Implementation_nfv_Mistral,
   exactly 0 tosca_artifacts_nfv_HelmChart,
-  exactly 153 tosca_datatypes_Root,
+  exactly 132 tosca_datatypes_Root,
   exactly 0 tosca_datatypes_Credential,
   exactly 0 tosca_datatypes_TimeInterval,
   exactly 0 tosca_datatypes_network_NetworkInfo,
@@ -1934,11 +1592,11 @@ run Substitute_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_datatypes_nfv_L2AddressData,
   exactly 0 tosca_datatypes_nfv_L3AddressData,
   exactly 0 tosca_datatypes_nfv_AddressData,
-  exactly 10 tosca_datatypes_nfv_ConnectivityType,
-  exactly 28 tosca_datatypes_nfv_LinkBitrateRequirements,
+  exactly 8 tosca_datatypes_nfv_ConnectivityType,
+  exactly 16 tosca_datatypes_nfv_LinkBitrateRequirements,
   exactly 0 tosca_datatypes_nfv_CpProtocolData,
   exactly 0 tosca_datatypes_nfv_VnfProfile,
-  exactly 4 tosca_datatypes_nfv_Qos,
+  exactly 0 tosca_datatypes_nfv_Qos,
   exactly 0 tosca_datatypes_nfv_VnfMonitoringParameter,
   exactly 0 tosca_datatypes_nfv_VersionDependency,
   exactly 0 tosca_datatypes_nfv_VersionDependencyStatement,
@@ -2012,8 +1670,8 @@ run Substitute_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_datatypes_nfv_LocationInfo,
   exactly 0 tosca_datatypes_nfv_CivicAddressElement,
   exactly 0 tosca_datatypes_nfv_GeographicCoordinates,
-  exactly 4 tosca_datatypes_nfv_NsVlProfile,
-  exactly 4 tosca_datatypes_nfv_NsVirtualLinkQos,
+  exactly 2 tosca_datatypes_nfv_NsVlProfile,
+  exactly 0 tosca_datatypes_nfv_NsVirtualLinkQos,
   exactly 0 tosca_datatypes_nfv_NsProfile,
   exactly 0 tosca_datatypes_nfv_Mask,
   exactly 0 tosca_datatypes_nfv_NsOperationAdditionalParameters,
@@ -2023,13 +1681,13 @@ run Substitute_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_datatypes_nfv_NsL3ProtocolData,
   exactly 0 tosca_datatypes_nfv_NsIpAllocationPool,
   exactly 1 tosca_datatypes_nfv_NsScalingAspect,
-  exactly 8 tosca_datatypes_nfv_NsLevels,
+  exactly 7 tosca_datatypes_nfv_NsLevels,
   exactly 0 tosca_datatypes_nfv_ScaleNsByStepsData,
   exactly 0 tosca_datatypes_nfv_ScaleNsToLevelData,
   exactly 0 tosca_datatypes_nfv_NsDataFlowMirroring,
   exactly 0 tosca_datatypes_nfv_NsScaleInfo,
-  exactly 95 tosca_capabilities_Root,
-  exactly 93 tosca_capabilities_Node,
+  exactly 91 tosca_capabilities_Root,
+  exactly 89 tosca_capabilities_Node,
   exactly 0 tosca_capabilities_Container,
   exactly 0 tosca_capabilities_Compute,
   exactly 0 tosca_capabilities_Network,
@@ -2043,7 +1701,7 @@ run Substitute_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_capabilities_Scalable,
   exactly 0 tosca_capabilities_network_Bindable,
   exactly 0 tosca_capabilities_network_Linkable,
-  exactly 32 tosca_capabilities_nfv_VirtualLinkable,
+  exactly 30 tosca_capabilities_nfv_VirtualLinkable,
   exactly 18 tosca_capabilities_nfv_VirtualBindable,
   exactly 6 tosca_capabilities_nfv_VirtualCompute,
   exactly 0 tosca_capabilities_nfv_VirtualStorage,
@@ -2051,13 +1709,13 @@ run Substitute_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_capabilities_nfv_ContainerDeployable,
   exactly 0 tosca_capabilities_nfv_AssociableVdu,
   exactly 2 tosca_capabilities_nfv_Forwarding,
-  exactly 5 tosca_interfaces_Root,
+  exactly 4 tosca_interfaces_Root,
   exactly 1 tosca_interfaces_node_lifecycle_Standard,
   exactly 1 tosca_interfaces_relationship_Configure,
   exactly 1 tosca_interfaces_nfv_Vnflcm,
   exactly 1 tosca_interfaces_nfv_VnfIndicator,
   exactly 0 tosca_interfaces_nfv_ChangeCurrentVnfPackage,
-  exactly 1 tosca_interfaces_nfv_Nslcm,
+  exactly 0 tosca_interfaces_nfv_Nslcm,
   exactly 0 tosca_interfaces_nfv_NsVnfIndicator,
   exactly 34 tosca_relationships_Root,
   exactly 34 tosca_relationships_DependsOn,
@@ -2075,7 +1733,7 @@ run Substitute_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_relationships_nfv_DeploysTo,
   exactly 0 tosca_relationships_nfv_MciopAssociates,
   exactly 0 tosca_relationships_nfv_ForwardTo,
-  exactly 41 tosca_nodes_Root,
+  exactly 38 tosca_nodes_Root,
   exactly 0 tosca_nodes_Abstract_Compute,
   exactly 0 tosca_nodes_Compute,
   exactly 0 tosca_nodes_SoftwareComponent,
@@ -2108,22 +1766,21 @@ run Substitute_Hybrid_Network_Service_topology_template {
   exactly 0 tosca_nodes_nfv_VirtualCp,
   exactly 0 tosca_nodes_nfv_PNF,
   exactly 0 tosca_nodes_nfv_PnfExtCp,
-  exactly 1 tosca_nodes_nfv_NS,
+  exactly 0 tosca_nodes_nfv_NS,
   exactly 2 tosca_nodes_nfv_Sap,
-  exactly 4 tosca_nodes_nfv_NsVirtualLink,
+  exactly 2 tosca_nodes_nfv_NsVirtualLink,
   exactly 0 tosca_nodes_nfv_NfpPositionElement,
   exactly 0 tosca_nodes_nfv_NfpPosition,
   exactly 0 tosca_nodes_nfv_NFP,
   exactly 0 tosca_nodes_nfv_Forwarding,
-  exactly 2 tosca_nodes_nfv_example_VNF1,
-  exactly 2 tosca_nodes_nfv_example_VNF2,
-  exactly 2 tosca_nodes_nfv_example_CNF,
-  exactly 1 tosca_nodes_nfv_MultiVNF_NS,
+  exactly 2 tosca_nodes_nfv_Firewall_VNF,
+  exactly 2 tosca_nodes_nfv_IDS_VNF,
+  exactly 2 tosca_nodes_nfv_Proxy_CNF,
   exactly 0 tosca_groups_Root,
   exactly 0 tosca_groups_nfv_PlacementGroup,
   exactly 0 tosca_groups_nfv_NsPlacementGroup,
   exactly 0 tosca_groups_nfv_VNFFG,
-  exactly 33 tosca_policies_Root,
+  exactly 31 tosca_policies_Root,
   exactly 2 tosca_policies_Placement,
   exactly 0 tosca_policies_Scaling,
   exactly 0 tosca_policies_Update,
@@ -2158,7 +1815,7 @@ run Substitute_Hybrid_Network_Service_topology_template {
   exactly 1 tosca_policies_nfv_NsScalingAspects,
   exactly 3 tosca_policies_nfv_VnfToLevelMapping,
   exactly 0 tosca_policies_nfv_NsToLevelMapping,
-  exactly 2 tosca_policies_nfv_VirtualLinkToLevelMapping,
+  exactly 0 tosca_policies_nfv_VirtualLinkToLevelMapping,
   exactly 1 tosca_policies_nfv_NsInstantiationLevels,
   exactly 0 tosca_policies_nfv_VnfToInstantiationLevelMapping,
   exactly 0 tosca_policies_nfv_NsToInstantiationLevelMapping,

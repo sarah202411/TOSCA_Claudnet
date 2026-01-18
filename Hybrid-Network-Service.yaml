@@ -1,6 +1,6 @@
 tosca_definitions_version: tosca_simple_yaml_1_3
 
-description: Network Service Descriptor for interconnecting VNF1, VNF2, and CNF
+description: Network Service Descriptor (Final Version)
 
 imports:
   - etsi_nfv_sol001_nsd_types.yaml
@@ -8,310 +8,138 @@ imports:
   - VNF2-scalable.yaml
   - CNF3-scalable.yaml
 
-node_types:
-  tosca.nodes.nfv.MultiVNF_NS:
-    derived_from: tosca.nodes.nfv.NS
-    properties:
-      descriptor_id:
-        type: string
-        default: multi-vnf-ns-001
-      designer:
-        type: string
-        default: MyCompany
-      version:
-        type: string
-        default: '1.0'
-      name:
-        type: string
-        default: Multi-VNF Network Service
-      invariant_id:
-        type: string
-        default: multi-vnf-ns-invariant-001
-      flavour_id:
-        type: string
-        default: default_flavour
-      flavour_description:
-        type: string
-        default: Default flavour for multi-VNF network service
-
 topology_template:
-  inputs:
-    external_mgmt_network:
-      type: string
-      description: External management network ID
-      default: ext-mgmt-net
-    
-    external_data_network:
-      type: string
-      description: External data network ID
-      default: ext-data-net
-
-  substitution_mappings:
-    node_type: tosca.nodes.nfv.MultiVNF_NS
-    requirements:
-      - virtual_link: [sap_mgmt, external_virtual_link]
-
   node_templates:
     # ========================================
-    # Network Service Virtual Links
+    # Virtual Links
     # ========================================
-    
-    # Management Network (shared by all VNFs/CNF)
     vl_mgmt_network:
       type: tosca.nodes.nfv.NsVirtualLink
       properties:
         connectivity_type:
           layer_protocols: [ipv4]
           flow_pattern: mesh
-        description: Management network for all VNFs and CNF
         vl_profile:
-          max_bitrate_requirements:
-            root: 1000000
-            leaf: 100000
-          min_bitrate_requirements:
-            root: 100000
-            leaf: 10000
-          qos:
-            priority: 2
-            latency: 10 ms
-            packet_delay_variation: 5 ms
-            packet_loss_ratio: 0.001
-          service_availability_level: 7
-        test_access: []
+          max_bitrate_requirements: { root: 1000000 }
+          min_bitrate_requirements: { root: 100000 }
 
-    # Data Network (interconnects VNF1 -> VNF2 -> CNF)
     vl_data_network:
       type: tosca.nodes.nfv.NsVirtualLink
       properties:
         connectivity_type:
           layer_protocols: [ipv4]
           flow_pattern: line
-        description: Data plane network connecting VNF1, VNF2, and CNF
         vl_profile:
-          max_bitrate_requirements:
-            root: 10000000
-            leaf: 1000000
-          min_bitrate_requirements:
-            root: 1000000
-            leaf: 100000
-          qos:
-            priority: 1
-            latency: 5 ms
-            packet_delay_variation: 2 ms
-            packet_loss_ratio: 0.0001
-          service_availability_level: 7
-        test_access: []
-
-    # Inter-VNF Link: VNF1 to VNF2
-    vl_vnf1_to_vnf2:
-      type: tosca.nodes.nfv.NsVirtualLink
-      properties:
-        connectivity_type:
-          layer_protocols: [ipv4]
-          flow_pattern: line
-        description: Direct link from VNF1 to VNF2
-        vl_profile:
-          max_bitrate_requirements:
-            root: 5000000
-            leaf: 500000
-          min_bitrate_requirements:
-            root: 500000
-            leaf: 50000
-          qos:
-            priority: 1
-            latency: 3 ms
-            packet_delay_variation: 1 ms
-            packet_loss_ratio: 0.0001
-        test_access: []
-
-    # Inter-VNF Link: VNF2 to CNF
-    vl_vnf2_to_cnf:
-      type: tosca.nodes.nfv.NsVirtualLink
-      properties:
-        connectivity_type:
-          layer_protocols: [ipv4]
-          flow_pattern: line
-        description: Direct link from VNF2 to CNF
-        vl_profile:
-          max_bitrate_requirements:
-            root: 5000000
-            leaf: 500000
-          min_bitrate_requirements:
-            root: 500000
-            leaf: 50000
-          qos:
-            priority: 1
-            latency: 3 ms
-            packet_delay_variation: 1 ms
-            packet_loss_ratio: 0.0001
-        test_access: []
+          max_bitrate_requirements: { root: 10000000 }
+          min_bitrate_requirements: { root: 1000000 }
 
     # ========================================
-    # VNF/CNF Instances
+    # VNF/CNF Instances (Noms de Types Corrigés)
     # ========================================
-
-    # VNF1 Instance (VM-based)
     vnf1_instance:
-      type: tosca.nodes.nfv.example_VNF1
+      type: tosca.nodes.nfv.Firewall_VNF # Corrigé selon vos logs
       properties:
         flavour_id: scalable_ha
       requirements:
         - virtual_link: vl_mgmt_network
 
-    # VNF2 Instance (VM-based)
     vnf2_instance:
-      type: tosca.nodes.nfv.example_VNF2
+      type: tosca.nodes.nfv.IDS_VNF # Corrigé selon vos logs
       properties:
         flavour_id: scalable_ha
       requirements:
         - virtual_link: vl_data_network
 
-    # CNF Instance (Container-based)
     cnf_instance:
-      type: tosca.nodes.nfv.example_CNF
+      type: tosca.nodes.nfv.Proxy_CNF # Corrigé selon vos logs
       properties:
         flavour_id: scalable_ha_container
       requirements:
-        - virtual_link: vl_vnf2_to_cnf
+        - virtual_link: vl_data_network
 
     # ========================================
     # Service Access Points (SAPs)
     # ========================================
-
-    # Management SAP
     sap_mgmt:
       type: tosca.nodes.nfv.Sap
       properties:
         layer_protocols: [ipv4]
         role: root
-        description: Service access point for management
-        protocol: []
-        trunk_mode: false
       requirements:
         - internal_virtual_link: vl_mgmt_network
 
-    # Data Plane SAP
     sap_data:
       type: tosca.nodes.nfv.Sap
       properties:
         layer_protocols: [ipv4]
         role: root
-        description: Service access point for data plane
-        protocol: []
-        trunk_mode: false
       requirements:
         - internal_virtual_link: vl_data_network
 
-  # ========================================
-  # Policies
+# ========================================
+  # Policies - REMPLACER CETTE SECTION
   # ========================================
   policies:
-    # NS Instantiation Levels
+    # 1. Niveaux de déploiement
     - ns_instantiation_levels:
         type: tosca.policies.nfv.NsInstantiationLevels
         properties:
           ns_levels:
-            default:
-              description: Default instantiation level
             small:
-              description: Small deployment with minimal resources
+              description: "Déploiement minimal"
             medium:
-              description: Medium deployment with moderate resources
+              description: "Déploiement moyen"
             large:
-              description: Large deployment with maximum resources
-          default_level: default
-
-    # VNF to Level Mapping - VNF1
-    - vnf1_to_level_mapping:
+              description: "Déploiement haute performance"
+          default_level: small
+    
+    # 2. Mapping VNF1 - Format corrigé
+    - vnf1_mapping:
         type: tosca.policies.nfv.VnfToLevelMapping
-        targets: [vnf1_instance]
-        properties:
-          aspect: ns_scaling_aspect
-          number_of_instances: 
-            default: 1
-            small: 1
-            medium: 2
-            large: 3
-        
-    # VNF to Level Mapping - VNF2
-    - vnf2_to_level_mapping:
-        type: tosca.policies.nfv.VnfToLevelMapping
-        targets: [vnf2_instance]
-        properties:
-          aspect: ns_scaling_aspect
-          number_of_instances: 
-            default: 1
-            small: 1
-            medium: 2
-            large: 3
-
-    # VNF to Level Mapping - CNF
-    - cnf_to_level_mapping:
-        type: tosca.policies.nfv.VnfToLevelMapping
-        targets: [cnf_instance]
+        targets: [ vnf1_instance ]
         properties:
           aspect: ns_scaling_aspect
           number_of_instances:
-            default: 1
             small: 1
             medium: 2
             large: 3
-
-    # Virtual Link to Level Mapping - Management
-    - vl_mgmt_to_level_mapping:
-        type: tosca.policies.nfv.VirtualLinkToLevelMapping
-        targets: [vl_mgmt_network]
+    
+    # 3. Mapping VNF2
+    - vnf2_mapping:
+        type: tosca.policies.nfv.VnfToLevelMapping
+        targets: [ vnf2_instance ]
         properties:
           aspect: ns_scaling_aspect
-          bit_rate_requirements:
-            default:
-              root: 100000
-              leaf: 10000
-            small:
-              root: 100000
-              leaf: 10000
-            medium:
-              root: 500000
-              leaf: 50000
-            large:
-              root: 1000000
-              leaf: 100000
-
-    # Virtual Link to Level Mapping - Data
-    - vl_data_to_level_mapping:
-        type: tosca.policies.nfv.VirtualLinkToLevelMapping
-        targets: [vl_data_network]
+          number_of_instances:
+            small: 1
+            medium: 2
+            large: 3
+    
+    # 4. Mapping CNF
+    - cnf_mapping:
+        type: tosca.policies.nfv.VnfToLevelMapping
+        targets: [ cnf_instance ]
         properties:
           aspect: ns_scaling_aspect
-          bit_rate_requirements:
-            default:
-              root: 1000000
-              leaf: 100000
-            small:
-              root: 1000000
-              leaf: 100000
-            medium:
-              root: 5000000
-              leaf: 500000
-            large:
-              root: 10000000
-              leaf: 1000000
-
-    # NS Scaling Aspects
+          number_of_instances:
+            small: 1
+            medium: 2
+            large: 3
+    
+    # 5. Aspects de Scaling
     - ns_scaling_aspects:
         type: tosca.policies.nfv.NsScalingAspects
         properties:
           aspects:
             ns_scaling_aspect:
               name: ns_scaling_aspect
-              description: Network Service horizontal scaling
+              description: "Scaling horizontal"
               ns_scale_levels:
                 0:
-                  description: Base level
+                  description: "Base"
                 1:
-                  description: Scale level 1
+                  description: "Niveau 1"
                 2:
-                  description: Scale level 2
+                  description: "Niveau 2"
                 3:
-                  description: Maximum scale level
-
+                  description: "Maximum"

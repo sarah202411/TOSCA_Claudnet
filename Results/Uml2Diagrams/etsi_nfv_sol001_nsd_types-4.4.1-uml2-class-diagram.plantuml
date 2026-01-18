@@ -1,0 +1,469 @@
+@startuml
+set namespaceSeparator none
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsVlProfile"
+class "tosca.datatypes.nfv.NsVlProfile" << (D,green) >> {
+.. properties ..
++<b>max_bitrate_requirements : tosca.datatypes.nfv.LinkBitrateRequirements
++<b>min_bitrate_requirements : tosca.datatypes.nfv.LinkBitrateRequirements
++qos : tosca.datatypes.nfv.NsVirtualLinkQos
++service_availability_level : integer
++virtual_link_protocol_data : list<tosca.datatypes.nfv.NsVirtualLinkProtocolData>
++data_flow_mirroring : list<tosca.datatypes.nfv.NsDataFlowMirroring>
+}
+"tosca.datatypes.nfv.NsVlProfile" *-- "1" "tosca.datatypes.nfv.NsVirtualLinkQos" : qos
+"tosca.datatypes.nfv.NsVlProfile" *-- "*" "tosca.datatypes.nfv.NsVirtualLinkProtocolData" : virtual_link_protocol_data
+"tosca.datatypes.nfv.NsVlProfile" *-- "*" "tosca.datatypes.nfv.NsDataFlowMirroring" : data_flow_mirroring
+class "tosca.datatypes.nfv.Qos" << (D,green) >> #DDDDDD
+"tosca.datatypes.nfv.Qos" <|-- "tosca.datatypes.nfv.NsVirtualLinkQos"
+class "tosca.datatypes.nfv.NsVirtualLinkQos" << (D,green) >> {
+.. properties ..
++priority : integer
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsProfile"
+class "tosca.datatypes.nfv.NsProfile" << (D,green) >> {
+.. properties ..
++ns_instantiation_level : string
++target_ns_scale_level : map<tosca.datatypes.nfv.NsScaleInfo>
++<b>min_number_of_instances : integer
++<b>max_number_of_instances : integer
++version_dependency : list<tosca.datatypes.nfv.VersionDependency>
+}
+"tosca.datatypes.nfv.NsProfile" *-- "*" "tosca.datatypes.nfv.NsScaleInfo" : target_ns_scale_level
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.Mask"
+class "tosca.datatypes.nfv.Mask" << (D,green) >> {
+.. properties ..
++<b>starting_point : integer
++<b>length : integer
++<b>value : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsOperationAdditionalParameters"
+class "tosca.datatypes.nfv.NsOperationAdditionalParameters" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsMonitoringParameter"
+class "tosca.datatypes.nfv.NsMonitoringParameter" << (D,green) >> {
+.. properties ..
++<b>name : string
++<b>performance_metric : string
++collection_period : scalar-unit.time
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsVirtualLinkProtocolData"
+class "tosca.datatypes.nfv.NsVirtualLinkProtocolData" << (D,green) >> {
+.. properties ..
++<b>associated_layer_protocol : string
++l2_protocol_data : tosca.datatypes.nfv.NsL2ProtocolData
++l3_protocol_data : tosca.datatypes.nfv.NsL3ProtocolData
+}
+"tosca.datatypes.nfv.NsVirtualLinkProtocolData" *-- "1" "tosca.datatypes.nfv.NsL2ProtocolData" : l2_protocol_data
+"tosca.datatypes.nfv.NsVirtualLinkProtocolData" *-- "1" "tosca.datatypes.nfv.NsL3ProtocolData" : l3_protocol_data
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsL2ProtocolData"
+class "tosca.datatypes.nfv.NsL2ProtocolData" << (D,green) >> {
+.. properties ..
++name : string
++network_type : string
++vlan_transparent : boolean = False
++mtu : integer
++segmentation_id : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsL3ProtocolData"
+class "tosca.datatypes.nfv.NsL3ProtocolData" << (D,green) >> {
+.. properties ..
++name : string
++<b>ip_version : string
++<b>cidr : string
++ip_allocation_pools : list<tosca.datatypes.nfv.NsIpAllocationPool>
+}
+"tosca.datatypes.nfv.NsL3ProtocolData" *-- "*" "tosca.datatypes.nfv.NsIpAllocationPool" : ip_allocation_pools
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsIpAllocationPool"
+class "tosca.datatypes.nfv.NsIpAllocationPool" << (D,green) >> {
+.. properties ..
++<b>start_ip_address : string
++<b>end_ip_address : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsScalingAspect"
+class "tosca.datatypes.nfv.NsScalingAspect" << (D,green) >> {
+.. properties ..
++<b>name : string
++<b>description : string
++<b>ns_scale_levels : map<integer, tosca.datatypes.nfv.NsLevels>
+}
+"tosca.datatypes.nfv.NsScalingAspect" *-- "*" "tosca.datatypes.nfv.NsLevels" : ns_scale_levels
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsLevels"
+class "tosca.datatypes.nfv.NsLevels" << (D,green) >> {
+.. properties ..
++<b>description : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.ScaleNsByStepsData"
+class "tosca.datatypes.nfv.ScaleNsByStepsData" << (D,green) >> {
+.. properties ..
++<b>scaling_direction : string
++<b>aspect : string
++<b>number_of_steps : integer = 1
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.ScaleNsToLevelData"
+class "tosca.datatypes.nfv.ScaleNsToLevelData" << (D,green) >> {
+.. properties ..
++instantiation_level : string
++ns_scale_info : map<integer>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsDataFlowMirroring"
+class "tosca.datatypes.nfv.NsDataFlowMirroring" << (D,green) >> {
+.. properties ..
++<b>mirroring_job_name : string
++description : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NsScaleInfo"
+class "tosca.datatypes.nfv.NsScaleInfo" << (D,green) >> {
+.. properties ..
++<b>scale_level : integer
+}
+class "tosca.capabilities.Root" << (C,green) >> #DDDDDD
+"tosca.capabilities.Root" <|-- "tosca.capabilities.nfv.Forwarding"
+class "tosca.capabilities.nfv.Forwarding" << (C,green) >> {
+}
+class "tosca.relationships.Root" << (R,green) >> #DDDDDD
+"tosca.relationships.Root" <|-- "tosca.relationships.nfv.ForwardTo"
+class "tosca.relationships.nfv.ForwardTo" << (R,green) >> {
+}
+"tosca.relationships.nfv.ForwardTo" ..> "tosca.capabilities.nfv.Forwarding" : valid_target_types
+class "tosca.interfaces.Root" << (I,green) >> #DDDDDD
+"tosca.interfaces.Root" <|-- "tosca.interfaces.nfv.Nslcm"
+class "tosca.interfaces.nfv.Nslcm" << (I,green) >> {
++instantiate_start()
++instantiate()
++instantiate_end()
++terminate_start()
++terminate()
++terminate_end()
++update_start()
++update()
++update_end()
++scale_start()
++scale()
++scale_end()
++heal_start()
++heal()
++heal_end()
+}
+class "tosca.interfaces.Root" << (I,green) >> #DDDDDD
+"tosca.interfaces.Root" <|-- "tosca.interfaces.nfv.NsVnfIndicator"
+class "tosca.interfaces.nfv.NsVnfIndicator" << (I,green) >> {
+}
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.NS"
+class "tosca.nodes.nfv.NS" << (N,green) >> {
+.. attributes ..
++<b>scale_status : map<integer>
+.. properties ..
++<b>descriptor_id : string
++<b>designer : string
++<b>version : string
++<b>name : string
++<b>invariant_id : string
++ext_invariant_id : string
++<b>flavour_id : string
++ns_profile : tosca.datatypes.nfv.NsProfile
++service_availability_level : integer
++priority : integer
++<b>strict_nsd_constituent_onboarding : boolean = True
+.. requirements ..
++virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[0..1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
+ node : tosca.nodes.nfv.NsVirtualLink
+--
+.. interface Nslcm ..
+}
+"tosca.nodes.nfv.NS" *-- "1" "tosca.datatypes.nfv.NsProfile" : ns_profile
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.NS" *- "0..1" "tosca.capabilities.nfv.VirtualLinkable" : virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.NS" ..> "tosca.relationships.nfv.VirtualLinksTo" : virtual_link.relationship
+"tosca.nodes.nfv.NS" ..> "tosca.nodes.nfv.NsVirtualLink" : virtual_link.node
+"tosca.interfaces.nfv.Nslcm" <|.. "tosca.nodes.nfv.NS" : Nslcm
+class "tosca.nodes.nfv.Cp" << (N,green) >> #DDDDDD
+"tosca.nodes.nfv.Cp" <|-- "tosca.nodes.nfv.Sap"
+class "tosca.nodes.nfv.Sap" << (N,green) >> {
+.. capabilities ..
++forwarding
+ type : tosca.capabilities.nfv.Forwarding[1..*]
+.. requirements ..
++external_virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[0..1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
++<b>internal_virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
+}
+"tosca.capabilities.nfv.Forwarding" "1..*" -* "tosca.nodes.nfv.Sap" : forwarding
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.Sap" *- "0..1" "tosca.capabilities.nfv.VirtualLinkable" : external_virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.Sap" ..> "tosca.relationships.nfv.VirtualLinksTo" : external_virtual_link.relationship
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.Sap" *- "1" "tosca.capabilities.nfv.VirtualLinkable" : internal_virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.Sap" ..> "tosca.relationships.nfv.VirtualLinksTo" : internal_virtual_link.relationship
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.NsVirtualLink"
+class "tosca.nodes.nfv.NsVirtualLink" << (N,green) >> {
+.. properties ..
++<b>vl_profile : tosca.datatypes.nfv.NsVlProfile
++<b>connectivity_type : tosca.datatypes.nfv.ConnectivityType
++test_access : list<string>
++description : string
+.. capabilities ..
++virtual_linkable
+ type : tosca.capabilities.nfv.VirtualLinkable[1..*]
+}
+"tosca.nodes.nfv.NsVirtualLink" *-- "1" "tosca.datatypes.nfv.NsVlProfile" : vl_profile
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.capabilities.nfv.VirtualLinkable" "1..*" -* "tosca.nodes.nfv.NsVirtualLink" : virtual_linkable
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.NfpPositionElement"
+class "tosca.nodes.nfv.NfpPositionElement" << (N,green) >> {
+.. capabilities ..
++forwarding
+ type : tosca.capabilities.nfv.Forwarding[1..*]
+.. requirements ..
++<b>profile_element
+ capability : tosca.capabilities.nfv.Forwarding[1..2]
+ relationship : tosca.relationships.nfv.ForwardTo
+}
+"tosca.capabilities.nfv.Forwarding" "1..*" -* "tosca.nodes.nfv.NfpPositionElement" : forwarding
+"tosca.nodes.nfv.NfpPositionElement" *- "1..2" "tosca.capabilities.nfv.Forwarding" : profile_element
+"tosca.nodes.nfv.NfpPositionElement" ..> "tosca.relationships.nfv.ForwardTo" : profile_element.relationship
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.NfpPosition"
+class "tosca.nodes.nfv.NfpPosition" << (N,green) >> {
+.. properties ..
++forwarding_behaviour : string
++forwarding_behaviour_input_parameters : map<string>
+.. capabilities ..
++forwarding
+ type : tosca.capabilities.nfv.Forwarding[1..*]
+.. requirements ..
++<b>element
+ capability : tosca.capabilities.nfv.Forwarding[1..*]
+ relationship : tosca.relationships.nfv.ForwardTo
+ node : tosca.nodes.nfv.NfpPositionElement
+}
+"tosca.capabilities.nfv.Forwarding" "1..*" -* "tosca.nodes.nfv.NfpPosition" : forwarding
+"tosca.nodes.nfv.NfpPosition" *- "1..*" "tosca.capabilities.nfv.Forwarding" : element
+"tosca.nodes.nfv.NfpPosition" ..> "tosca.relationships.nfv.ForwardTo" : element.relationship
+"tosca.nodes.nfv.NfpPosition" ..> "tosca.nodes.nfv.NfpPositionElement" : element.node
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.NFP"
+class "tosca.nodes.nfv.NFP" << (N,green) >> {
+.. requirements ..
++<b>nfp_position
+ capability : tosca.capabilities.nfv.Forwarding[1..*]
+ relationship : tosca.relationships.nfv.ForwardTo
+ node : tosca.nodes.nfv.NfpPosition
+}
+"tosca.nodes.nfv.NFP" *- "1..*" "tosca.capabilities.nfv.Forwarding" : nfp_position
+"tosca.nodes.nfv.NFP" ..> "tosca.relationships.nfv.ForwardTo" : nfp_position.relationship
+"tosca.nodes.nfv.NFP" ..> "tosca.nodes.nfv.NfpPosition" : nfp_position.node
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.Forwarding"
+class "tosca.nodes.nfv.Forwarding" << (N,green) >> {
+.. capabilities ..
++virtual_linkable
+ type : tosca.capabilities.nfv.VirtualLinkable[1..*]
++forwarding
+ type : tosca.capabilities.nfv.Forwarding[1..*]
+.. requirements ..
++<b>virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
+}
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.capabilities.nfv.VirtualLinkable" "1..*" -* "tosca.nodes.nfv.Forwarding" : virtual_linkable
+"tosca.capabilities.nfv.Forwarding" "1..*" -* "tosca.nodes.nfv.Forwarding" : forwarding
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.Forwarding" *- "1" "tosca.capabilities.nfv.VirtualLinkable" : virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.Forwarding" ..> "tosca.relationships.nfv.VirtualLinksTo" : virtual_link.relationship
+class "tosca.groups.Root" << (G,green) >> #DDDDDD
+"tosca.groups.Root" <|-- "tosca.groups.nfv.NsPlacementGroup"
+class "tosca.groups.nfv.NsPlacementGroup" << (G,green) >> {
+.. properties ..
++<b>description : string
+}
+class "tosca.nodes.nfv.VNF" << (N,green) >> #DDDDDD
+"tosca.groups.nfv.NsPlacementGroup" ..> "*" "tosca.nodes.nfv.VNF" : members
+"tosca.groups.nfv.NsPlacementGroup" ..> "*" "tosca.nodes.nfv.NsVirtualLink" : members
+"tosca.groups.nfv.NsPlacementGroup" ..> "*" "tosca.nodes.nfv.NS" : members
+"tosca.groups.nfv.NsPlacementGroup" ..> "*" "tosca.nodes.nfv.Forwarding" : members
+"tosca.groups.nfv.NsPlacementGroup" ..> "*" "tosca.nodes.nfv.Sap" : members
+class "tosca.groups.Root" << (G,green) >> #DDDDDD
+"tosca.groups.Root" <|-- "tosca.groups.nfv.VNFFG"
+class "tosca.groups.nfv.VNFFG" << (G,green) >> {
+.. properties ..
++<b>description : string
+}
+"tosca.groups.nfv.VNFFG" ..> "*" "tosca.nodes.nfv.NFP" : members
+class "tosca.nodes.nfv.VNF" << (N,green) >> #DDDDDD
+"tosca.groups.nfv.VNFFG" ..> "*" "tosca.nodes.nfv.VNF" : members
+class "tosca.nodes.nfv.PNF" << (N,green) >> #DDDDDD
+"tosca.groups.nfv.VNFFG" ..> "*" "tosca.nodes.nfv.PNF" : members
+"tosca.groups.nfv.VNFFG" ..> "*" "tosca.nodes.nfv.NS" : members
+"tosca.groups.nfv.VNFFG" ..> "*" "tosca.nodes.nfv.NsVirtualLink" : members
+"tosca.groups.nfv.VNFFG" ..> "*" "tosca.nodes.nfv.NfpPositionElement" : members
+class "tosca.policies.Placement" << (P,green) >> #DDDDDD
+"tosca.policies.Placement" <|-- "tosca.policies.nfv.NsAffinityRule"
+class "tosca.policies.nfv.NsAffinityRule" << (P,green) >> {
+.. properties ..
++<b>scope : string
+}
+class "tosca.nodes.nfv.VNF" << (N,green) >> #DDDDDD
+"tosca.policies.nfv.NsAffinityRule" ..> "*" "tosca.nodes.nfv.VNF" : targets
+"tosca.policies.nfv.NsAffinityRule" ..> "*" "tosca.nodes.nfv.NsVirtualLink" : targets
+"tosca.policies.nfv.NsAffinityRule" ..> "*" "tosca.nodes.nfv.NS" : targets
+"tosca.policies.nfv.NsAffinityRule" ..> "*" "tosca.groups.nfv.NsPlacementGroup" : targets
+"tosca.policies.nfv.NsAffinityRule" ..> "*" "tosca.nodes.nfv.Sap" : targets
+"tosca.policies.nfv.NsAffinityRule" ..> "*" "tosca.nodes.nfv.Forwarding" : targets
+class "tosca.policies.Placement" << (P,green) >> #DDDDDD
+"tosca.policies.Placement" <|-- "tosca.policies.nfv.NsAntiAffinityRule"
+class "tosca.policies.nfv.NsAntiAffinityRule" << (P,green) >> {
+.. properties ..
++<b>scope : string
+}
+class "tosca.nodes.nfv.VNF" << (N,green) >> #DDDDDD
+"tosca.policies.nfv.NsAntiAffinityRule" ..> "*" "tosca.nodes.nfv.VNF" : targets
+"tosca.policies.nfv.NsAntiAffinityRule" ..> "*" "tosca.nodes.nfv.NsVirtualLink" : targets
+"tosca.policies.nfv.NsAntiAffinityRule" ..> "*" "tosca.nodes.nfv.NS" : targets
+"tosca.policies.nfv.NsAntiAffinityRule" ..> "*" "tosca.groups.nfv.NsPlacementGroup" : targets
+"tosca.policies.nfv.NsAntiAffinityRule" ..> "*" "tosca.nodes.nfv.Sap" : targets
+"tosca.policies.nfv.NsAntiAffinityRule" ..> "*" "tosca.nodes.nfv.Forwarding" : targets
+class "tosca.policies.nfv.Abstract.SecurityGroupRule" << (P,green) >> #DDDDDD
+"tosca.policies.nfv.Abstract.SecurityGroupRule" <|-- "tosca.policies.nfv.NsSecurityGroupRule"
+class "tosca.policies.nfv.NsSecurityGroupRule" << (P,green) >> {
+}
+"tosca.policies.nfv.NsSecurityGroupRule" ..> "*" "tosca.nodes.nfv.Sap" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.NfpRule"
+class "tosca.policies.nfv.NfpRule" << (P,green) >> {
+.. properties ..
++ether_destination_address : string
++ether_source_address : string
++ether_type : string
++vlan_tag : list<string>
++protocol : string
++dscp : string
++source_port_range : range
++destination_port_range : range
++source_ip_address_prefix : string
++destination_ip_address_prefix : string
++extended_criteria : list<tosca.datatypes.nfv.Mask>
+}
+"tosca.policies.nfv.NfpRule" *-- "*" "tosca.datatypes.nfv.Mask" : extended_criteria
+"tosca.policies.nfv.NfpRule" ..> "*" "tosca.nodes.nfv.NFP" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.NsMonitoring"
+class "tosca.policies.nfv.NsMonitoring" << (P,green) >> {
+.. properties ..
++<b>ns_monitoring_parameters : map<tosca.datatypes.nfv.NsMonitoringParameter>
+}
+"tosca.policies.nfv.NsMonitoring" *-- "*" "tosca.datatypes.nfv.NsMonitoringParameter" : ns_monitoring_parameters
+"tosca.policies.nfv.NsMonitoring" ..> "*" "tosca.nodes.nfv.NS" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VnfMonitoring"
+class "tosca.policies.nfv.VnfMonitoring" << (P,green) >> {
+.. properties ..
++<b>vnf_monitoring_parameters : map<tosca.datatypes.nfv.VnfMonitoringParameter>
+}
+class "tosca.nodes.nfv.VNF" << (N,green) >> #DDDDDD
+"tosca.policies.nfv.VnfMonitoring" ..> "*" "tosca.nodes.nfv.VNF" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.NsScalingAspects"
+class "tosca.policies.nfv.NsScalingAspects" << (P,green) >> {
+.. properties ..
++<b>aspects : map<tosca.datatypes.nfv.NsScalingAspect>
+}
+"tosca.policies.nfv.NsScalingAspects" *-- "*" "tosca.datatypes.nfv.NsScalingAspect" : aspects
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VnfToLevelMapping"
+class "tosca.policies.nfv.VnfToLevelMapping" << (P,green) >> {
+.. properties ..
++<b>aspect : string
++<b>number_of_instances : map<integer, integer>
+}
+class "tosca.nodes.nfv.VNF" << (N,green) >> #DDDDDD
+"tosca.policies.nfv.VnfToLevelMapping" ..> "*" "tosca.nodes.nfv.VNF" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.NsToLevelMapping"
+class "tosca.policies.nfv.NsToLevelMapping" << (P,green) >> {
+.. properties ..
++<b>aspect : string
++<b>number_of_instances : map<integer, integer>
+}
+"tosca.policies.nfv.NsToLevelMapping" ..> "*" "tosca.nodes.nfv.NS" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VirtualLinkToLevelMapping"
+class "tosca.policies.nfv.VirtualLinkToLevelMapping" << (P,green) >> {
+.. properties ..
++<b>aspect : string
++<b>bit_rate_requirements : map<integer, tosca.datatypes.nfv.LinkBitrateRequirements>
+}
+"tosca.policies.nfv.VirtualLinkToLevelMapping" ..> "*" "tosca.nodes.nfv.NsVirtualLink" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.NsInstantiationLevels"
+class "tosca.policies.nfv.NsInstantiationLevels" << (P,green) >> {
+.. properties ..
++<b>ns_levels : map<tosca.datatypes.nfv.NsLevels>
++default_level : string
+}
+"tosca.policies.nfv.NsInstantiationLevels" *-- "*" "tosca.datatypes.nfv.NsLevels" : ns_levels
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VnfToInstantiationLevelMapping"
+class "tosca.policies.nfv.VnfToInstantiationLevelMapping" << (P,green) >> {
+.. properties ..
++<b>number_of_instances : map<integer>
+}
+class "tosca.nodes.nfv.VNF" << (N,green) >> #DDDDDD
+"tosca.policies.nfv.VnfToInstantiationLevelMapping" ..> "*" "tosca.nodes.nfv.VNF" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.NsToInstantiationLevelMapping"
+class "tosca.policies.nfv.NsToInstantiationLevelMapping" << (P,green) >> {
+.. properties ..
++<b>number_of_instances : map<integer>
+}
+"tosca.policies.nfv.NsToInstantiationLevelMapping" ..> "*" "tosca.nodes.nfv.NS" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VirtualLinkToInstantiationLevelMapping"
+class "tosca.policies.nfv.VirtualLinkToInstantiationLevelMapping" << (P,green) >> {
+.. properties ..
++<b>bit_rate_requirements : map<tosca.datatypes.nfv.LinkBitrateRequirements>
+}
+"tosca.policies.nfv.VirtualLinkToInstantiationLevelMapping" ..> "*" "tosca.nodes.nfv.NsVirtualLink" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.NsAutoScale"
+class "tosca.policies.nfv.NsAutoScale" << (P,green) >> {
+}
+"tosca.policies.nfv.NsAutoScale" ..> "*" "tosca.nodes.nfv.NS" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.DataFlowInfo"
+class "tosca.policies.nfv.DataFlowInfo" << (P,green) >> {
+.. properties ..
++<b>data_flow_info_id : string
++<b>associated_mirroring_job_name : string
++<b>direction : string
+}
+"tosca.policies.nfv.DataFlowInfo" ..> "*" "tosca.nodes.nfv.Forwarding" : targets
+"tosca.policies.nfv.DataFlowInfo" ..> "*" "tosca.nodes.nfv.Sap" : targets
+@enduml

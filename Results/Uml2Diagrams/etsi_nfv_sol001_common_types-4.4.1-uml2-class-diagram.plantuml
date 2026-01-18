@@ -1,0 +1,138 @@
+@startuml
+set namespaceSeparator none
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.L2AddressData"
+class "tosca.datatypes.nfv.L2AddressData" << (D,green) >> {
+.. properties ..
++<b>mac_address_assignment : boolean
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.L3AddressData"
+class "tosca.datatypes.nfv.L3AddressData" << (D,green) >> {
+.. properties ..
++ip_address_assignment : boolean
++ip_address_assignment_subtype : string
++<b>floating_ip_activated : boolean
++ip_address_type : string
++number_of_ip_address : integer
++fixed_ip_address : list<string>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.AddressData"
+class "tosca.datatypes.nfv.AddressData" << (D,green) >> {
+.. properties ..
++<b>address_type : string
++l2_address_data : tosca.datatypes.nfv.L2AddressData
++l3_address_data : tosca.datatypes.nfv.L3AddressData
+}
+"tosca.datatypes.nfv.AddressData" *-- "1" "tosca.datatypes.nfv.L2AddressData" : l2_address_data
+"tosca.datatypes.nfv.AddressData" *-- "1" "tosca.datatypes.nfv.L3AddressData" : l3_address_data
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.ConnectivityType"
+class "tosca.datatypes.nfv.ConnectivityType" << (D,green) >> {
+.. properties ..
++<b>layer_protocols : list<string>
++flow_pattern : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.LinkBitrateRequirements"
+class "tosca.datatypes.nfv.LinkBitrateRequirements" << (D,green) >> {
+.. properties ..
++<b>root : integer
++leaf : integer
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.CpProtocolData"
+class "tosca.datatypes.nfv.CpProtocolData" << (D,green) >> {
+.. properties ..
++<b>associated_layer_protocol : string
++address_data : list<tosca.datatypes.nfv.AddressData>
+}
+"tosca.datatypes.nfv.CpProtocolData" *-- "*" "tosca.datatypes.nfv.AddressData" : address_data
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfProfile"
+class "tosca.datatypes.nfv.VnfProfile" << (D,green) >> {
+.. properties ..
++instantiation_level : string
++target_vnf_scale_level_info : map<tosca.datatypes.nfv.ScaleInfo>
++<b>min_number_of_instances : integer
++<b>max_number_of_instances : integer
++service_availability_level : integer
++version_dependency : list<tosca.datatypes.nfv.VersionDependency>
+}
+"tosca.datatypes.nfv.VnfProfile" *-- "*" "tosca.datatypes.nfv.ScaleInfo" : target_vnf_scale_level_info
+"tosca.datatypes.nfv.VnfProfile" *-- "*" "tosca.datatypes.nfv.VersionDependency" : version_dependency
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.Qos"
+class "tosca.datatypes.nfv.Qos" << (D,green) >> {
+.. properties ..
++<b>latency : scalar-unit.time
++<b>packet_delay_variation : scalar-unit.time
++packet_loss_ratio : float
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfMonitoringParameter"
+class "tosca.datatypes.nfv.VnfMonitoringParameter" << (D,green) >> {
+.. properties ..
++<b>name : string
++<b>performance_metric : string
++collection_period : scalar-unit.time
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VersionDependency"
+class "tosca.datatypes.nfv.VersionDependency" << (D,green) >> {
+.. properties ..
++<b>dependent_constituent_id : string
++<b>version_dependency_statement : list<tosca.datatypes.nfv.VersionDependencyStatement>
+}
+"tosca.datatypes.nfv.VersionDependency" *-- "*" "tosca.datatypes.nfv.VersionDependencyStatement" : version_dependency_statement
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VersionDependencyStatement"
+class "tosca.datatypes.nfv.VersionDependencyStatement" << (D,green) >> {
+.. properties ..
++<b>descriptor_id : list<string>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.ScaleInfo"
+class "tosca.datatypes.nfv.ScaleInfo" << (D,green) >> {
+.. properties ..
++<b>scale_level : integer
+}
+class "tosca.capabilities.Node" << (C,green) >> #DDDDDD
+"tosca.capabilities.Node" <|-- "tosca.capabilities.nfv.VirtualLinkable"
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> {
+}
+class "tosca.relationships.DependsOn" << (R,green) >> #DDDDDD
+"tosca.relationships.DependsOn" <|-- "tosca.relationships.nfv.VirtualLinksTo"
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> {
+}
+"tosca.relationships.nfv.VirtualLinksTo" ..> "tosca.capabilities.nfv.VirtualLinkable" : valid_target_types
+class "tosca.relationships.DependsOn" << (R,green) >> #DDDDDD
+"tosca.relationships.DependsOn" <|-- "tosca.relationships.nfv.VipVirtualLinksTo"
+class "tosca.relationships.nfv.VipVirtualLinksTo" << (R,green) >> {
+}
+"tosca.relationships.nfv.VipVirtualLinksTo" ..> "tosca.capabilities.nfv.VirtualLinkable" : valid_target_types
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.Cp"
+class "tosca.nodes.nfv.Cp" << (N,green) >> {
+.. properties ..
++<b>layer_protocols : list<string>
++ip_stack_mode : string
++role : string
++description : string
++protocol : list<tosca.datatypes.nfv.CpProtocolData>
++trunk_mode : boolean
+}
+"tosca.nodes.nfv.Cp" *-- "*" "tosca.datatypes.nfv.CpProtocolData" : protocol
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.Abstract.SecurityGroupRule"
+class "tosca.policies.nfv.Abstract.SecurityGroupRule" << (P,green) >> {
+.. properties ..
++description : string
++<b>direction : string = 'ingress'
++<b>ether_type : string = 'ipv4'
++<b>protocol : string = 'tcp'
++<b>port_range_min : integer = 0
++<b>port_range_max : integer = 65535
+}
+@enduml

@@ -62,52 +62,6 @@ state "start_vl_data_network" as step_parallel_deploy_start_vl_data_network << s
   step_parallel_deploy_start_vl_data_network_vl_data_network_starting --> step_parallel_deploy_start_vl_data_network_vl_data_network_Standard.start
   step_parallel_deploy_start_vl_data_network_vl_data_network_Standard.start --> step_parallel_deploy_start_vl_data_network_vl_data_network_started
 }
-state "create_vl_vnf1_to_vnf2" as step_parallel_deploy_create_vl_vnf1_to_vnf2 << step >> {
-  state "vl_vnf1_to_vnf2 creating" as step_parallel_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_creating << set_state >>
-  state "vl_vnf1_to_vnf2 Standard.create" as step_parallel_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.create << call_operation >>
-  state "vl_vnf1_to_vnf2 created" as step_parallel_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_created << set_state >>
-  step_parallel_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_creating --> step_parallel_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.create
-  step_parallel_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.create --> step_parallel_deploy_create_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_created
-}
-state "pre_configure_vl_vnf1_to_vnf2" as step_parallel_deploy_pre_configure_vl_vnf1_to_vnf2 << step >> {
-  state "vl_vnf1_to_vnf2 configuring" as step_parallel_deploy_pre_configure_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_configuring << set_state >>
-}
-state "configure_vl_vnf1_to_vnf2" as step_parallel_deploy_configure_vl_vnf1_to_vnf2 << step >> {
-  state "vl_vnf1_to_vnf2 Standard.configure" as step_parallel_deploy_configure_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.configure << call_operation >>
-}
-state "post_configure_vl_vnf1_to_vnf2" as step_parallel_deploy_post_configure_vl_vnf1_to_vnf2 << step >> {
-  state "vl_vnf1_to_vnf2 configured" as step_parallel_deploy_post_configure_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_configured << set_state >>
-}
-state "start_vl_vnf1_to_vnf2" as step_parallel_deploy_start_vl_vnf1_to_vnf2 << step >> {
-  state "vl_vnf1_to_vnf2 starting" as step_parallel_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_starting << set_state >>
-  state "vl_vnf1_to_vnf2 Standard.start" as step_parallel_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.start << call_operation >>
-  state "vl_vnf1_to_vnf2 started" as step_parallel_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_started << set_state >>
-  step_parallel_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_starting --> step_parallel_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.start
-  step_parallel_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_Standard.start --> step_parallel_deploy_start_vl_vnf1_to_vnf2_vl_vnf1_to_vnf2_started
-}
-state "create_vl_vnf2_to_cnf" as step_parallel_deploy_create_vl_vnf2_to_cnf << step >> {
-  state "vl_vnf2_to_cnf creating" as step_parallel_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_creating << set_state >>
-  state "vl_vnf2_to_cnf Standard.create" as step_parallel_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.create << call_operation >>
-  state "vl_vnf2_to_cnf created" as step_parallel_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_created << set_state >>
-  step_parallel_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_creating --> step_parallel_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.create
-  step_parallel_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.create --> step_parallel_deploy_create_vl_vnf2_to_cnf_vl_vnf2_to_cnf_created
-}
-state "pre_configure_vl_vnf2_to_cnf" as step_parallel_deploy_pre_configure_vl_vnf2_to_cnf << step >> {
-  state "vl_vnf2_to_cnf configuring" as step_parallel_deploy_pre_configure_vl_vnf2_to_cnf_vl_vnf2_to_cnf_configuring << set_state >>
-}
-state "configure_vl_vnf2_to_cnf" as step_parallel_deploy_configure_vl_vnf2_to_cnf << step >> {
-  state "vl_vnf2_to_cnf Standard.configure" as step_parallel_deploy_configure_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.configure << call_operation >>
-}
-state "post_configure_vl_vnf2_to_cnf" as step_parallel_deploy_post_configure_vl_vnf2_to_cnf << step >> {
-  state "vl_vnf2_to_cnf configured" as step_parallel_deploy_post_configure_vl_vnf2_to_cnf_vl_vnf2_to_cnf_configured << set_state >>
-}
-state "start_vl_vnf2_to_cnf" as step_parallel_deploy_start_vl_vnf2_to_cnf << step >> {
-  state "vl_vnf2_to_cnf starting" as step_parallel_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_starting << set_state >>
-  state "vl_vnf2_to_cnf Standard.start" as step_parallel_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.start << call_operation >>
-  state "vl_vnf2_to_cnf started" as step_parallel_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_started << set_state >>
-  step_parallel_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_starting --> step_parallel_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.start
-  step_parallel_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_Standard.start --> step_parallel_deploy_start_vl_vnf2_to_cnf_vl_vnf2_to_cnf_started
-}
 state "create_vnf1_instance" as step_parallel_deploy_create_vnf1_instance << step >> {
   state "vnf1_instance creating" as step_parallel_deploy_create_vnf1_instance_vnf1_instance_creating << set_state >>
   state "vnf1_instance Standard.create" as step_parallel_deploy_create_vnf1_instance_vnf1_instance_Standard.create << call_operation >>
@@ -244,16 +198,8 @@ step_parallel_deploy_post_configure_vl_data_network --> step_parallel_deploy_sta
 state step_parallel_deploy_start_vl_data_network_fork <<fork>>
 step_parallel_deploy_start_vl_data_network --> step_parallel_deploy_start_vl_data_network_fork
 step_parallel_deploy_start_vl_data_network_fork --> step_parallel_deploy_create_vnf2_instance_join
+step_parallel_deploy_start_vl_data_network_fork --> step_parallel_deploy_create_cnf_instance_join
 step_parallel_deploy_start_vl_data_network_fork --> step_parallel_deploy_create_sap_data
-step_parallel_deploy_create_vl_vnf1_to_vnf2 --> step_parallel_deploy_pre_configure_vl_vnf1_to_vnf2
-step_parallel_deploy_pre_configure_vl_vnf1_to_vnf2 --> step_parallel_deploy_configure_vl_vnf1_to_vnf2
-step_parallel_deploy_configure_vl_vnf1_to_vnf2 --> step_parallel_deploy_post_configure_vl_vnf1_to_vnf2
-step_parallel_deploy_post_configure_vl_vnf1_to_vnf2 --> step_parallel_deploy_start_vl_vnf1_to_vnf2
-step_parallel_deploy_create_vl_vnf2_to_cnf --> step_parallel_deploy_pre_configure_vl_vnf2_to_cnf
-step_parallel_deploy_pre_configure_vl_vnf2_to_cnf --> step_parallel_deploy_configure_vl_vnf2_to_cnf
-step_parallel_deploy_configure_vl_vnf2_to_cnf --> step_parallel_deploy_post_configure_vl_vnf2_to_cnf
-step_parallel_deploy_post_configure_vl_vnf2_to_cnf --> step_parallel_deploy_start_vl_vnf2_to_cnf
-step_parallel_deploy_start_vl_vnf2_to_cnf --> step_parallel_deploy_create_cnf_instance_join
 step_parallel_deploy_create_vnf1_instance --> step_parallel_deploy_pre_configure_vnf1_instance
 step_parallel_deploy_pre_configure_vnf1_instance --> step_parallel_deploy_configure_vnf1_instance
 step_parallel_deploy_configure_vnf1_instance --> step_parallel_deploy_post_configure_vnf1_instance
@@ -278,11 +224,8 @@ state parallel_deploy_fork <<fork>>
 [*] --> parallel_deploy_fork
 parallel_deploy_fork --> step_parallel_deploy_create_vl_mgmt_network
 parallel_deploy_fork --> step_parallel_deploy_create_vl_data_network
-parallel_deploy_fork --> step_parallel_deploy_create_vl_vnf1_to_vnf2
-parallel_deploy_fork --> step_parallel_deploy_create_vl_vnf2_to_cnf
 state parallel_deploy_join <<join>>
 parallel_deploy_join --> [*]
-step_parallel_deploy_start_vl_vnf1_to_vnf2 --> parallel_deploy_join
 step_parallel_deploy_start_vnf1_instance --> parallel_deploy_join
 step_parallel_deploy_start_vnf2_instance --> parallel_deploy_join
 step_parallel_deploy_start_cnf_instance --> parallel_deploy_join

@@ -1,0 +1,1164 @@
+@startuml
+set namespaceSeparator none
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VirtualNetworkInterfaceRequirements"
+class "tosca.datatypes.nfv.VirtualNetworkInterfaceRequirements" << (D,green) >> {
+.. properties ..
++name : string
++description : string
++<b>network_interface_requirements : map<string>
++nic_io_requirements : tosca.datatypes.nfv.LogicalNodeData
+}
+"tosca.datatypes.nfv.VirtualNetworkInterfaceRequirements" *-- "1" "tosca.datatypes.nfv.LogicalNodeData" : nic_io_requirements
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.RequestedAdditionalCapability"
+class "tosca.datatypes.nfv.RequestedAdditionalCapability" << (D,green) >> {
+.. properties ..
++<b>requested_additional_capability_name : string
++<b>support_mandatory : boolean
++min_requested_additional_capability_version : string
++preferred_requested_additional_capability_version : string
++<b>target_performance_parameters : map<string>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VirtualMemory"
+class "tosca.datatypes.nfv.VirtualMemory" << (D,green) >> {
+.. properties ..
++<b>virtual_mem_size : scalar-unit.size
++virtual_mem_oversubscription_policy : string
++vdu_mem_requirements : map<string>
++<b>numa_enabled : boolean = False
++huge_pages_requirements : list<tosca.datatypes.nfv.Hugepages>
+}
+"tosca.datatypes.nfv.VirtualMemory" *-- "*" "tosca.datatypes.nfv.Hugepages" : huge_pages_requirements
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VirtualCpu"
+class "tosca.datatypes.nfv.VirtualCpu" << (D,green) >> {
+.. properties ..
++cpu_architecture : string
++<b>num_virtual_cpu : integer
++virtual_cpu_clock : scalar-unit.frequency
++virtual_cpu_oversubscription_policy : string
++vdu_cpu_requirements : map<string>
++virtual_cpu_pinning : tosca.datatypes.nfv.VirtualCpuPinning
+}
+"tosca.datatypes.nfv.VirtualCpu" *-- "1" "tosca.datatypes.nfv.VirtualCpuPinning" : virtual_cpu_pinning
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VirtualCpuPinning"
+class "tosca.datatypes.nfv.VirtualCpuPinning" << (D,green) >> {
+.. properties ..
++virtual_cpu_pinning_policy : string
++virtual_cpu_pinning_rule : list<string>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfcConfigurableProperties"
+class "tosca.datatypes.nfv.VnfcConfigurableProperties" << (D,green) >> {
+.. properties ..
++additional_vnfc_configurable_properties : tosca.datatypes.nfv.VnfcAdditionalConfigurableProperties
+}
+"tosca.datatypes.nfv.VnfcConfigurableProperties" *-- "1" "tosca.datatypes.nfv.VnfcAdditionalConfigurableProperties" : additional_vnfc_configurable_properties
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfcAdditionalConfigurableProperties"
+class "tosca.datatypes.nfv.VnfcAdditionalConfigurableProperties" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VduProfile"
+class "tosca.datatypes.nfv.VduProfile" << (D,green) >> {
+.. properties ..
++<b>min_number_of_instances : integer
++<b>max_number_of_instances : integer
++nfvi_maintenance_info : tosca.datatypes.nfv.NfviMaintenanceInfo
+}
+"tosca.datatypes.nfv.VduProfile" *-- "1" "tosca.datatypes.nfv.NfviMaintenanceInfo" : nfvi_maintenance_info
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VlProfile"
+class "tosca.datatypes.nfv.VlProfile" << (D,green) >> {
+.. properties ..
++<b>max_bitrate_requirements : tosca.datatypes.nfv.LinkBitrateRequirements
++<b>min_bitrate_requirements : tosca.datatypes.nfv.LinkBitrateRequirements
++qos : tosca.datatypes.nfv.Qos
++virtual_link_protocol_data : list<tosca.datatypes.nfv.VirtualLinkProtocolData>
+}
+"tosca.datatypes.nfv.VlProfile" *-- "*" "tosca.datatypes.nfv.VirtualLinkProtocolData" : virtual_link_protocol_data
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VirtualLinkProtocolData"
+class "tosca.datatypes.nfv.VirtualLinkProtocolData" << (D,green) >> {
+.. properties ..
++<b>associated_layer_protocol : string
++l2_protocol_data : tosca.datatypes.nfv.L2ProtocolData
++l3_protocol_data : tosca.datatypes.nfv.L3ProtocolData
+}
+"tosca.datatypes.nfv.VirtualLinkProtocolData" *-- "1" "tosca.datatypes.nfv.L2ProtocolData" : l2_protocol_data
+"tosca.datatypes.nfv.VirtualLinkProtocolData" *-- "1" "tosca.datatypes.nfv.L3ProtocolData" : l3_protocol_data
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.L2ProtocolData"
+class "tosca.datatypes.nfv.L2ProtocolData" << (D,green) >> {
+.. properties ..
++name : string
++network_type : string
++<b>vlan_transparent : boolean = False
++mtu : integer
++segmentation_id : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.L3ProtocolData"
+class "tosca.datatypes.nfv.L3ProtocolData" << (D,green) >> {
+.. properties ..
++name : string
++<b>ip_version : string
++<b>cidr : string
++ip_allocation_pools : list<tosca.datatypes.nfv.IpAllocationPool>
++gateway_ip : string
++dhcp_enabled : boolean
++ipv6_address_mode : string
+}
+"tosca.datatypes.nfv.L3ProtocolData" *-- "*" "tosca.datatypes.nfv.IpAllocationPool" : ip_allocation_pools
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.IpAllocationPool"
+class "tosca.datatypes.nfv.IpAllocationPool" << (D,green) >> {
+.. properties ..
++<b>start_ip_address : string
++<b>end_ip_address : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.InstantiationLevel"
+class "tosca.datatypes.nfv.InstantiationLevel" << (D,green) >> {
+.. properties ..
++<b>description : string
++scale_info : map<tosca.datatypes.nfv.ScaleInfo>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VduLevel"
+class "tosca.datatypes.nfv.VduLevel" << (D,green) >> {
+.. properties ..
++<b>number_of_instances : integer
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfLcmOperationsConfiguration"
+class "tosca.datatypes.nfv.VnfLcmOperationsConfiguration" << (D,green) >> {
+.. properties ..
++instantiate : tosca.datatypes.nfv.VnfInstantiateOperationConfiguration
++scale : tosca.datatypes.nfv.VnfScaleOperationConfiguration
++scale_to_level : tosca.datatypes.nfv.VnfScaleToLevelOperationConfiguration
++change_flavour : tosca.datatypes.nfv.VnfChangeFlavourOperationConfiguration
++heal : tosca.datatypes.nfv.VnfHealOperationConfiguration
++terminate : tosca.datatypes.nfv.VnfTerminateOperationConfiguration
++operate : tosca.datatypes.nfv.VnfOperateOperationConfiguration
++change_ext_connectivity : tosca.datatypes.nfv.VnfChangeExtConnectivityOperationConfiguration
++change_current_package : tosca.datatypes.nfv.VnfChangeCurrentPackageOperationConfiguration
++create_snapshot : tosca.datatypes.nfv.VnfCreateSnapshotOperationConfiguration
++revert_to_snapshot : tosca.datatypes.nfv.VnfRevertToSnapshotOperationConfiguration
+}
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfInstantiateOperationConfiguration" : instantiate
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfScaleOperationConfiguration" : scale
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfScaleToLevelOperationConfiguration" : scale_to_level
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfChangeFlavourOperationConfiguration" : change_flavour
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfHealOperationConfiguration" : heal
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfTerminateOperationConfiguration" : terminate
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfOperateOperationConfiguration" : operate
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfChangeExtConnectivityOperationConfiguration" : change_ext_connectivity
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfChangeCurrentPackageOperationConfiguration" : change_current_package
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfCreateSnapshotOperationConfiguration" : create_snapshot
+"tosca.datatypes.nfv.VnfLcmOperationsConfiguration" *-- "1" "tosca.datatypes.nfv.VnfRevertToSnapshotOperationConfiguration" : revert_to_snapshot
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfInstantiateOperationConfiguration"
+class "tosca.datatypes.nfv.VnfInstantiateOperationConfiguration" << (D,green) >> {
+.. properties ..
++<b>target_scale_levels_supported : boolean = False
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfScaleOperationConfiguration"
+class "tosca.datatypes.nfv.VnfScaleOperationConfiguration" << (D,green) >> {
+.. properties ..
++<b>scaling_by_more_than_one_step_supported : boolean = False
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfScaleToLevelOperationConfiguration"
+class "tosca.datatypes.nfv.VnfScaleToLevelOperationConfiguration" << (D,green) >> {
+.. properties ..
++<b>arbitrary_target_levels_supported : boolean
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfHealOperationConfiguration"
+class "tosca.datatypes.nfv.VnfHealOperationConfiguration" << (D,green) >> {
+.. properties ..
++causes : list<string>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfTerminateOperationConfiguration"
+class "tosca.datatypes.nfv.VnfTerminateOperationConfiguration" << (D,green) >> {
+.. properties ..
++<b>min_graceful_termination_timeout : scalar-unit.time
++max_recommended_graceful_termination_timeout : scalar-unit.time
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfOperateOperationConfiguration"
+class "tosca.datatypes.nfv.VnfOperateOperationConfiguration" << (D,green) >> {
+.. properties ..
++<b>min_graceful_stop_timeout : scalar-unit.time
++max_recommended_graceful_stop_timeout : scalar-unit.time
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.ScalingAspect"
+class "tosca.datatypes.nfv.ScalingAspect" << (D,green) >> {
+.. properties ..
++<b>name : string
++<b>description : string
++<b>max_scale_level : integer
++step_deltas : list<string>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfConfigurableProperties"
+class "tosca.datatypes.nfv.VnfConfigurableProperties" << (D,green) >> {
+.. properties ..
++is_autoscale_enabled : boolean
++is_autoheal_enabled : boolean
++vnfm_interface_info : list<tosca.datatypes.nfv.VnfmInterfaceInfo>
++vnfm_oauth_server_info : tosca.datatypes.nfv.OauthServerInfo
++vnf_oauth_server_info : tosca.datatypes.nfv.OauthServerInfo
++additional_configurable_properties : tosca.datatypes.nfv.VnfAdditionalConfigurableProperties
+}
+"tosca.datatypes.nfv.VnfConfigurableProperties" *-- "*" "tosca.datatypes.nfv.VnfmInterfaceInfo" : vnfm_interface_info
+"tosca.datatypes.nfv.VnfConfigurableProperties" *-- "1" "tosca.datatypes.nfv.OauthServerInfo" : vnfm_oauth_server_info
+"tosca.datatypes.nfv.VnfConfigurableProperties" *-- "1" "tosca.datatypes.nfv.OauthServerInfo" : vnf_oauth_server_info
+"tosca.datatypes.nfv.VnfConfigurableProperties" *-- "1" "tosca.datatypes.nfv.VnfAdditionalConfigurableProperties" : additional_configurable_properties
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfAdditionalConfigurableProperties"
+class "tosca.datatypes.nfv.VnfAdditionalConfigurableProperties" << (D,green) >> {
+.. properties ..
++<b>is_writable_anytime : boolean = True
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfInfoModifiableAttributes"
+class "tosca.datatypes.nfv.VnfInfoModifiableAttributes" << (D,green) >> {
+.. properties ..
++extensions : tosca.datatypes.nfv.VnfInfoModifiableAttributesExtensions
++metadata : tosca.datatypes.nfv.VnfInfoModifiableAttributesMetadata
+}
+"tosca.datatypes.nfv.VnfInfoModifiableAttributes" *-- "1" "tosca.datatypes.nfv.VnfInfoModifiableAttributesExtensions" : extensions
+"tosca.datatypes.nfv.VnfInfoModifiableAttributes" *-- "1" "tosca.datatypes.nfv.VnfInfoModifiableAttributesMetadata" : metadata
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfInfoModifiableAttributesExtensions"
+class "tosca.datatypes.nfv.VnfInfoModifiableAttributesExtensions" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfInfoModifiableAttributesMetadata"
+class "tosca.datatypes.nfv.VnfInfoModifiableAttributesMetadata" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.LogicalNodeData"
+class "tosca.datatypes.nfv.LogicalNodeData" << (D,green) >> {
+.. properties ..
++logical_node_requirements : map<string>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VirtualBlockStorageData"
+class "tosca.datatypes.nfv.VirtualBlockStorageData" << (D,green) >> {
+.. properties ..
++<b>size_of_storage : scalar-unit.size
++vdu_storage_requirements : map<string>
++<b>rdma_enabled : boolean = False
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VirtualObjectStorageData"
+class "tosca.datatypes.nfv.VirtualObjectStorageData" << (D,green) >> {
+.. properties ..
++max_size_of_storage : scalar-unit.size
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VirtualFileStorageData"
+class "tosca.datatypes.nfv.VirtualFileStorageData" << (D,green) >> {
+.. properties ..
++<b>size_of_storage : scalar-unit.size
++<b>file_system_protocol : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VirtualLinkBitrateLevel"
+class "tosca.datatypes.nfv.VirtualLinkBitrateLevel" << (D,green) >> {
+.. properties ..
++<b>bitrate_requirements : tosca.datatypes.nfv.LinkBitrateRequirements
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfOperationAdditionalParameters"
+class "tosca.datatypes.nfv.VnfOperationAdditionalParameters" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfChangeFlavourOperationConfiguration"
+class "tosca.datatypes.nfv.VnfChangeFlavourOperationConfiguration" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfChangeExtConnectivityOperationConfiguration"
+class "tosca.datatypes.nfv.VnfChangeExtConnectivityOperationConfiguration" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfcMonitoringParameter"
+class "tosca.datatypes.nfv.VnfcMonitoringParameter" << (D,green) >> {
+.. properties ..
++<b>name : string
++<b>performance_metric : string
++collection_period : scalar-unit.time
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VirtualLinkMonitoringParameter"
+class "tosca.datatypes.nfv.VirtualLinkMonitoringParameter" << (D,green) >> {
+.. properties ..
++<b>name : string
++<b>performance_metric : string
++collection_period : scalar-unit.time
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.InterfaceDetails"
+class "tosca.datatypes.nfv.InterfaceDetails" << (D,green) >> {
+.. properties ..
++uri_components : tosca.datatypes.nfv.UriComponents
++interface_specific_data : map<string>
+}
+"tosca.datatypes.nfv.InterfaceDetails" *-- "1" "tosca.datatypes.nfv.UriComponents" : uri_components
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.UriComponents"
+class "tosca.datatypes.nfv.UriComponents" << (D,green) >> {
+.. properties ..
++<b>scheme : string
++authority : tosca.datatypes.nfv.UriAuthority
++path : string
++query : string
++fragment : string
+}
+"tosca.datatypes.nfv.UriComponents" *-- "1" "tosca.datatypes.nfv.UriAuthority" : authority
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.UriAuthority"
+class "tosca.datatypes.nfv.UriAuthority" << (D,green) >> {
+.. properties ..
++user_info : string
++host : string
++port : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.ChecksumData"
+class "tosca.datatypes.nfv.ChecksumData" << (D,green) >> {
+.. properties ..
++<b>algorithm : string
++<b>hash : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfmInterfaceInfo"
+class "tosca.datatypes.nfv.VnfmInterfaceInfo" << (D,green) >> {
+.. properties ..
++<b>interface_name : string
++details : tosca.datatypes.nfv.InterfaceDetails
++credentials : map<string>
+}
+"tosca.datatypes.nfv.VnfmInterfaceInfo" *-- "1" "tosca.datatypes.nfv.InterfaceDetails" : details
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.OauthServerInfo"
+class "tosca.datatypes.nfv.OauthServerInfo" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.BootData"
+class "tosca.datatypes.nfv.BootData" << (D,green) >> {
+.. properties ..
++vim_specific_properties : tosca.datatypes.nfv.BootDataVimSpecificProperties
++kvp_data : tosca.datatypes.nfv.KvpData
++content_or_file_data : tosca.datatypes.nfv.ContentOrFileData
+}
+"tosca.datatypes.nfv.BootData" *-- "1" "tosca.datatypes.nfv.BootDataVimSpecificProperties" : vim_specific_properties
+"tosca.datatypes.nfv.BootData" *-- "1" "tosca.datatypes.nfv.KvpData" : kvp_data
+"tosca.datatypes.nfv.BootData" *-- "1" "tosca.datatypes.nfv.ContentOrFileData" : content_or_file_data
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.KvpData"
+class "tosca.datatypes.nfv.KvpData" << (D,green) >> {
+.. properties ..
++data : map<string>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.ContentOrFileData"
+class "tosca.datatypes.nfv.ContentOrFileData" << (D,green) >> {
+.. properties ..
++data : map<string>
++content : string
++source_path : string
++destination_path : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.BootDataVimSpecificProperties"
+class "tosca.datatypes.nfv.BootDataVimSpecificProperties" << (D,green) >> {
+.. properties ..
++vim_type : string
++<b>properties : map<string>
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfPackageChangeSelector"
+class "tosca.datatypes.nfv.VnfPackageChangeSelector" << (D,green) >> {
+.. properties ..
++<b>source_descriptor_id : string
++<b>destination_descriptor_id : string
++<b>source_flavour_id : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfPackageChangeComponentMapping"
+class "tosca.datatypes.nfv.VnfPackageChangeComponentMapping" << (D,green) >> {
+.. properties ..
++<b>component_type : string
++<b>source_id : string
++<b>destination_id : string
++description : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfChangeCurrentPackageOperationConfiguration"
+class "tosca.datatypes.nfv.VnfChangeCurrentPackageOperationConfiguration" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfCreateSnapshotOperationConfiguration"
+class "tosca.datatypes.nfv.VnfCreateSnapshotOperationConfiguration" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfRevertToSnapshotOperationConfiguration"
+class "tosca.datatypes.nfv.VnfRevertToSnapshotOperationConfiguration" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.ServicePortData"
+class "tosca.datatypes.nfv.ServicePortData" << (D,green) >> {
+.. properties ..
++<b>name : string
++<b>protocol : string
++<b>port : integer
++<b>portConfigurable : boolean
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.AdditionalServiceData"
+class "tosca.datatypes.nfv.AdditionalServiceData" << (D,green) >> {
+.. properties ..
++<b>portData : list<tosca.datatypes.nfv.ServicePortData>
++serviceData : tosca.datatypes.nfv.ServiceData
+}
+"tosca.datatypes.nfv.AdditionalServiceData" *-- "*" "tosca.datatypes.nfv.ServicePortData" : portData
+"tosca.datatypes.nfv.AdditionalServiceData" *-- "1" "tosca.datatypes.nfv.ServiceData" : serviceData
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VnfLcmOpCoord"
+class "tosca.datatypes.nfv.VnfLcmOpCoord" << (D,green) >> {
+.. properties ..
++description : string
++endpoint_type : string
++coordination_stage : string
++input_parameters : tosca.datatypes.nfv.InputOpCoordParams
++output_parameters : tosca.datatypes.nfv.OutputOpCoordParams
+}
+"tosca.datatypes.nfv.VnfLcmOpCoord" *-- "1" "tosca.datatypes.nfv.InputOpCoordParams" : input_parameters
+"tosca.datatypes.nfv.VnfLcmOpCoord" *-- "1" "tosca.datatypes.nfv.OutputOpCoordParams" : output_parameters
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.InputOpCoordParams"
+class "tosca.datatypes.nfv.InputOpCoordParams" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.OutputOpCoordParams"
+class "tosca.datatypes.nfv.OutputOpCoordParams" << (D,green) >> {
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.ExtendedResourceData"
+class "tosca.datatypes.nfv.ExtendedResourceData" << (D,green) >> {
+.. properties ..
++<b>extended_resource : map<string>
++<b>amount : integer
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.Hugepages"
+class "tosca.datatypes.nfv.Hugepages" << (D,green) >> {
+.. properties ..
++<b>hugepage_size : scalar-unit.size
++<b>requested_size : scalar-unit.size
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.MaxNumberOfImpactedInstances"
+class "tosca.datatypes.nfv.MaxNumberOfImpactedInstances" << (D,green) >> {
+.. properties ..
++group_size : integer
++<b>max_number_of_impacted_instances : integer
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.MinNumberOfPreservedInstances"
+class "tosca.datatypes.nfv.MinNumberOfPreservedInstances" << (D,green) >> {
+.. properties ..
++group_size : integer
++<b>min_number_of_preserved_instances : integer
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.NfviMaintenanceInfo"
+class "tosca.datatypes.nfv.NfviMaintenanceInfo" << (D,green) >> {
+.. properties ..
++<b>impact_notification_lead_time : scalar-unit.time
++<b>is_impact_mitigation_requested : boolean = False
++supported_migration_type : list<string>
++max_undetectable_interruption_time : scalar-unit.time
++min_recovery_time_between_impacts : scalar-unit.time
++max_number_of_impacted_instances : list<tosca.datatypes.nfv.MaxNumberOfImpactedInstances>
++min_number_of_preserved_instances : list<tosca.datatypes.nfv.MinNumberOfPreservedInstances>
+}
+"tosca.datatypes.nfv.NfviMaintenanceInfo" *-- "*" "tosca.datatypes.nfv.MaxNumberOfImpactedInstances" : max_number_of_impacted_instances
+"tosca.datatypes.nfv.NfviMaintenanceInfo" *-- "*" "tosca.datatypes.nfv.MinNumberOfPreservedInstances" : min_number_of_preserved_instances
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.McioIdentificationData"
+class "tosca.datatypes.nfv.McioIdentificationData" << (D,green) >> {
+.. properties ..
++<b>name : string
++<b>type : string
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.VipCpLevel"
+class "tosca.datatypes.nfv.VipCpLevel" << (D,green) >> {
+.. properties ..
++<b>number_of_instances : integer
+}
+class "tosca.datatypes.Root" << (D,green) >> #DDDDDD
+"tosca.datatypes.Root" <|-- "tosca.datatypes.nfv.ServiceData"
+class "tosca.datatypes.nfv.ServiceData" << (D,green) >> {
+.. properties ..
++host : string
++path : list<string>
+}
+class "tosca.artifacts.Deployment.Image" << (A,green) >> #DDDDDD
+"tosca.artifacts.Deployment.Image" <|-- "tosca.artifacts.nfv.SwImage"
+class "tosca.artifacts.nfv.SwImage" << (A,green) >> {
+.. properties ..
++<b>name : string
++<b>version : string
++provider : string
++checksum : tosca.datatypes.nfv.ChecksumData
++<b>container_format : string
++disk_format : string
++min_disk : scalar-unit.size
++min_ram : scalar-unit.size
++size : scalar-unit.size
++operating_system : string
++supported_virtualisation_environments : list<string>
+}
+"tosca.artifacts.nfv.SwImage" *-- "1" "tosca.datatypes.nfv.ChecksumData" : checksum
+class "tosca.artifacts.Implementation" << (A,green) >> #DDDDDD
+"tosca.artifacts.Implementation" <|-- "tosca.artifacts.Implementation.nfv.Mistral"
+class "tosca.artifacts.Implementation.nfv.Mistral" << (A,green) >> {
++mime_type: application/x-yaml
++file_ext: ['yaml']
+}
+class "tosca.artifacts.File" << (A,green) >> #DDDDDD
+"tosca.artifacts.File" <|-- "tosca.artifacts.nfv.HelmChart"
+class "tosca.artifacts.nfv.HelmChart" << (A,green) >> {
++file_ext: ['tar', 'tar.gz', 'tgz']
+}
+class "tosca.capabilities.Node" << (C,green) >> #DDDDDD
+"tosca.capabilities.Node" <|-- "tosca.capabilities.nfv.VirtualBindable"
+class "tosca.capabilities.nfv.VirtualBindable" << (C,green) >> {
+}
+class "tosca.capabilities.Node" << (C,green) >> #DDDDDD
+"tosca.capabilities.Node" <|-- "tosca.capabilities.nfv.VirtualCompute"
+class "tosca.capabilities.nfv.VirtualCompute" << (C,green) >> {
+.. properties ..
++logical_node : map<tosca.datatypes.nfv.LogicalNodeData>
++requested_additional_capabilities : map<tosca.datatypes.nfv.RequestedAdditionalCapability>
++compute_requirements : map<string>
++<b>virtual_memory : tosca.datatypes.nfv.VirtualMemory
++<b>virtual_cpu : tosca.datatypes.nfv.VirtualCpu
++virtual_local_storage : list<tosca.datatypes.nfv.VirtualBlockStorageData>
+}
+"tosca.capabilities.nfv.VirtualCompute" *-- "*" "tosca.datatypes.nfv.LogicalNodeData" : logical_node
+"tosca.capabilities.nfv.VirtualCompute" *-- "*" "tosca.datatypes.nfv.RequestedAdditionalCapability" : requested_additional_capabilities
+"tosca.capabilities.nfv.VirtualCompute" *-- "1" "tosca.datatypes.nfv.VirtualMemory" : virtual_memory
+"tosca.capabilities.nfv.VirtualCompute" *-- "1" "tosca.datatypes.nfv.VirtualCpu" : virtual_cpu
+"tosca.capabilities.nfv.VirtualCompute" *-- "*" "tosca.datatypes.nfv.VirtualBlockStorageData" : virtual_local_storage
+class "tosca.capabilities.Root" << (C,green) >> #DDDDDD
+"tosca.capabilities.Root" <|-- "tosca.capabilities.nfv.VirtualStorage"
+class "tosca.capabilities.nfv.VirtualStorage" << (C,green) >> {
+}
+class "tosca.capabilities.Node" << (C,green) >> #DDDDDD
+"tosca.capabilities.Node" <|-- "tosca.capabilities.nfv.TrunkBindable"
+class "tosca.capabilities.nfv.TrunkBindable" << (C,green) >> {
+}
+class "tosca.capabilities.Node" << (C,green) >> #DDDDDD
+"tosca.capabilities.Node" <|-- "tosca.capabilities.nfv.ContainerDeployable"
+class "tosca.capabilities.nfv.ContainerDeployable" << (C,green) >> {
+}
+class "tosca.capabilities.Node" << (C,green) >> #DDDDDD
+"tosca.capabilities.Node" <|-- "tosca.capabilities.nfv.AssociableVdu"
+class "tosca.capabilities.nfv.AssociableVdu" << (C,green) >> {
+}
+class "tosca.relationships.DependsOn" << (R,green) >> #DDDDDD
+"tosca.relationships.DependsOn" <|-- "tosca.relationships.nfv.VirtualBindsTo"
+class "tosca.relationships.nfv.VirtualBindsTo" << (R,green) >> {
+}
+"tosca.relationships.nfv.VirtualBindsTo" ..> "tosca.capabilities.nfv.VirtualBindable" : valid_target_types
+class "tosca.relationships.Root" << (R,green) >> #DDDDDD
+"tosca.relationships.Root" <|-- "tosca.relationships.nfv.AttachesTo"
+class "tosca.relationships.nfv.AttachesTo" << (R,green) >> {
+}
+"tosca.relationships.nfv.AttachesTo" ..> "tosca.capabilities.nfv.VirtualStorage" : valid_target_types
+class "tosca.relationships.DependsOn" << (R,green) >> #DDDDDD
+"tosca.relationships.DependsOn" <|-- "tosca.relationships.nfv.TrunkBindsTo"
+class "tosca.relationships.nfv.TrunkBindsTo" << (R,green) >> {
+}
+"tosca.relationships.nfv.TrunkBindsTo" ..> "tosca.capabilities.nfv.TrunkBindable" : valid_target_types
+class "tosca.relationships.DependsOn" << (R,green) >> #DDDDDD
+"tosca.relationships.DependsOn" <|-- "tosca.relationships.nfv.DeploysTo"
+class "tosca.relationships.nfv.DeploysTo" << (R,green) >> {
+}
+"tosca.relationships.nfv.DeploysTo" ..> "tosca.capabilities.nfv.ContainerDeployable" : valid_target_types
+class "tosca.relationships.DependsOn" << (R,green) >> #DDDDDD
+"tosca.relationships.DependsOn" <|-- "tosca.relationships.nfv.MciopAssociates"
+class "tosca.relationships.nfv.MciopAssociates" << (R,green) >> {
+}
+"tosca.relationships.nfv.MciopAssociates" ..> "tosca.capabilities.nfv.AssociableVdu" : valid_target_types
+class "tosca.interfaces.Root" << (I,green) >> #DDDDDD
+"tosca.interfaces.Root" <|-- "tosca.interfaces.nfv.Vnflcm"
+class "tosca.interfaces.nfv.Vnflcm" << (I,green) >> {
++instantiate()
++instantiate_start()
++instantiate_end()
++terminate()
++terminate_start()
++terminate_end()
++modify_information()
++modify_information_start()
++modify_information_end()
++change_flavour()
++change_flavour_start()
++change_flavour_end()
++change_external_connectivity()
++change_external_connectivity_start()
++change_external_connectivity_end()
++operate()
++operate_start()
++operate_end()
++heal()
++heal_start()
++heal_end()
++scale()
++scale_start()
++scale_end()
++scale_to_level()
++scale_to_level_start()
++scale_to_level_end()
++create_snapshot()
++create_snapshot_start()
++create_snapshot_end()
++revert_to_snapshot()
++revert_to_snapshot_start()
++revert_to_snapshot_end()
++change_current_package()
++change_current_package_start()
++change_current_package_end()
+}
+class "tosca.interfaces.Root" << (I,green) >> #DDDDDD
+"tosca.interfaces.Root" <|-- "tosca.interfaces.nfv.VnfIndicator"
+class "tosca.interfaces.nfv.VnfIndicator" << (I,green) >> {
+}
+class "tosca.interfaces.Root" << (I,green) >> #DDDDDD
+"tosca.interfaces.Root" <|-- "tosca.interfaces.nfv.ChangeCurrentVnfPackage"
+class "tosca.interfaces.nfv.ChangeCurrentVnfPackage" << (I,green) >> {
+}
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.VNF"
+class "tosca.nodes.nfv.VNF" << (N,green) >> {
+.. attributes ..
++<b>scale_status : map<tosca.datatypes.nfv.ScaleInfo>
+.. properties ..
++<b>descriptor_id : string
++ext_invariant_id : string
++<b>descriptor_version : string
++<b>provider : string
++<b>product_name : string
++<b>software_version : string
++product_info_name : string
++product_info_description : string
++<b>vnfm_info : list<string>
++localization_languages : list<string>
++default_localization_language : string
++configurable_properties : tosca.datatypes.nfv.VnfConfigurableProperties
++modifiable_attributes : tosca.datatypes.nfv.VnfInfoModifiableAttributes
++lcm_operations_configuration : tosca.datatypes.nfv.VnfLcmOperationsConfiguration
++monitoring_parameters : map<tosca.datatypes.nfv.VnfMonitoringParameter>
++<b>flavour_id : string
++<b>flavour_description : string
++vnf_profile : tosca.datatypes.nfv.VnfProfile
+.. requirements ..
++virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[0..1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
+--
+.. interface Vnflcm ..
+.. interface VnfIndicator ..
+}
+"tosca.nodes.nfv.VNF" *-- "1" "tosca.datatypes.nfv.VnfConfigurableProperties" : configurable_properties
+"tosca.nodes.nfv.VNF" *-- "1" "tosca.datatypes.nfv.VnfInfoModifiableAttributes" : modifiable_attributes
+"tosca.nodes.nfv.VNF" *-- "1" "tosca.datatypes.nfv.VnfLcmOperationsConfiguration" : lcm_operations_configuration
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.VNF" *- "0..1" "tosca.capabilities.nfv.VirtualLinkable" : virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.VNF" ..> "tosca.relationships.nfv.VirtualLinksTo" : virtual_link.relationship
+"tosca.interfaces.nfv.Vnflcm" <|.. "tosca.nodes.nfv.VNF" : Vnflcm
+"tosca.interfaces.nfv.VnfIndicator" <|.. "tosca.nodes.nfv.VNF" : VnfIndicator
+class "tosca.nodes.nfv.Cp" << (N,green) >> #DDDDDD
+"tosca.nodes.nfv.Cp" <|-- "tosca.nodes.nfv.VnfExtCp"
+class "tosca.nodes.nfv.VnfExtCp" << (N,green) >> {
+.. properties ..
++virtual_network_interface_requirements : list<tosca.datatypes.nfv.VirtualNetworkInterfaceRequirements>
+.. requirements ..
++external_virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[0..1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
++<b>internal_virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
+}
+"tosca.nodes.nfv.VnfExtCp" *-- "*" "tosca.datatypes.nfv.VirtualNetworkInterfaceRequirements" : virtual_network_interface_requirements
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.VnfExtCp" *- "0..1" "tosca.capabilities.nfv.VirtualLinkable" : external_virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.VnfExtCp" ..> "tosca.relationships.nfv.VirtualLinksTo" : external_virtual_link.relationship
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.VnfExtCp" *- "1" "tosca.capabilities.nfv.VirtualLinkable" : internal_virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.VnfExtCp" ..> "tosca.relationships.nfv.VirtualLinksTo" : internal_virtual_link.relationship
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.Vdu.Compute"
+class "tosca.nodes.nfv.Vdu.Compute" << (N,green) >> {
+.. properties ..
++<b>name : string
++<b>description : string
++<b>boot_order : boolean = False
++nfvi_constraints : map<string>
++monitoring_parameters : map<tosca.datatypes.nfv.VnfcMonitoringParameter>
++configurable_properties : tosca.datatypes.nfv.VnfcConfigurableProperties
++<b>vdu_profile : tosca.datatypes.nfv.VduProfile
++boot_data : tosca.datatypes.nfv.BootData
+.. capabilities ..
++virtual_compute
+ type : tosca.capabilities.nfv.VirtualCompute[1]
++virtual_binding
+ type : tosca.capabilities.nfv.VirtualBindable[1..*]
+.. requirements ..
++virtual_storage
+ capability : tosca.capabilities.nfv.VirtualStorage[0..*]
+ relationship : tosca.relationships.nfv.AttachesTo
+}
+"tosca.nodes.nfv.Vdu.Compute" *-- "*" "tosca.datatypes.nfv.VnfcMonitoringParameter" : monitoring_parameters
+"tosca.nodes.nfv.Vdu.Compute" *-- "1" "tosca.datatypes.nfv.VnfcConfigurableProperties" : configurable_properties
+"tosca.nodes.nfv.Vdu.Compute" *-- "1" "tosca.datatypes.nfv.VduProfile" : vdu_profile
+"tosca.nodes.nfv.Vdu.Compute" *-- "1" "tosca.datatypes.nfv.BootData" : boot_data
+"tosca.capabilities.nfv.VirtualCompute" "1" -* "tosca.nodes.nfv.Vdu.Compute" : virtual_compute
+"tosca.capabilities.nfv.VirtualBindable" "1..*" -* "tosca.nodes.nfv.Vdu.Compute" : virtual_binding
+"tosca.nodes.nfv.Vdu.Compute" *- "0..*" "tosca.capabilities.nfv.VirtualStorage" : virtual_storage
+"tosca.nodes.nfv.Vdu.Compute" ..> "tosca.relationships.nfv.AttachesTo" : virtual_storage.relationship
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.Vdu.VirtualBlockStorage"
+class "tosca.nodes.nfv.Vdu.VirtualBlockStorage" << (N,green) >> {
+.. properties ..
++<b>virtual_block_storage_data : tosca.datatypes.nfv.VirtualBlockStorageData
++<b>per_vnfc_instance : boolean = True
++nfvi_maintenance_info : tosca.datatypes.nfv.NfviMaintenanceInfo
+.. capabilities ..
++virtual_storage
+ type : tosca.capabilities.nfv.VirtualStorage[1..*]
+}
+"tosca.nodes.nfv.Vdu.VirtualBlockStorage" *-- "1" "tosca.datatypes.nfv.VirtualBlockStorageData" : virtual_block_storage_data
+"tosca.nodes.nfv.Vdu.VirtualBlockStorage" *-- "1" "tosca.datatypes.nfv.NfviMaintenanceInfo" : nfvi_maintenance_info
+"tosca.capabilities.nfv.VirtualStorage" "1..*" -* "tosca.nodes.nfv.Vdu.VirtualBlockStorage" : virtual_storage
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.Vdu.VirtualObjectStorage"
+class "tosca.nodes.nfv.Vdu.VirtualObjectStorage" << (N,green) >> {
+.. properties ..
++<b>virtual_object_storage_data : tosca.datatypes.nfv.VirtualObjectStorageData
++<b>per_vnfc_instance : boolean = True
++nfvi_maintenance_info : tosca.datatypes.nfv.NfviMaintenanceInfo
+.. capabilities ..
++virtual_storage
+ type : tosca.capabilities.nfv.VirtualStorage[1..*]
+}
+"tosca.nodes.nfv.Vdu.VirtualObjectStorage" *-- "1" "tosca.datatypes.nfv.VirtualObjectStorageData" : virtual_object_storage_data
+"tosca.nodes.nfv.Vdu.VirtualObjectStorage" *-- "1" "tosca.datatypes.nfv.NfviMaintenanceInfo" : nfvi_maintenance_info
+"tosca.capabilities.nfv.VirtualStorage" "1..*" -* "tosca.nodes.nfv.Vdu.VirtualObjectStorage" : virtual_storage
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.Vdu.VirtualFileStorage"
+class "tosca.nodes.nfv.Vdu.VirtualFileStorage" << (N,green) >> {
+.. properties ..
++<b>virtual_file_storage_data : tosca.datatypes.nfv.VirtualFileStorageData
++<b>per_vnfc_instance : boolean = True
++nfvi_maintenance_info : tosca.datatypes.nfv.NfviMaintenanceInfo
+.. capabilities ..
++virtual_storage
+ type : tosca.capabilities.nfv.VirtualStorage[1..*]
+.. requirements ..
++<b>virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
+}
+"tosca.nodes.nfv.Vdu.VirtualFileStorage" *-- "1" "tosca.datatypes.nfv.VirtualFileStorageData" : virtual_file_storage_data
+"tosca.nodes.nfv.Vdu.VirtualFileStorage" *-- "1" "tosca.datatypes.nfv.NfviMaintenanceInfo" : nfvi_maintenance_info
+"tosca.capabilities.nfv.VirtualStorage" "1..*" -* "tosca.nodes.nfv.Vdu.VirtualFileStorage" : virtual_storage
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.Vdu.VirtualFileStorage" *- "1" "tosca.capabilities.nfv.VirtualLinkable" : virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.Vdu.VirtualFileStorage" ..> "tosca.relationships.nfv.VirtualLinksTo" : virtual_link.relationship
+class "tosca.nodes.nfv.Cp" << (N,green) >> #DDDDDD
+"tosca.nodes.nfv.Cp" <|-- "tosca.nodes.nfv.VduCp"
+class "tosca.nodes.nfv.VduCp" << (N,green) >> {
+.. properties ..
++bitrate_requirement : integer
++virtual_network_interface_requirements : list<tosca.datatypes.nfv.VirtualNetworkInterfaceRequirements>
++order : integer
++vnic_type : string
+.. capabilities ..
++trunk_binding
+ type : tosca.capabilities.nfv.TrunkBindable[0..*]
+.. requirements ..
++<b>virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
++virtual_binding
+ capability : tosca.capabilities.nfv.VirtualBindable[0..1]
+ relationship : tosca.relationships.nfv.VirtualBindsTo
+}
+"tosca.nodes.nfv.VduCp" *-- "*" "tosca.datatypes.nfv.VirtualNetworkInterfaceRequirements" : virtual_network_interface_requirements
+"tosca.capabilities.nfv.TrunkBindable" "0..*" -* "tosca.nodes.nfv.VduCp" : trunk_binding
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.VduCp" *- "1" "tosca.capabilities.nfv.VirtualLinkable" : virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.VduCp" ..> "tosca.relationships.nfv.VirtualLinksTo" : virtual_link.relationship
+"tosca.nodes.nfv.VduCp" *- "0..1" "tosca.capabilities.nfv.VirtualBindable" : virtual_binding
+"tosca.nodes.nfv.VduCp" ..> "tosca.relationships.nfv.VirtualBindsTo" : virtual_binding.relationship
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.VnfVirtualLink"
+class "tosca.nodes.nfv.VnfVirtualLink" << (N,green) >> {
+.. properties ..
++<b>connectivity_type : tosca.datatypes.nfv.ConnectivityType
++description : string
++test_access : list<string>
++<b>vl_profile : tosca.datatypes.nfv.VlProfile
++monitoring_parameters : map<tosca.datatypes.nfv.VirtualLinkMonitoringParameter>
++nfvi_maintenance_info : tosca.datatypes.nfv.NfviMaintenanceInfo
++externally_managed : string
+.. capabilities ..
++virtual_linkable
+ type : tosca.capabilities.nfv.VirtualLinkable[1..*]
+}
+"tosca.nodes.nfv.VnfVirtualLink" *-- "1" "tosca.datatypes.nfv.VlProfile" : vl_profile
+"tosca.nodes.nfv.VnfVirtualLink" *-- "*" "tosca.datatypes.nfv.VirtualLinkMonitoringParameter" : monitoring_parameters
+"tosca.nodes.nfv.VnfVirtualLink" *-- "1" "tosca.datatypes.nfv.NfviMaintenanceInfo" : nfvi_maintenance_info
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.capabilities.nfv.VirtualLinkable" "1..*" -* "tosca.nodes.nfv.VnfVirtualLink" : virtual_linkable
+class "tosca.nodes.nfv.Cp" << (N,green) >> #DDDDDD
+"tosca.nodes.nfv.Cp" <|-- "tosca.nodes.nfv.VipCp"
+class "tosca.nodes.nfv.VipCp" << (N,green) >> {
+.. properties ..
++<b>dedicated_ip_address : boolean = True
++<b>vip_function : string
+.. requirements ..
++<b>target
+ capability : tosca.capabilities.Node[1..*]
+ relationship : tosca.relationships.DependsOn
+ node : tosca.nodes.nfv.VduCp
++<b>virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[1]
+ relationship : tosca.relationships.nfv.VipVirtualLinksTo
+}
+class "tosca.capabilities.Node" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.VipCp" *- "1..*" "tosca.capabilities.Node" : target
+class "tosca.relationships.DependsOn" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.VipCp" ..> "tosca.relationships.DependsOn" : target.relationship
+"tosca.nodes.nfv.VipCp" ..> "tosca.nodes.nfv.VduCp" : target.node
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.VipCp" *- "1" "tosca.capabilities.nfv.VirtualLinkable" : virtual_link
+class "tosca.relationships.nfv.VipVirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.VipCp" ..> "tosca.relationships.nfv.VipVirtualLinksTo" : virtual_link.relationship
+"tosca.nodes.nfv.VduCp" <|-- "tosca.nodes.nfv.VduSubCp"
+class "tosca.nodes.nfv.VduSubCp" << (N,green) >> {
+.. properties ..
++segmentation_type : string
++segmentation_id : integer
+.. requirements ..
++<b>trunk_binding
+ capability : tosca.capabilities.nfv.TrunkBindable[1]
+ relationship : tosca.relationships.nfv.TrunkBindsTo
+ node : tosca.nodes.nfv.VduCp
+}
+"tosca.nodes.nfv.VduSubCp" *- "1" "tosca.capabilities.nfv.TrunkBindable" : trunk_binding
+"tosca.nodes.nfv.VduSubCp" ..> "tosca.relationships.nfv.TrunkBindsTo" : trunk_binding.relationship
+"tosca.nodes.nfv.VduSubCp" ..> "tosca.nodes.nfv.VduCp" : trunk_binding.node
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.Vdu.OsContainer"
+class "tosca.nodes.nfv.Vdu.OsContainer" << (N,green) >> {
+.. properties ..
++<b>name : string
++<b>description : string
++requested_cpu_resources : integer
++cpu_resource_limit : integer
++requested_memory_resources : scalar-unit.size
++memory_resource_limit : scalar-unit.size
++requested_ephemeral_storage_resources : scalar-unit.size
++ephemeral_storage_resource_limit : scalar-unit.size
++extended_resource_requests : list<tosca.datatypes.nfv.ExtendedResourceData>
++huge_pages_resources : list<tosca.datatypes.nfv.Hugepages>
++cpu_pinning_requirements : tosca.datatypes.nfv.VirtualCpuPinning
+.. capabilities ..
++container_deployable
+ type : tosca.capabilities.nfv.ContainerDeployable[1..*]
+}
+"tosca.nodes.nfv.Vdu.OsContainer" *-- "*" "tosca.datatypes.nfv.ExtendedResourceData" : extended_resource_requests
+"tosca.nodes.nfv.Vdu.OsContainer" *-- "*" "tosca.datatypes.nfv.Hugepages" : huge_pages_resources
+"tosca.nodes.nfv.Vdu.OsContainer" *-- "1" "tosca.datatypes.nfv.VirtualCpuPinning" : cpu_pinning_requirements
+"tosca.capabilities.nfv.ContainerDeployable" "1..*" -* "tosca.nodes.nfv.Vdu.OsContainer" : container_deployable
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit"
+class "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" << (N,green) >> {
+.. properties ..
++<b>name : string
++<b>description : string
++logical_node : map<tosca.datatypes.nfv.LogicalNodeData>
++requested_additional_capabilities : map<tosca.datatypes.nfv.RequestedAdditionalCapability>
++nfvi_constraints : map<string>
++configurable_properties : tosca.datatypes.nfv.VnfcConfigurableProperties
++<b>vdu_profile : tosca.datatypes.nfv.VduProfile
++mcio_constraint_params : list<string>
++<b>mcio_identification_data : tosca.datatypes.nfv.McioIdentificationData
+.. capabilities ..
++virtual_binding
+ type : tosca.capabilities.nfv.VirtualBindable[0..*]
++associable
+ type : tosca.capabilities.nfv.AssociableVdu[1]
+.. requirements ..
++virtual_storage
+ capability : tosca.capabilities.nfv.VirtualStorage[0..*]
+ relationship : tosca.relationships.nfv.AttachesTo
++<b>container
+ capability : tosca.capabilities.nfv.ContainerDeployable[1..*]
+ relationship : tosca.relationships.nfv.DeploysTo
+}
+"tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" *-- "*" "tosca.datatypes.nfv.LogicalNodeData" : logical_node
+"tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" *-- "*" "tosca.datatypes.nfv.RequestedAdditionalCapability" : requested_additional_capabilities
+"tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" *-- "1" "tosca.datatypes.nfv.VnfcConfigurableProperties" : configurable_properties
+"tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" *-- "1" "tosca.datatypes.nfv.VduProfile" : vdu_profile
+"tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" *-- "1" "tosca.datatypes.nfv.McioIdentificationData" : mcio_identification_data
+"tosca.capabilities.nfv.VirtualBindable" "0..*" -* "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : virtual_binding
+"tosca.capabilities.nfv.AssociableVdu" "1" -* "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : associable
+"tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" *- "0..*" "tosca.capabilities.nfv.VirtualStorage" : virtual_storage
+"tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" ..> "tosca.relationships.nfv.AttachesTo" : virtual_storage.relationship
+"tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" *- "1..*" "tosca.capabilities.nfv.ContainerDeployable" : container
+"tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" ..> "tosca.relationships.nfv.DeploysTo" : container.relationship
+class "tosca.nodes.Root" << (N,green) >> #DDDDDD
+"tosca.nodes.Root" <|-- "tosca.nodes.nfv.Mciop"
+class "tosca.nodes.nfv.Mciop" << (N,green) >> {
+.. requirements ..
++<b>associatedVdu
+ capability : tosca.capabilities.nfv.AssociableVdu[1..*]
+ relationship : tosca.relationships.nfv.MciopAssociates
+ node : tosca.nodes.nfv.Vdu.OsContainerDeployableUnit
+}
+"tosca.nodes.nfv.Mciop" *- "1..*" "tosca.capabilities.nfv.AssociableVdu" : associatedVdu
+"tosca.nodes.nfv.Mciop" ..> "tosca.relationships.nfv.MciopAssociates" : associatedVdu.relationship
+"tosca.nodes.nfv.Mciop" ..> "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : associatedVdu.node
+class "tosca.nodes.nfv.Cp" << (N,green) >> #DDDDDD
+"tosca.nodes.nfv.Cp" <|-- "tosca.nodes.nfv.VirtualCp"
+class "tosca.nodes.nfv.VirtualCp" << (N,green) >> {
+.. properties ..
++additionalServiceData : list<tosca.datatypes.nfv.AdditionalServiceData>
++<b>address_pool_name_configurable : boolean = False
+.. requirements ..
++<b>target
+ capability : tosca.capabilities.Node[1..*]
+ relationship : tosca.relationships.DependsOn
+ node : tosca.nodes.nfv.Vdu.OsContainerDeployableUnit
++virtual_link
+ capability : tosca.capabilities.nfv.VirtualLinkable[0..1]
+ relationship : tosca.relationships.nfv.VirtualLinksTo
+}
+"tosca.nodes.nfv.VirtualCp" *-- "*" "tosca.datatypes.nfv.AdditionalServiceData" : additionalServiceData
+class "tosca.capabilities.Node" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.VirtualCp" *- "1..*" "tosca.capabilities.Node" : target
+class "tosca.relationships.DependsOn" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.VirtualCp" ..> "tosca.relationships.DependsOn" : target.relationship
+"tosca.nodes.nfv.VirtualCp" ..> "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : target.node
+class "tosca.capabilities.nfv.VirtualLinkable" << (C,green) >> #DDDDDD
+"tosca.nodes.nfv.VirtualCp" *- "0..1" "tosca.capabilities.nfv.VirtualLinkable" : virtual_link
+class "tosca.relationships.nfv.VirtualLinksTo" << (R,green) >> #DDDDDD
+"tosca.nodes.nfv.VirtualCp" ..> "tosca.relationships.nfv.VirtualLinksTo" : virtual_link.relationship
+class "tosca.groups.Root" << (G,green) >> #DDDDDD
+"tosca.groups.Root" <|-- "tosca.groups.nfv.PlacementGroup"
+class "tosca.groups.nfv.PlacementGroup" << (G,green) >> {
+.. properties ..
++<b>description : string
+}
+"tosca.groups.nfv.PlacementGroup" ..> "*" "tosca.nodes.nfv.Vdu.Compute" : members
+"tosca.groups.nfv.PlacementGroup" ..> "*" "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : members
+"tosca.groups.nfv.PlacementGroup" ..> "*" "tosca.nodes.nfv.VnfVirtualLink" : members
+"tosca.groups.nfv.PlacementGroup" ..> "*" "tosca.nodes.nfv.Mciop" : members
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.InstantiationLevels"
+class "tosca.policies.nfv.InstantiationLevels" << (P,green) >> {
+.. properties ..
++<b>levels : map<tosca.datatypes.nfv.InstantiationLevel>
++default_level : string
+}
+"tosca.policies.nfv.InstantiationLevels" *-- "*" "tosca.datatypes.nfv.InstantiationLevel" : levels
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VduInstantiationLevels"
+class "tosca.policies.nfv.VduInstantiationLevels" << (P,green) >> {
+.. properties ..
++<b>levels : map<tosca.datatypes.nfv.VduLevel>
+}
+"tosca.policies.nfv.VduInstantiationLevels" *-- "*" "tosca.datatypes.nfv.VduLevel" : levels
+"tosca.policies.nfv.VduInstantiationLevels" ..> "*" "tosca.nodes.nfv.Vdu.Compute" : targets
+"tosca.policies.nfv.VduInstantiationLevels" ..> "*" "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VirtualLinkInstantiationLevels"
+class "tosca.policies.nfv.VirtualLinkInstantiationLevels" << (P,green) >> {
+.. properties ..
++<b>levels : map<tosca.datatypes.nfv.VirtualLinkBitrateLevel>
+}
+"tosca.policies.nfv.VirtualLinkInstantiationLevels" *-- "*" "tosca.datatypes.nfv.VirtualLinkBitrateLevel" : levels
+"tosca.policies.nfv.VirtualLinkInstantiationLevels" ..> "*" "tosca.nodes.nfv.VnfVirtualLink" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.ScalingAspects"
+class "tosca.policies.nfv.ScalingAspects" << (P,green) >> {
+.. properties ..
++<b>aspects : map<tosca.datatypes.nfv.ScalingAspect>
+}
+"tosca.policies.nfv.ScalingAspects" *-- "*" "tosca.datatypes.nfv.ScalingAspect" : aspects
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VduScalingAspectDeltas"
+class "tosca.policies.nfv.VduScalingAspectDeltas" << (P,green) >> {
+.. properties ..
++<b>aspect : string
++<b>deltas : map<tosca.datatypes.nfv.VduLevel>
+}
+"tosca.policies.nfv.VduScalingAspectDeltas" *-- "*" "tosca.datatypes.nfv.VduLevel" : deltas
+"tosca.policies.nfv.VduScalingAspectDeltas" ..> "*" "tosca.nodes.nfv.Vdu.Compute" : targets
+"tosca.policies.nfv.VduScalingAspectDeltas" ..> "*" "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VirtualLinkBitrateScalingAspectDeltas"
+class "tosca.policies.nfv.VirtualLinkBitrateScalingAspectDeltas" << (P,green) >> {
+.. properties ..
++<b>aspect : string
++<b>deltas : map<tosca.datatypes.nfv.VirtualLinkBitrateLevel>
+}
+"tosca.policies.nfv.VirtualLinkBitrateScalingAspectDeltas" *-- "*" "tosca.datatypes.nfv.VirtualLinkBitrateLevel" : deltas
+"tosca.policies.nfv.VirtualLinkBitrateScalingAspectDeltas" ..> "*" "tosca.nodes.nfv.VnfVirtualLink" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VduInitialDelta"
+class "tosca.policies.nfv.VduInitialDelta" << (P,green) >> {
+.. properties ..
++<b>initial_delta : tosca.datatypes.nfv.VduLevel
+}
+"tosca.policies.nfv.VduInitialDelta" *-- "1" "tosca.datatypes.nfv.VduLevel" : initial_delta
+"tosca.policies.nfv.VduInitialDelta" ..> "*" "tosca.nodes.nfv.Vdu.Compute" : targets
+"tosca.policies.nfv.VduInitialDelta" ..> "*" "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VirtualLinkBitrateInitialDelta"
+class "tosca.policies.nfv.VirtualLinkBitrateInitialDelta" << (P,green) >> {
+.. properties ..
++<b>initial_delta : tosca.datatypes.nfv.VirtualLinkBitrateLevel
+}
+"tosca.policies.nfv.VirtualLinkBitrateInitialDelta" *-- "1" "tosca.datatypes.nfv.VirtualLinkBitrateLevel" : initial_delta
+"tosca.policies.nfv.VirtualLinkBitrateInitialDelta" ..> "*" "tosca.nodes.nfv.VnfVirtualLink" : targets
+class "tosca.policies.Placement" << (P,green) >> #DDDDDD
+"tosca.policies.Placement" <|-- "tosca.policies.nfv.AffinityRule"
+class "tosca.policies.nfv.AffinityRule" << (P,green) >> {
+.. properties ..
++<b>scope : string
++nfvi_maintenance_group_info : tosca.datatypes.nfv.NfviMaintenanceInfo
+}
+"tosca.policies.nfv.AffinityRule" *-- "1" "tosca.datatypes.nfv.NfviMaintenanceInfo" : nfvi_maintenance_group_info
+"tosca.policies.nfv.AffinityRule" ..> "*" "tosca.nodes.nfv.Vdu.Compute" : targets
+"tosca.policies.nfv.AffinityRule" ..> "*" "tosca.nodes.nfv.VnfVirtualLink" : targets
+"tosca.policies.nfv.AffinityRule" ..> "*" "tosca.groups.nfv.PlacementGroup" : targets
+"tosca.policies.nfv.AffinityRule" ..> "*" "tosca.nodes.nfv.Mciop" : targets
+"tosca.policies.nfv.AffinityRule" ..> "*" "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : targets
+class "tosca.policies.Placement" << (P,green) >> #DDDDDD
+"tosca.policies.Placement" <|-- "tosca.policies.nfv.AntiAffinityRule"
+class "tosca.policies.nfv.AntiAffinityRule" << (P,green) >> {
+.. properties ..
++<b>scope : string
++nfvi_maintenance_group_info : tosca.datatypes.nfv.NfviMaintenanceInfo
+}
+"tosca.policies.nfv.AntiAffinityRule" *-- "1" "tosca.datatypes.nfv.NfviMaintenanceInfo" : nfvi_maintenance_group_info
+"tosca.policies.nfv.AntiAffinityRule" ..> "*" "tosca.nodes.nfv.Vdu.Compute" : targets
+"tosca.policies.nfv.AntiAffinityRule" ..> "*" "tosca.nodes.nfv.VnfVirtualLink" : targets
+"tosca.policies.nfv.AntiAffinityRule" ..> "*" "tosca.groups.nfv.PlacementGroup" : targets
+"tosca.policies.nfv.AntiAffinityRule" ..> "*" "tosca.nodes.nfv.Mciop" : targets
+"tosca.policies.nfv.AntiAffinityRule" ..> "*" "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.SupportedVnfInterface"
+class "tosca.policies.nfv.SupportedVnfInterface" << (P,green) >> {
+.. properties ..
++<b>interface_name : string
++details : tosca.datatypes.nfv.InterfaceDetails
+}
+"tosca.policies.nfv.SupportedVnfInterface" *-- "1" "tosca.datatypes.nfv.InterfaceDetails" : details
+"tosca.policies.nfv.SupportedVnfInterface" ..> "*" "tosca.nodes.nfv.VnfExtCp" : targets
+"tosca.policies.nfv.SupportedVnfInterface" ..> "*" "tosca.nodes.nfv.VduCp" : targets
+class "tosca.policies.nfv.Abstract.SecurityGroupRule" << (P,green) >> #DDDDDD
+"tosca.policies.nfv.Abstract.SecurityGroupRule" <|-- "tosca.policies.nfv.SecurityGroupRule"
+class "tosca.policies.nfv.SecurityGroupRule" << (P,green) >> {
+}
+"tosca.policies.nfv.SecurityGroupRule" ..> "*" "tosca.nodes.nfv.VduCp" : targets
+"tosca.policies.nfv.SecurityGroupRule" ..> "*" "tosca.nodes.nfv.VnfExtCp" : targets
+"tosca.policies.nfv.SecurityGroupRule" ..> "*" "tosca.nodes.nfv.Vdu.OsContainerDeployableUnit" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VnfIndicator"
+class "tosca.policies.nfv.VnfIndicator" << (P,green) >> {
+.. properties ..
++<b>source : string
+}
+"tosca.policies.nfv.VnfIndicator" ..> "*" "tosca.nodes.nfv.VNF" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VnfPackageChange"
+class "tosca.policies.nfv.VnfPackageChange" << (P,green) >> {
+.. properties ..
++<b>selector : list<tosca.datatypes.nfv.VnfPackageChangeSelector>
++<b>modification_qualifier : string
++additional_modification_description : string
++component_mappings : list<tosca.datatypes.nfv.VnfPackageChangeComponentMapping>
++<b>destination_flavour_id : string
++actions : list<string>
++referenced_coordination_actions : list<string>
+}
+"tosca.policies.nfv.VnfPackageChange" *-- "*" "tosca.datatypes.nfv.VnfPackageChangeSelector" : selector
+"tosca.policies.nfv.VnfPackageChange" *-- "*" "tosca.datatypes.nfv.VnfPackageChangeComponentMapping" : component_mappings
+"tosca.policies.nfv.VnfPackageChange" ..> "*" "tosca.nodes.nfv.VNF" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.LcmCoordinationAction"
+class "tosca.policies.nfv.LcmCoordinationAction" << (P,green) >> {
+.. properties ..
++<b>action_name : string
++<b>action : tosca.datatypes.nfv.VnfLcmOpCoord
+}
+"tosca.policies.nfv.LcmCoordinationAction" *-- "1" "tosca.datatypes.nfv.VnfLcmOpCoord" : action
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.LcmCoordinationsForLcmOperation"
+class "tosca.policies.nfv.LcmCoordinationsForLcmOperation" << (P,green) >> {
+.. properties ..
++<b>vnf_lcm_operation : string
++actions : list<string>
++referenced_coordination_actions : list<string>
+}
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VipCpScalingAspectDeltas"
+class "tosca.policies.nfv.VipCpScalingAspectDeltas" << (P,green) >> {
+.. properties ..
++<b>aspect : string
++<b>deltas : map<tosca.datatypes.nfv.VipCpLevel>
+}
+"tosca.policies.nfv.VipCpScalingAspectDeltas" *-- "*" "tosca.datatypes.nfv.VipCpLevel" : deltas
+"tosca.policies.nfv.VipCpScalingAspectDeltas" ..> "*" "tosca.nodes.nfv.VipCp" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VipCpInitialDelta"
+class "tosca.policies.nfv.VipCpInitialDelta" << (P,green) >> {
+.. properties ..
++<b>initial_delta : tosca.datatypes.nfv.VipCpLevel
+}
+"tosca.policies.nfv.VipCpInitialDelta" *-- "1" "tosca.datatypes.nfv.VipCpLevel" : initial_delta
+"tosca.policies.nfv.VipCpInitialDelta" ..> "*" "tosca.nodes.nfv.VipCp" : targets
+class "tosca.policies.Root" << (P,green) >> #DDDDDD
+"tosca.policies.Root" <|-- "tosca.policies.nfv.VipCpInstantiationLevels"
+class "tosca.policies.nfv.VipCpInstantiationLevels" << (P,green) >> {
+.. properties ..
++<b>levels : map<tosca.datatypes.nfv.VipCpLevel>
+}
+"tosca.policies.nfv.VipCpInstantiationLevels" *-- "*" "tosca.datatypes.nfv.VipCpLevel" : levels
+"tosca.policies.nfv.VipCpInstantiationLevels" ..> "*" "tosca.nodes.nfv.VipCp" : targets
+@enduml
