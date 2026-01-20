@@ -13,7 +13,7 @@ cd bin/
 2️ Cloner mon projet
 
 ```bash
-cd Cloudnet-TOSCA-toolbo/examples/my_service
+cd Cloudnet-TOSCA-toolbox/examples/my_service
 git clone https://github.com/sarah202411/TOSCA_Claudnet.git
 export CLOUDNET_BINDIR=../../bin
 . ${CLOUDNET_BINDIR}/cloudnet_rc.sh
