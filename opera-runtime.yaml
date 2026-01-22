@@ -1,0 +1,63 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: "Runtime orchestration (xOpera) for Hybrid NS: 2 VM-based VNFs (LXD) + 1 CNF (k3s) - local execution"
+
+topology_template:
+  relationship_templates:
+    dep:
+      type: tosca.relationships.DependsOn
+
+  node_templates:
+    # Host local pour satisfaire le requirement "host" des SoftwareComponent
+    local_host:
+      type: tosca.nodes.Compute
+      attributes:
+        public_address: 127.0.0.1
+      capabilities:
+        host:
+          properties:
+            num_cpus: 2
+            mem_size: 2 GB
+            disk_size: 10 GB
+        os:
+          properties:
+            type: linux
+            distribution: ubuntu
+            version: "22.04"
+
+    deploy_vnf1:
+      type: tosca.nodes.SoftwareComponent
+      requirements:
+        - host: local_host
+      interfaces:
+        Standard:
+          operations:
+            create:
+              implementation: external/tosca-deploy-scripts/scripts/run_lxd_create_vnf1.yaml
+
+    deploy_vnf2:
+      type: tosca.nodes.SoftwareComponent
+      requirements:
+        - host: local_host
+        - dependency:
+            node: deploy_vnf1
+            relationship: dep
+      interfaces:
+        Standard:
+          operations:
+            create:
+              implementation: external/tosca-deploy-scripts/scripts/run_lxd_create_vnf2.yaml
+
+    deploy_cnf3:
+      type: tosca.nodes.SoftwareComponent
+      requirements:
+        - host: local_host
+        - dependency:
+            node: deploy_vnf2
+            relationship: dep
+      interfaces:
+        Standard:
+          operations:
+            create:
+              implementation: external/tosca-deploy-scripts/scripts/run_k3s_install.yaml
+            configure:
+              implementation: external/tosca-deploy-scripts/scripts/run_k8s_apply.yaml

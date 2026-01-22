@@ -1,0 +1,58 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+description: Deploy wrapper for Hybrid NS on LXD (VM-like) + k3s (CNF) using xOpera default lifecycle
+
+imports:
+  - etsi_nfv_sol001_common_types.yaml
+  - etsi_nfv_sol001_vnfd_types.yaml
+  - etsi_nfv_sol001_nsd_types.yaml
+  - etsi_nfv_sol001_pnfd_types.yaml
+  - Hybrid-Network-Service.yaml
+  - VNF1-scalable.yaml
+  - VNF2-scalable.yaml
+  - CNF3-scalable.yaml
+
+topology_template:
+  relationship_templates:
+    dep:
+      type: tosca.relationships.DependsOn
+
+  node_templates:
+    deploy_vnf1:
+      type: tosca.nodes.SoftwareComponent
+      interfaces:
+        Standard:
+          operations:
+            create:
+              implementation: external/tosca-deploy-scripts/scripts/lxd_create_pair.sh
+              inputs:
+                vnf_name: { default: "vnf1" }
+                image: { default: "ubuntu:22.04" }
+
+    deploy_vnf2:
+      type: tosca.nodes.SoftwareComponent
+      requirements:
+        - dependency:
+            node: deploy_vnf1
+            relationship: dep
+      interfaces:
+        Standard:
+          operations:
+            create:
+              implementation: external/tosca-deploy-scripts/scripts/lxd_create_pair.sh
+              inputs:
+                vnf_name: { default: "vnf2" }
+                image: { default: "ubuntu:22.04" }
+
+    deploy_cnf3:
+      type: tosca.nodes.SoftwareComponent
+      requirements:
+        - dependency:
+            node: deploy_vnf2
+            relationship: dep
+      interfaces:
+        Standard:
+          operations:
+            create:
+              implementation: external/tosca-deploy-scripts/scripts/k3s_install.sh
+            configure:
+              implementation: external/tosca-deploy-scripts/scripts/k8s_apply.sh

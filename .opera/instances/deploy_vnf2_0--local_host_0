@@ -1,0 +1,14 @@
+{
+  "tosca_name": {
+    "is_set": true,
+    "data": "deploy_vnf2-host-local_host"
+  },
+  "tosca_id": {
+    "is_set": true,
+    "data": "deploy_vnf2_0--local_host_0"
+  },
+  "state": {
+    "is_set": true,
+    "data": "initial"
+  }
+}
