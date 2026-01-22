@@ -1,0 +1,45 @@
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Write LXD create pair script (vnf2)
+      copy:
+        dest: /tmp/opera_lxd_create_vnf2.sh
+        mode: "0755"
+        content: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          VNF_NAME="vnf2"
+          IMAGE="ubuntu:22.04"
+          C1="${VNF_NAME}-comp1"
+          C2="${VNF_NAME}-comp2"
+
+          echo "[LXD] Creating $C1 and $C2 from $IMAGE"
+
+          if ! lxc info "$C1" >/dev/null 2>&1; then
+            lxc launch "$IMAGE" "$C1"
+          else
+            echo "[LXD] $C1 already exists"
+          fi
+
+          if ! lxc info "$C2" >/dev/null 2>&1; then
+            lxc launch "$IMAGE" "$C2"
+          else
+            echo "[LXD] $C2 already exists"
+          fi
+
+          for c in "$C1" "$C2"; do
+            lxc exec "$c" -- bash -lc "apt update && apt install -y nginx && systemctl enable --now nginx"
+          done
+
+          echo "[LXD] Done: $VNF_NAME"
+
+    - name: Run script
+      shell: bash -lc /tmp/opera_lxd_create_vnf2.sh
+      register: out
+      changed_when: true
+
+    - debug:
+        var: out.stdout_lines
+
+    - debug:
+        var: out.stderr_lines

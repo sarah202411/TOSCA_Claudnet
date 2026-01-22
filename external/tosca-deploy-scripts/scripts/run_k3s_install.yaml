@@ -1,0 +1,29 @@
+- hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Ensure deps
+      apt:
+        update_cache: true
+        name:
+          - curl
+          - ca-certificates
+        state: present
+
+    - name: Install k3s (server)
+      shell: |
+        set -euo pipefail
+        if systemctl is-active --quiet k3s; then
+          echo "k3s already running"
+          exit 0
+        fi
+        curl -sfL https://get.k3s.io | sh -
+      args:
+        executable: /bin/bash
+      register: out
+      changed_when: true
+
+    - debug:
+        var: out.stdout_lines
+    - debug:
+        var: out.stderr_lines

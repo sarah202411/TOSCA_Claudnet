@@ -1,0 +1,43 @@
+- hosts: localhost
+  gather_facts: false
+  become: true
+  vars:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    manifest: /home/nova/TOSCA_Claudnet/k8s/cnf3.yaml
+  tasks:
+    - name: Pick kubectl path
+      shell: |
+        set -e
+        if [ -x /usr/local/bin/kubectl ]; then echo /usr/local/bin/kubectl; exit 0; fi
+        if command -v kubectl >/dev/null 2>&1; then command -v kubectl; exit 0; fi
+        echo "kubectl_not_found"
+        exit 2
+      register: kubectl_path
+      changed_when: false
+
+    - name: Fail if kubectl not found
+      fail:
+        msg: "kubectl introuvable (PATH root). k3s installe normalement kubectl dans /usr/local/bin/kubectl."
+      when: kubectl_path.stdout == "kubectl_not_found"
+
+    - name: Wait for k3s API
+      shell: "{{ kubectl_path.stdout }} get nodes"
+      environment:
+        KUBECONFIG: "{{ kubeconfig }}"
+      register: out
+      retries: 40
+      delay: 2
+      until: out.rc == 0
+      changed_when: false
+
+    - name: Apply CNF3 manifest
+      shell: "{{ kubectl_path.stdout }} apply -f {{ manifest }}"
+      environment:
+        KUBECONFIG: "{{ kubeconfig }}"
+      register: out2
+      changed_when: true
+
+    - debug:
+        var: out2.stdout_lines
+    - debug:
+        var: out2.stderr_lines

@@ -1,0 +1,11 @@
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Set public_address fact
+      set_fact:
+        public_address: "127.0.0.1"
+
+    - name: Print outputs for xOpera
+      debug:
+        msg:
+          public_address: "{{ public_address }}"
